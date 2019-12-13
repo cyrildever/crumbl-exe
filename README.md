@@ -119,7 +119,31 @@ NB: Error(s) and/or warning message(s) are all sent to stderr.
 
 #### Go Library ####
 
-// TODO
+```golang
+import "github.com/edgeqhere/crumbl-exe"
+```
+_NB: The repository being still private, this kind of import is not possible for now. See with our team on how to implement it._
+
+Construct a new Crumbl client by passing to it all the arguments otherwise passed in the executable as flags (see above).
+Then, launch its process.
+
+For example, the code below reproduces the command-line instruction above for crumbl creation:
+```golang
+worker := client.CrumblWorker{
+      Mode:             client.CREATION,
+	Input:            "",
+	Output:           "myFile.dat",
+	OwnerKeys:        "ecies:path/to/myKey.pub",
+	OwnerSecret:      "",
+	SignerKeys:       "ecies:path/to/trustee1.pub,rsa:path/to/trustee2.pub",
+	SignerSecret:     "",
+	VerificationHash: "",
+	Data:             []string{"myDataToCrumbl"},
+}
+worker.Process()
+```
+
+You may want to launch each process in separate goroutine.
 
 
 ### Licence ###

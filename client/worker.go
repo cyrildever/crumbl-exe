@@ -1,6 +1,7 @@
-package core
+package client
 
 import (
+	"crumbl/core"
 	"crumbl/crypto"
 	"crumbl/decrypter"
 	"crumbl/models/signer"
@@ -19,13 +20,13 @@ import (
 // CrumblWorker ...
 type CrumblWorker struct {
 	Mode             CrumblMode
-	Input            *string
-	Output           *string
-	OwnerKeys        *string
-	OwnerSecret      *string
-	SignerKeys       *string
-	SignerSecret     *string
-	VerificationHash *string
+	Input            string
+	Output           string
+	OwnerKeys        string
+	OwnerSecret      string
+	SignerKeys       string
+	SignerSecret     string
+	VerificationHash string
 	Data             []string
 }
 
@@ -45,10 +46,10 @@ const (
 // Process ...
 func (w *CrumblWorker) Process() {
 	if len(w.Data) == 0 {
-		if *w.Input == "" {
+		if w.Input == "" {
 			Check(errors.New("invalid data: not enough arguments and/or no input file to use"))
 		} else {
-			content, err := ioutil.ReadFile(*w.Input)
+			content, err := ioutil.ReadFile(w.Input)
 			Check(err)
 			// TODO Add multiple-line handling (using one crumbl per line in input file)
 			contentStr := strings.Replace(string(content), "\n", "", -1)
@@ -56,10 +57,10 @@ func (w *CrumblWorker) Process() {
 		}
 	} else {
 		// Any data in an input file should be prepended to the data from the command-line arguments
-		if *w.Input != "" {
+		if w.Input != "" {
 			// In this case where there are arguments and an input file, there's no possible multiline handling
 			tmp := w.Data
-			content, err := ioutil.ReadFile(*w.Input)
+			content, err := ioutil.ReadFile(w.Input)
 			Check(err)
 			contentStr := strings.Replace(string(content), "\n", "", -1)
 			w.Data = utils.RegexSplit(contentStr, "\\s+")
@@ -69,7 +70,7 @@ func (w *CrumblWorker) Process() {
 
 	// Get algorithm and keys
 	ownersMap := make(map[string]string)
-	for _, tuple := range strings.Split(*w.OwnerKeys, ",") {
+	for _, tuple := range strings.Split(w.OwnerKeys, ",") {
 		if tuple != "" {
 			parts := strings.SplitN(tuple, ":", 2)
 			algo := parts[0]
@@ -91,7 +92,7 @@ func (w *CrumblWorker) Process() {
 	}
 	signersMap := make(map[string]string)
 
-	for _, tuple := range strings.Split(*w.SignerKeys, ",") {
+	for _, tuple := range strings.Split(w.SignerKeys, ",") {
 		if tuple != "" {
 			parts := strings.SplitN(tuple, ":", 2)
 			algo := parts[0]
@@ -119,7 +120,7 @@ func (w *CrumblWorker) Process() {
 	}
 
 	// Check data
-	if w.Mode == EXTRACTION && *w.VerificationHash == "" {
+	if w.Mode == EXTRACTION && w.VerificationHash == "" {
 		logWarning("verification hash is missing")
 	}
 	if len(w.Data) == 0 {
@@ -155,29 +156,29 @@ func (w *CrumblWorker) Process() {
 			trustees = append(trustees, trustee)
 		}
 
-		crumbl := Crumbl{
+		crumbl := core.Crumbl{
 			Source:     w.Data[0],
 			HashEngine: crypto.DEFAULT_HASH_ENGINE,
 			Owners:     owners,
 			Trustees:   trustees,
 		}
-		if *w.Output == "" {
+		if w.Output == "" {
 			err := crumbl.ToStdOut()
 			Check(err)
 			os.Exit(0)
 		}
-		err := crumbl.ToFile(*w.Output)
+		err := crumbl.ToFile(w.Output)
 		Check(err)
 	}
 	if w.Mode == EXTRACTION {
 		var user signer.Signer
 		hasSigner := false
 		isOwner := false
-		if *w.OwnerSecret != "" && fileExists(*w.OwnerSecret) {
+		if w.OwnerSecret != "" && fileExists(w.OwnerSecret) {
 			if len(ownersMap) != 1 {
 				Check(errors.New("too many public keys for a data owner"))
 			}
-			sk, err := ioutil.ReadFile(*w.OwnerSecret)
+			sk, err := ioutil.ReadFile(w.OwnerSecret)
 			Check(err)
 			for pk, algo := range ownersMap {
 				pubkey, err := crypto.GetKeyBytes(pk, algo)
@@ -200,11 +201,11 @@ func (w *CrumblWorker) Process() {
 				break
 			}
 		}
-		if !hasSigner && *w.SignerSecret != "" && fileExists(*w.SignerSecret) {
+		if !hasSigner && w.SignerSecret != "" && fileExists(w.SignerSecret) {
 			if len(signersMap) != 1 {
 				Check(errors.New("too many public keys for a single uncrumbler"))
 			}
-			sk, err := ioutil.ReadFile(*w.SignerSecret)
+			sk, err := ioutil.ReadFile(w.SignerSecret)
 			Check(err)
 			for pk, algo := range signersMap {
 				pubkey, err := crypto.GetKeyBytes(pk, algo)
@@ -235,12 +236,12 @@ func (w *CrumblWorker) Process() {
 		if len(w.Data) > 1 {
 			for _, u := range w.Data[1:] {
 				parts := strings.SplitN(u, ".", 2)
-				if parts[1] != VERSION {
+				if parts[1] != core.VERSION {
 					logWarning("wrong version for uncrumb: " + u)
 					continue
 				}
 				vh := parts[0][:crypto.DEFAULT_HASH_LENGTH]
-				if vh == *w.VerificationHash {
+				if vh == w.VerificationHash {
 					us := parts[0][crypto.DEFAULT_HASH_LENGTH:]
 					uncs := strings.Split(us, decrypter.PARTIAL_PREFIX)
 					for _, unc := range uncs {
@@ -256,19 +257,19 @@ func (w *CrumblWorker) Process() {
 			}
 		}
 
-		uncrumbl := Uncrumbl{
+		uncrumbl := core.Uncrumbl{
 			Crumbled:         w.Data[0],
 			Slices:           uncrumbs,
-			VerificationHash: *w.VerificationHash,
+			VerificationHash: w.VerificationHash,
 			Signer:           user,
 			IsOwner:          isOwner,
 		}
-		if *w.Output == "" {
+		if w.Output == "" {
 			err := uncrumbl.ToStdOut()
 			Check(err)
 			os.Exit(0)
 		}
-		err := uncrumbl.ToFile(*w.Output)
+		err := uncrumbl.ToFile(w.Output)
 		Check(err)
 	}
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"crumbl/core"
+	"crumbl/client"
 	"errors"
 	"flag"
 )
@@ -42,32 +42,32 @@ func main() {
 	data := flag.Args()
 
 	// Check operation: create or extract, ie. crumbl or uncrumbl
-	var mode core.CrumblMode
+	var mode client.CrumblMode
 	create := isFlagPassed("c")
 	extract := isFlagPassed("x")
 	if !create && !extract {
-		core.Check(errors.New("invalid operation: you must set -c or -x flag"))
+		client.Check(errors.New("invalid operation: you must set -c or -x flag"))
 	}
 	if create && extract {
-		core.Check(errors.New("invalid flags: cannot create and extract at the same time"))
+		client.Check(errors.New("invalid flags: cannot create and extract at the same time"))
 	}
 	if create {
-		mode = core.CREATION
+		mode = client.CREATION
 	}
 	if extract {
-		mode = core.EXTRACTION
+		mode = client.EXTRACTION
 	}
 
 	// Launch worker
-	worker := core.CrumblWorker{
+	worker := client.CrumblWorker{
 		Mode:             mode,
-		Input:            input,
-		Output:           output,
-		OwnerKeys:        ownerKeys,
-		OwnerSecret:      ownerSecret,
-		SignerKeys:       signerKeys,
-		SignerSecret:     signerSecret,
-		VerificationHash: hash,
+		Input:            *input,
+		Output:           *output,
+		OwnerKeys:        *ownerKeys,
+		OwnerSecret:      *ownerSecret,
+		SignerKeys:       *signerKeys,
+		SignerSecret:     *signerSecret,
+		VerificationHash: *hash,
 		Data:             data,
 	}
 	worker.Process()
