@@ -120,7 +120,7 @@ NB: Error(s) and/or warning message(s) are all sent to stderr.
 #### Go Library ####
 
 ```golang
-import "github.com/edgeqhere/crumbl-exe"
+import "github.com/edgewhere/crumbl-exe"
 ```
 _NB: The repository being still private, this kind of import is not possible for now. See with our team on how to implement it._
 
@@ -131,14 +131,14 @@ For example, the code below reproduces the command-line instruction above for cr
 ```golang
 worker := client.CrumblWorker{
       Mode:             client.CREATION,
-	Input:            "",
-	Output:           "myFile.dat",
-	OwnerKeys:        "ecies:path/to/myKey.pub",
-	OwnerSecret:      "",
-	SignerKeys:       "ecies:path/to/trustee1.pub,rsa:path/to/trustee2.pub",
-	SignerSecret:     "",
-	VerificationHash: "",
-	Data:             []string{"myDataToCrumbl"},
+      Input:            "",
+      Output:           "myFile.dat",
+      OwnerKeys:        "ecies:path/to/myKey.pub",
+      OwnerSecret:      "",
+      SignerKeys:       "ecies:path/to/trustee1.pub,rsa:path/to/trustee2.pub",
+      SignerSecret:     "",
+      VerificationHash: "",
+      Data:             []string{"myDataToCrumbl"},
 }
 worker.Process()
 ```
