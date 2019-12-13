@@ -51,6 +51,7 @@ func (c *Crumbl) ToFile(filename string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Printf("SUCCESS - crumbl successfully saved to %v\n", filename)
 	return nil
 }
 

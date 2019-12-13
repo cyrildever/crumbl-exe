@@ -49,6 +49,7 @@ func (u Uncrumbl) ToFile(filename string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Printf("SUCCESS - result saved in %v\n", filename)
 	return nil
 }
 
