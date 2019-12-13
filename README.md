@@ -12,7 +12,7 @@ The whole process could be divided into two major steps:
 
 The first step involves at least two stakeholders, but preferably four for optimal security and sustainability:
 * at least one "owner" of the data, ie. the stakeholder that needs to securely store it;
-* three signing trusted third-parties.
+* three signing trusted third-parties who shall remain unaware of the data.
 
 1. Creation
 
