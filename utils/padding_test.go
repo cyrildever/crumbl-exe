@@ -53,4 +53,11 @@ func TestUnpad(t *testing.T) {
 
 	unpadded := utils.Unpad(padded)
 	assert.Equal(t, str, unpadded)
+
+	// A padding character in the middle of the string shouldn't change the unpadding behaviour
+	manInTheMiddle := "test" + string(utils.LEFT_PADDING_CHARACTER) + "test"
+	padded = utils.LeftPad(manInTheMiddle, leftLength)
+	assert.Equal(t, len(padded), leftLength)
+	unpadded = utils.Unpad(padded)
+	assert.Equal(t, unpadded, manInTheMiddle)
 }
