@@ -56,13 +56,13 @@ func (c *Crumbl) ToFile(filename string) error {
 }
 
 // ToStdOut writes the crumbl to stdout
-func (c *Crumbl) ToStdOut() error {
+func (c *Crumbl) ToStdOut() (result string, err error) {
 	crumbled, err := c.doCrumbl()
 	if err != nil {
-		return err
+		return
 	}
 	fmt.Println(crumbled)
-	return nil
+	return crumbled, nil
 }
 
 // doCrumbl build the actual crumbled string which would be composed of:

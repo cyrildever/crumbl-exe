@@ -44,13 +44,19 @@ const (
 //--- METHODS
 
 // Process ...
-func (w *CrumblWorker) Process() {
+func (w *CrumblWorker) Process(returnResult bool) (result string, err error) {
 	if len(w.Data) == 0 {
 		if w.Input == "" {
-			Check(errors.New("invalid data: not enough arguments and/or no input file to use"))
+			err = errors.New("invalid data: not enough arguments and/or no input file to use")
+			if !Check(err, returnResult) {
+				return
+			}
 		} else {
-			content, err := ioutil.ReadFile(w.Input)
-			Check(err)
+			content, e := ioutil.ReadFile(w.Input)
+			if !Check(e, returnResult) {
+				err = e
+				return
+			}
 			// TODO Add multiple-line handling (using one crumbl per line in input file)
 			contentStr := strings.Replace(string(content), "\n", "", -1)
 			w.Data = utils.RegexSplit(contentStr, "\\s+")
@@ -60,8 +66,11 @@ func (w *CrumblWorker) Process() {
 		if w.Input != "" {
 			// In this case where there are arguments and an input file, there's no possible multiline handling
 			tmp := w.Data
-			content, err := ioutil.ReadFile(w.Input)
-			Check(err)
+			content, e := ioutil.ReadFile(w.Input)
+			if !Check(e, returnResult) {
+				err = e
+				return
+			}
 			contentStr := strings.Replace(string(content), "\n", "", -1)
 			w.Data = utils.RegexSplit(contentStr, "\\s+")
 			w.Data = append(w.Data, tmp...)
@@ -77,8 +86,11 @@ func (w *CrumblWorker) Process() {
 			path := parts[1]
 			if path != "" {
 				if fileExists(path) {
-					key, err := ioutil.ReadFile(path)
-					Check(err)
+					key, e := ioutil.ReadFile(path)
+					if !Check(e, returnResult) {
+						err = e
+						return
+					}
 					if crypto.ExistsAlgorithm(algo) {
 						ownersMap[string(key)] = algo
 					} else {
@@ -99,8 +111,11 @@ func (w *CrumblWorker) Process() {
 			path := parts[1]
 			if path != "" {
 				if fileExists(path) {
-					key, err := ioutil.ReadFile(path)
-					Check(err)
+					key, e := ioutil.ReadFile(path)
+					if !Check(e, returnResult) {
+						err = e
+						return
+					}
 					if crypto.ExistsAlgorithm(algo) {
 						signersMap[string(key)] = algo
 					} else {
@@ -113,10 +128,16 @@ func (w *CrumblWorker) Process() {
 		}
 	}
 	if len(ownersMap) == 0 && (w.Mode == CREATION || (w.Mode == EXTRACTION && len(signersMap) == 0)) {
-		Check(errors.New("missing public key for the data owner"))
+		err = errors.New("missing public key for the data owner")
+		if !Check(err, returnResult) {
+			return
+		}
 	}
 	if len(signersMap) == 0 && (w.Mode == CREATION || (w.Mode == EXTRACTION && len(ownersMap) == 0)) {
-		Check(errors.New("missing public keys for trusted signers"))
+		err = errors.New("missing public keys for trusted signers")
+		if !Check(err, returnResult) {
+			return
+		}
 	}
 
 	// Check data
@@ -124,7 +145,10 @@ func (w *CrumblWorker) Process() {
 		logWarning("verification hash is missing")
 	}
 	if len(w.Data) == 0 {
-		Check(errors.New("no data to use"))
+		err = errors.New("no data to use")
+		if !Check(err, returnResult) {
+			return
+		}
 	}
 
 	if w.Mode == CREATION {
@@ -163,12 +187,22 @@ func (w *CrumblWorker) Process() {
 			Trustees:   trustees,
 		}
 		if w.Output == "" {
-			err := crumbl.ToStdOut()
-			Check(err)
+			res, e := crumbl.ToStdOut()
+			if !Check(e, returnResult) {
+				err = e
+				return
+			}
+			if returnResult {
+				result = res
+				return
+			}
 			os.Exit(0)
 		}
-		err := crumbl.ToFile(w.Output)
-		Check(err)
+		e := crumbl.ToFile(w.Output)
+		if !Check(e, returnResult) {
+			err = e
+			return
+		}
 	}
 	if w.Mode == EXTRACTION {
 		var user signer.Signer
@@ -176,10 +210,16 @@ func (w *CrumblWorker) Process() {
 		isOwner := false
 		if w.OwnerSecret != "" && fileExists(w.OwnerSecret) {
 			if len(ownersMap) != 1 {
-				Check(errors.New("too many public keys for a data owner"))
+				err = errors.New("too many public keys for a data owner")
+				if !Check(err, returnResult) {
+					return
+				}
 			}
-			sk, err := ioutil.ReadFile(w.OwnerSecret)
-			Check(err)
+			sk, e := ioutil.ReadFile(w.OwnerSecret)
+			if !Check(e, returnResult) {
+				err = e
+				return
+			}
 			for pk, algo := range ownersMap {
 				pubkey, err := crypto.GetKeyBytes(pk, algo)
 				if err != nil {
@@ -203,10 +243,16 @@ func (w *CrumblWorker) Process() {
 		}
 		if !hasSigner && w.SignerSecret != "" && fileExists(w.SignerSecret) {
 			if len(signersMap) != 1 {
-				Check(errors.New("too many public keys for a single uncrumbler"))
+				err = errors.New("too many public keys for a single uncrumbler")
+				if !Check(err, returnResult) {
+					return
+				}
 			}
-			sk, err := ioutil.ReadFile(w.SignerSecret)
-			Check(err)
+			sk, e := ioutil.ReadFile(w.SignerSecret)
+			if !Check(e, returnResult) {
+				err = e
+				return
+			}
 			for pk, algo := range signersMap {
 				pubkey, err := crypto.GetKeyBytes(pk, algo)
 				if err != nil {
@@ -228,7 +274,10 @@ func (w *CrumblWorker) Process() {
 			}
 		}
 		if !hasSigner {
-			Check(errors.New("invalid keys: no signer was detected"))
+			err = errors.New("invalid keys: no signer was detected")
+			if !Check(err, returnResult) {
+				return
+			}
 		}
 
 		// TODO Add multiple-line handling (using one crumbl per line in input file)
@@ -265,25 +314,40 @@ func (w *CrumblWorker) Process() {
 			IsOwner:          isOwner,
 		}
 		if w.Output == "" {
-			err := uncrumbl.ToStdOut()
-			Check(err)
+			res, e := uncrumbl.ToStdOut()
+			if !Check(e, returnResult) {
+				err = e
+				return
+			}
+			if returnResult {
+				result = res
+				return
+			}
 			os.Exit(0)
 		}
-		err := uncrumbl.ToFile(w.Output)
-		Check(err)
+		e := uncrumbl.ToFile(w.Output)
+		if !Check(e, returnResult) {
+			err = e
+			return
+		}
 	}
+	return
 }
 
 //--- utilities
 
 // Check ...
-func Check(e error) {
+func Check(e error, returnResult bool) bool {
 	if e != nil {
+		if returnResult {
+			return false
+		}
 		_, fn, line, _ := runtime.Caller(1)
 		fmt.Fprintf(os.Stderr, "ERROR - %v [%s:%d]\n", e, fn, line)
 		flag.Usage()
 		os.Exit(1)
 	}
+	return true
 }
 
 func fileExists(filename string) bool {

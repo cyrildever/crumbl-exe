@@ -54,13 +54,14 @@ func (u Uncrumbl) ToFile(filename string) error {
 }
 
 // ToStdOut ...
-func (u *Uncrumbl) ToStdOut() error {
+func (u *Uncrumbl) ToStdOut() (result string, err error) {
 	uncrumbled, err := u.doUncrumbl()
 	if err != nil {
-		return err
+		return
 	}
-	fmt.Println(string(uncrumbled))
-	return nil
+	result = string(uncrumbled)
+	fmt.Println(result)
+	return
 }
 
 // doUncrumbl is a multi-step process involving at least an owner or any necessary trustees to recover all crumbs depending on the number of signing parties.
@@ -135,7 +136,7 @@ func (u *Uncrumbl) doUncrumbl() (uncrumbled []byte, err error) {
 		hasAllUncrumbs = true
 	}
 	if u.IsOwner && !hasAllUncrumbs {
-		fmt.Fprintln(os.Stderr, "WARNING - missing crumbs to fully uncrumbl as data owner: only partial uncrumbs will be returned")
+		fmt.Fprintln(os.Stderr, "WARNING - missing crumbs to fully uncrumbl as data owner: only partial uncrumbs are returned")
 	}
 	if hasAllUncrumbs {
 		// Owner may recover fully-deciphered data

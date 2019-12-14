@@ -124,7 +124,7 @@ import "github.com/edgewhere/crumbl-exe"
 ```
 _NB: The repository being still private, this kind of import is not possible for now. See with our team on how to implement it._
 
-Construct a new Crumbl client by passing to it all the arguments otherwise passed in the executable as flags (see above).
+Construct a new CrumblWorker client by passing to it all the arguments otherwise passed in the executable as flags (see above).
 Then, launch its process.
 
 For example, the code below reproduces the command-line instruction above for crumbl creation:
@@ -140,10 +140,11 @@ worker := client.CrumblWorker{
       VerificationHash: "",
       Data:             []string{"myDataToCrumbl"},
 }
-worker.Process()
+result, err := worker.Process(true)
 ```
+_NB: Passing `false` to the `Process()` method would not return any result or error, ie. mimic the behaviour of the executable._
 
-You may want to launch each process in separate goroutine.
+You may want to launch each process in separate goroutines.
 
 
 ### Licence ###
@@ -153,4 +154,4 @@ Please [contact us](mailto:contact@edgehere.fr) to get further information.
 
 
 <hr />
-&copy; 2019-2020
+&copy; 2019-2020 Edgewhere SAS

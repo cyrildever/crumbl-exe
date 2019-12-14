@@ -46,10 +46,10 @@ func main() {
 	create := isFlagPassed("c")
 	extract := isFlagPassed("x")
 	if !create && !extract {
-		client.Check(errors.New("invalid operation: you must set -c or -x flag"))
+		client.Check(errors.New("invalid operation: you must set -c or -x flag"), false)
 	}
 	if create && extract {
-		client.Check(errors.New("invalid flags: cannot create and extract at the same time"))
+		client.Check(errors.New("invalid flags: cannot create and extract at the same time"), false)
 	}
 	if create {
 		mode = client.CREATION
@@ -70,7 +70,7 @@ func main() {
 		VerificationHash: *hash,
 		Data:             data,
 	}
-	worker.Process()
+	worker.Process(false)
 }
 
 //--- utilities
