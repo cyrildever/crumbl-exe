@@ -15,7 +15,7 @@ import (
 // TestUncrumbl ...
 func TestUncrumbl(t *testing.T) {
 	ref := "cdever@edgewhere.fr"
-	crumbled := "580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d0000a8BA5LudBtwkchppK/K9baKtkXybam/B9xmtE5VmfsKGa5qzdNQdL0UQ34eT3khNlUwcM5TkD/encZSYBz+TdIi9b8p7IigJWEHvC5ONkWla1VnxAs6Y0Krjf6q0iZAE0OtXBiaP/p3JPz9cYaWQdXLhUkTHtSbtbW0omZaQ==0100a8BPS6VX1+7XNfytep5H64DpRPi5ODvW+ViMykJey9VlATWi3zA2nbLSK81gUHtDtkJqA9zTLs62VA/jJQqr/rWd3kWCoJFrYd49iQGEkVqv66Z8+IzufmrRywAeEZqRspDVnBXU4hP+U6Mo3kWuQDIaiq2DoB9BQh2YUZfg==020158cs0kKolHuf20OJJ5TLspHXndQ9avYRPfHeWolLgzyu/RhS6domJMVK8aKqyOmayZGoqDUTG/KjIWULG2XsInd34MrUFJyh6l6wJGbzy8czcbapKtEIf+tYc6sILsKDNlji0jhoMK4wZQBkdlDjQb8lMmpi51TEavUM9Qi5fpJb9ur7ChwR7kNNRsNeyt5c+mckSPDEuGMYYLDKxGk3EYLjPr1lSBUDKHpcIBXSc4QvEdhD4cGRXLlauNI+3Ru8RrwlSHUjb6ykxCHhyQOQ3nzuznHS9TmCaUBWHI9YpCU6ZWzHP0H42te1Mb+0faBuVoafe2Oxh3RnsdY9Iwoku5Mg==.1"
+	crumbled := "580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d0000a8BJM2I8mS/bkFNdZOATg8jHsQbzYp4o5rTqYWkf/pqgvkH7a4OijBxy86W1y2J+pB525jYO4iBuig2JswBdNv++8dkb0GcSXT873M0I5Xma9oM83eHXihOF2rqnqWN/RNZPwJSM23DcCj/xyVs1FK5jWVMGxtMLttIN7vqg==010158KbcQ6boXhkGdXR97+UwSHvt12wEwkVa57e+2m+66sTu32luP00cWET2gb01tgNZYjU621U7u4RI6fmz5kkyTSZtjPJ5wXISTf2wOBv5cY94LvgYoyMFKP9J3mGbPgAKGGsIdY4GCQBx6+Gi7VzfuNxdP1YHAPqcpKXPWiY+nmqYhT7eZVZlmNF1UmkMbgrneYglenmKxWSyUA6P7yMj3LrhlKekWAPdWpMLzRftLh1oH5e2KHkz7Wyh9eYOCKXlQ4sUUm8o3i0Inann41wL0KGaNajPU1RP0M9n3/Zil1/T+ZZcNJgSlQh1mxVKX1ztBRqYNUy+pqDat1qq6ED5r5A==0200a8BIIMyYgouCq7ZVy7S1kRJUl1Lg+aQMHoNeo7SauKwsy//XZ5rJOF4FrYMXmPpu0pf7nwCgAgk6Iv9IQK+WXsKpDE+QazdPpYFtxm4/1qi8qnzG1Wp/9Lf5nFTozacHqghz2e7XkaO1qyLNfmzimpsm6aw/lhEsd+djJ8KA==.1"
 
 	verificationHash, _ := crypto.Hash([]byte(ref), crypto.DEFAULT_HASH_ENGINE)
 
@@ -34,7 +34,7 @@ func TestUncrumbl(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, string(uncrumb1), "580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%01AgICAgKWqJ/v0/4=.1") // This shall be returned by the trustee
+	assert.Equal(t, string(uncrumb1), "580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%02AgICAgICAgkYUkI=.1") // This shall be returned by the trustee
 	uncrumbs = append(uncrumbs, uncrumb1)
 
 	uTrustee2 := core.Uncrumbl{
@@ -50,7 +50,7 @@ func TestUncrumbl(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, string(uncrumb2), "580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%02AgICAgKEEqTinyo=.1") // This shall be returned by the trustee
+	assert.Equal(t, string(uncrumb2), "580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%01AgICBFUDDk4PXEc=.1") // This shall be returned by the trustee
 	uncrumbs = append(uncrumbs, uncrumb2)
 
 	// 2- As an owner

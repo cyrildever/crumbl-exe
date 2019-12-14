@@ -1,6 +1,7 @@
 package obfuscator
 
 import (
+	"crumbl/utils"
 	"crypto/sha256"
 	"errors"
 	"math"
@@ -18,7 +19,7 @@ func (o Obfuscator) Round(item string, number int) (processed string, err error)
 	h := sha256.New()
 	h.Write([]byte(addition))
 	// Finally, keep what's needed
-	processed = Extract(string(h.Sum(nil)), number, len(item))
+	processed = Extract(utils.ToHex(h.Sum(nil)), number, len(item))
 	return
 }
 

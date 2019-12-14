@@ -17,12 +17,12 @@ func TestObfuscatorApply(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, utils.ToHex(obfuscated), "7e2f58d475e28ee973e6")
+	assert.Equal(t, utils.ToHex(obfuscated), "3d7c0a0f51415a521054")
 }
 
 // TestObfuscatorUnapply ...
 func TestObfuscatorUnapply(t *testing.T) {
-	obfuscated, _ := utils.FromHex("7e2f58d475e28ee973e6")
+	obfuscated, _ := utils.FromHex("3d7c0a0f51415a521054")
 	deobfuscated, err := obfuscator.Obfuscator{
 		Key:    obfuscator.DEFAULT_KEY_STRING,
 		Rounds: obfuscator.DEFAULT_ROUNDS,
