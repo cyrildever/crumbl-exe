@@ -16,4 +16,7 @@ func TestHash(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, ref, utils.ToHex(hash))
+
+	_, err = crypto.Hash([]byte("Edgewhere"), "wrong-hash-engine")
+	assert.Assert(t, err != nil && err.Error() == "invalid hash engine")
 }

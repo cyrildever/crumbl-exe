@@ -3,6 +3,7 @@ package crypto
 import (
 	"crumbl/utils"
 	"crypto/sha256"
+	"errors"
 	"strings"
 )
 
@@ -43,6 +44,9 @@ func Hash(input []byte, engine string) (h []byte, err error) {
 			return
 		}
 		h = hasher.Sum(nil)
+	} else {
+		err = errors.New("invalid hash engine")
+		return
 	}
 	return
 }
