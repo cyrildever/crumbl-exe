@@ -45,6 +45,15 @@ const (
 
 // Process ...
 func (w *CrumblWorker) Process(returnResult bool) (result string, err error) {
+	// Check mode
+	if w.Mode != CREATION && w.Mode != EXTRACTION {
+		err = fmt.Errorf("invalid mode: %s", w.Mode)
+		if !Check(err, returnResult) {
+			return
+		}
+	}
+
+	// Build data if need be
 	if len(w.Data) == 0 {
 		if w.Input == "" {
 			err = errors.New("invalid data: not enough arguments and/or no input file to use")
@@ -58,7 +67,7 @@ func (w *CrumblWorker) Process(returnResult bool) (result string, err error) {
 				return
 			}
 			// TODO Add multiple-line handling (using one crumbl per line in input file)
-			contentStr := strings.Replace(string(content), "\n", "", -1)
+			contentStr := strings.Replace(string(content), "\n", " ", -1)
 			w.Data = utils.RegexSplit(contentStr, "\\s+")
 		}
 	} else {
@@ -71,61 +80,20 @@ func (w *CrumblWorker) Process(returnResult bool) (result string, err error) {
 				err = e
 				return
 			}
-			contentStr := strings.Replace(string(content), "\n", "", -1)
+			contentStr := strings.Replace(string(content), "\n", " ", -1)
 			w.Data = utils.RegexSplit(contentStr, "\\s+")
 			w.Data = append(w.Data, tmp...)
 		}
 	}
 
 	// Get algorithm and keys
-	ownersMap := make(map[string]string)
-	for _, tuple := range strings.Split(w.OwnerKeys, ",") {
-		if tuple != "" {
-			parts := strings.SplitN(tuple, ":", 2)
-			algo := parts[0]
-			path := parts[1]
-			if path != "" {
-				if fileExists(path) {
-					key, e := ioutil.ReadFile(path)
-					if !Check(e, returnResult) {
-						err = e
-						return
-					}
-					if crypto.ExistsAlgorithm(algo) {
-						ownersMap[string(key)] = algo
-					} else {
-						logWarning("invalid encryption algorithm for owner in " + tuple)
-					}
-				} else {
-					logWarning("invalid file path for owner in " + tuple)
-				}
-			}
-		}
+	ownersMap, err := fillMap(w.OwnerKeys, returnResult)
+	if !Check(err, returnResult) {
+		return
 	}
-	signersMap := make(map[string]string)
-
-	for _, tuple := range strings.Split(w.SignerKeys, ",") {
-		if tuple != "" {
-			parts := strings.SplitN(tuple, ":", 2)
-			algo := parts[0]
-			path := parts[1]
-			if path != "" {
-				if fileExists(path) {
-					key, e := ioutil.ReadFile(path)
-					if !Check(e, returnResult) {
-						err = e
-						return
-					}
-					if crypto.ExistsAlgorithm(algo) {
-						signersMap[string(key)] = algo
-					} else {
-						logWarning("invalid encryption algorithm for signer in " + tuple)
-					}
-				} else {
-					logWarning("invalid file path for signer in " + tuple)
-				}
-			}
-		}
+	signersMap, err := fillMap(w.SignerKeys, returnResult)
+	if !Check(err, returnResult) {
+		return
 	}
 	if len(ownersMap) == 0 && (w.Mode == CREATION || (w.Mode == EXTRACTION && len(signersMap) == 0)) {
 		err = errors.New("missing public key for the data owner")
@@ -152,33 +120,8 @@ func (w *CrumblWorker) Process(returnResult bool) (result string, err error) {
 	}
 
 	if w.Mode == CREATION {
-		var owners []signer.Signer
-		for pk, algo := range ownersMap {
-			pubkey, err := crypto.GetKeyBytes(pk, algo)
-			if err != nil {
-				logWarning(err.Error())
-				continue
-			}
-			owner := signer.Signer{
-				EncryptionAlgorithm: algo,
-				PublicKey:           pubkey,
-			}
-			owners = append(owners, owner)
-		}
-
-		var trustees []signer.Signer
-		for pk, algo := range signersMap {
-			pubkey, err := crypto.GetKeyBytes(pk, algo)
-			if err != nil {
-				logWarning(err.Error())
-				continue
-			}
-			trustee := signer.Signer{
-				EncryptionAlgorithm: algo,
-				PublicKey:           pubkey,
-			}
-			trustees = append(trustees, trustee)
-		}
+		owners := buildSigner(ownersMap)
+		trustees := buildSigner(signersMap)
 
 		crumbl := core.Crumbl{
 			Source:     w.Data[0],
@@ -350,12 +293,56 @@ func Check(e error, returnResult bool) bool {
 	return true
 }
 
+func buildSigner(withMap map[string]string) []signer.Signer {
+	signers := make([]signer.Signer, 0)
+	for pk, algo := range withMap {
+		pubkey, err := crypto.GetKeyBytes(pk, algo)
+		if err != nil {
+			logWarning(err.Error())
+			continue
+		}
+		signer := signer.Signer{
+			EncryptionAlgorithm: algo,
+			PublicKey:           pubkey,
+		}
+		signers = append(signers, signer)
+	}
+	return signers
+}
+
 func fileExists(filename string) bool {
 	info, err := os.Stat(filename)
 	if os.IsNotExist(err) {
 		return false
 	}
 	return !info.IsDir()
+}
+
+func fillMap(dataKeys string, returnResult bool) (map[string]string, error) {
+	theMap := make(map[string]string)
+	for _, tuple := range strings.Split(dataKeys, ",") {
+		if tuple != "" {
+			parts := strings.SplitN(tuple, ":", 2)
+			algo := parts[0]
+			path := parts[1]
+			if path != "" {
+				if fileExists(path) {
+					key, e := ioutil.ReadFile(path)
+					if !Check(e, returnResult) {
+						return nil, e
+					}
+					if crypto.ExistsAlgorithm(algo) {
+						theMap[string(key)] = algo
+					} else {
+						logWarning("invalid encryption algorithm for owner in " + tuple)
+					}
+				} else {
+					logWarning("invalid file path for owner in " + tuple)
+				}
+			}
+		}
+	}
+	return theMap, nil
 }
 
 func logWarning(msg string) {
