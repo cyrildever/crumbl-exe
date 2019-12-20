@@ -20,6 +20,15 @@ func TestEncrypt(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	// For RSA key of 2048 bits (256 bytes), using the SHA-512 hash of 64 bytes long with OAEP,
+	// the RSA padding will be 2 * 64 + 2 = 130 bytes.
+	// Hence, the max length of the data would be 256 - 130 = 126 bytes.
+	veryLongStr := "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrs"
+	assert.Assert(t, len(veryLongStr) > 256-(2*64+2)) // As this public key is a 2048-bits RSA key
+
+	_, err = rsa.Encrypt([]byte(veryLongStr), pk)
+	assert.Equal(t, err.Error(), "crypto/rsa: message too long for RSA public key size")
 }
 
 // TestDecrypt ...

@@ -62,7 +62,7 @@ Usage of ./crumbl:
     To create a _crumbl_, you need to pass the `-c` flag, then to fill in the `--owner-keys` and `--signer-keys` flags in the appropriate format concatenating:
     * the code name of the encryption algorithm to use (`ecies` or `rsa`);
     * a separating colon (`:`);
-    * the path to the fie holding the public key (using the uncompressed public key in ECIES, and a PEM file for RSA).
+    * the path to the file holding the public key (using the uncompressed public key in ECIES, and a PEM file for RSA).
     eg. `ecies:path/to/myKey.pub`
 
     Optionally, you may add the file path to the `-out` flag to save the result into.
