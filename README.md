@@ -149,9 +149,9 @@ You may want to launch each process in separate goroutines.
 
 ### Licence ###
 
-The use of the Crumbl&trade; executable or library for commercial purpose is subject to fees. All technologies are protected by patents owned by Edgewhere.
+The use of the Crumbl&trade; executable or library for commercial purpose is subject to fees for commercial purpose and to the respect of the [EULA](LICENSE.md) terms for everyone. All technologies are protected by patents owned by Edgewhere.
 Please [contact us](mailto:contact@edgehere.fr) to get further information.
 
 
 <hr />
-&copy; 2019-2020 Edgewhere SAS
+&copy; 2019-2020 Edgewhere SAS. All rights reserved.
