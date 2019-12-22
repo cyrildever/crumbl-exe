@@ -146,8 +146,12 @@ _NB: Passing `false` to the `Process()` method would not return any result or er
 
 You may want to launch each process in separate goroutines.
 
+#### Javascript Library ####
 
-### Licence ###
+You might want to check out the JS implementation for the Crumbl&trade;: [`crumbl-js`](https://github.com/edgewhere/crumbl-js), a Javascript client developed in TypeScript for generating secure data storage with trusted signing third-parties using the Crumbl&trade; technology patented by Edgewhere.
+
+
+### License ###
 
 The use of the Crumbl&trade; executable or library for commercial purpose is subject to fees for commercial purpose and to the respect of the [EULA](LICENSE.md) terms for everyone. All technologies are protected by patents owned by Edgewhere.
 Please [contact us](mailto:contact@edgehere.fr) to get further information.
