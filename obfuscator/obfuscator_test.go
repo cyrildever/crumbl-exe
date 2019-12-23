@@ -67,13 +67,13 @@ func TestRound(t *testing.T) {
 		Key: obfuscator.DEFAULT_KEY_STRING,
 	}
 	data1 := []byte{1, 0, 0, 0, 0, 0, 0, 0}
-	round1, err := o.Round(string(data1), 0)
+	round1, err := o.Round(string(data1), 5)
 	if err != nil {
 		t.Fatal(err)
 	}
 	bytes1 := []byte(round1)
 	data2 := []byte{1, 1, 0, 0, 0, 0, 0, 0}
-	round2, err := o.Round(string(data2), 0)
+	round2, err := o.Round(string(data2), 5)
 	if err != nil {
 		t.Fatal(err)
 	}

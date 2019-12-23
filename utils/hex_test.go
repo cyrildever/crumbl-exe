@@ -30,3 +30,11 @@ func TestHexToInt(t *testing.T) {
 	}
 	assert.Equal(t, ref, i)
 }
+
+// TestToHex ...
+func TestToHex(t *testing.T) {
+	ref := "456467657768657265"
+	bytes := []byte("Edgewhere")
+	hex := utils.ToHex(bytes)
+	assert.Equal(t, ref, hex)
+}
