@@ -31,9 +31,15 @@ func (d *Dispatcher) Allocate() (map[int][]signer.Signer, error) {
 			allocation[i] = []signer.Signer{d.Trustees[0]}
 		}
 	case 2:
-		// Slices should be equally splitted between the two trustees
+		// Slices should all be in double but first and last
 		for i := 1; i < d.NumberOfSlices; i++ {
-			allocation[i] = []signer.Signer{d.Trustees[i%2]}
+			if i == 1 {
+				allocation[i] = []signer.Signer{d.Trustees[0]}
+			} else if i == d.NumberOfSlices-1 {
+				allocation[i] = []signer.Signer{d.Trustees[1]}
+			} else {
+				allocation[i] = []signer.Signer{d.Trustees[0], d.Trustees[1]}
+			}
 		}
 	case 3:
 		// Slices must be allocated to n-1 trustees at most, and no trustee can have it all
