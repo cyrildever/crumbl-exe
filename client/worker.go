@@ -120,8 +120,8 @@ func (w *CrumblWorker) Process(returnResult bool) (result string, err error) {
 	}
 
 	if w.Mode == CREATION {
-		owners := buildSigner(ownersMap)
-		trustees := buildSigner(signersMap)
+		owners := buildSigners(ownersMap)
+		trustees := buildSigners(signersMap)
 
 		crumbl := core.Crumbl{
 			Source:     w.Data[0],
@@ -141,10 +141,13 @@ func (w *CrumblWorker) Process(returnResult bool) (result string, err error) {
 			}
 			os.Exit(0)
 		}
-		e := crumbl.ToFile(w.Output)
+		res, e := crumbl.ToFile(w.Output)
 		if !Check(e, returnResult) {
 			err = e
 			return
+		}
+		if returnResult {
+			result = res
 		}
 	}
 	if w.Mode == EXTRACTION {
@@ -293,7 +296,7 @@ func Check(e error, returnResult bool) bool {
 	return true
 }
 
-func buildSigner(withMap map[string]string) []signer.Signer {
+func buildSigners(withMap map[string]string) []signer.Signer {
 	signers := make([]signer.Signer, 0)
 	for pk, algo := range withMap {
 		pubkey, err := crypto.GetKeyBytes(pk, algo)
@@ -334,10 +337,10 @@ func fillMap(dataKeys string, returnResult bool) (map[string]string, error) {
 					if crypto.ExistsAlgorithm(algo) {
 						theMap[string(key)] = algo
 					} else {
-						logWarning("invalid encryption algorithm for owner in " + tuple)
+						logWarning("invalid encryption algorithm in " + tuple)
 					}
 				} else {
-					logWarning("invalid file path for owner in " + tuple)
+					logWarning("invalid file path in " + tuple)
 				}
 			}
 		}

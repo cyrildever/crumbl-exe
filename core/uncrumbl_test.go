@@ -25,7 +25,7 @@ func TestUncrumbl(t *testing.T) {
 		Crumbled:         crumbled,
 		VerificationHash: "580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d",
 		Signer: signer.Signer{
-			EncryptionAlgorithm: "ecies",
+			EncryptionAlgorithm: crypto.ECIES_ALGORITHM,
 			PublicKey:           trustee1_pubkey,
 			PrivateKey:          trustee1_privkey,
 		},
@@ -41,7 +41,7 @@ func TestUncrumbl(t *testing.T) {
 		Crumbled:         crumbled,
 		VerificationHash: "580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d",
 		Signer: signer.Signer{
-			EncryptionAlgorithm: "rsa",
+			EncryptionAlgorithm: crypto.RSA_ALGORITHM,
 			PublicKey:           trustee2_pubkey,
 			PrivateKey:          trustee2_privkey,
 		},
@@ -78,7 +78,7 @@ func TestUncrumbl(t *testing.T) {
 		Slices:           fromTrustees,
 		VerificationHash: utils.ToHex(verificationHash),
 		Signer: signer.Signer{
-			EncryptionAlgorithm: "ecies",
+			EncryptionAlgorithm: crypto.ECIES_ALGORITHM,
 			PublicKey:           owner1_pubkey,
 			PrivateKey:          owner1_privkey,
 		},

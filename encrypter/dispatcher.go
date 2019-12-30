@@ -44,15 +44,19 @@ func (d *Dispatcher) Allocate() (map[int][]signer.Signer, error) {
 	case 3:
 		// Slices must be allocated to n-1 trustees at most, and no trustee can have it all
 		rand.Seed(time.Now().UnixNano())
-		for i := 0; i < numberOfTrustees; i++ {
-			allocated := 0
-			for allocated < d.NumberOfSlices-2 {
-				rnd := rand.Intn(d.NumberOfSlices-1) + 1
-				if len(allocation[rnd]) < numberOfTrustees-1 && !contains(allocation[rnd], d.Trustees[i]) {
-					allocation[rnd] = append(allocation[rnd], d.Trustees[i])
-					allocated++
-				}
-			}
+		// TODO Enhance: too naive!
+		combinations := [][][]int{
+			[][]int{[]int{1, 2}, []int{1, 3}, []int{2, 3}},
+			[][]int{[]int{1, 2}, []int{2, 3}, []int{1, 3}},
+			[][]int{[]int{1, 3}, []int{2, 3}, []int{1, 2}},
+			[][]int{[]int{1, 3}, []int{1, 2}, []int{2, 3}},
+			[][]int{[]int{2, 3}, []int{1, 3}, []int{1, 2}},
+			[][]int{[]int{2, 3}, []int{1, 2}, []int{1, 3}},
+		}
+		chosen := rand.Intn(len(combinations))
+		for i := 0; i < 3; i++ {
+			idx := combinations[chosen][i]
+			allocation[i+1] = []signer.Signer{d.Trustees[idx[0]-1], d.Trustees[idx[1]-1]}
 		}
 	default:
 		err := errors.New("wrong number of trustees")

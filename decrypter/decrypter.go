@@ -1,6 +1,7 @@
 package decrypter
 
 import (
+	"crumbl/crypto"
 	"crumbl/crypto/ecies"
 	"crumbl/crypto/rsa"
 	"crumbl/encrypter"
@@ -13,14 +14,14 @@ import (
 func Decrypt(encrypted encrypter.Crumb, s signer.Signer) (data Uncrumb, err error) {
 	var dec []byte
 	switch s.EncryptionAlgorithm {
-	case "ecies":
+	case crypto.ECIES_ALGORITHM:
 		deciphered, e := ecies.Decrypt(encrypted.Encrypted.Bytes(), s.PrivateKey, s.PublicKey)
 		if e != nil {
 			err = e
 			return
 		}
 		dec = deciphered
-	case "rsa":
+	case crypto.RSA_ALGORITHM:
 		deciphered, e := rsa.Decrypt(encrypted.Encrypted.Bytes(), s.PrivateKey)
 		if e != nil {
 			err = e

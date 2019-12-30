@@ -1,6 +1,7 @@
 package obfuscator_test
 
 import (
+	"bytes"
 	"crumbl/obfuscator"
 	"crumbl/utils"
 	"testing"
@@ -78,9 +79,7 @@ func TestRound(t *testing.T) {
 		t.Fatal(err)
 	}
 	bytes2 := []byte(round2)
-	for i := 0; i < len(bytes1); i++ {
-		assert.Assert(t, bytes1[i] != bytes2[i])
-	}
+	assert.Assert(t, !bytes.Equal(bytes1, bytes2))
 }
 
 // TestSplit ...

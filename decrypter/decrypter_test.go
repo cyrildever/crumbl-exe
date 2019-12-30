@@ -1,6 +1,7 @@
 package decrypter_test
 
 import (
+	"crumbl/crypto"
 	"crumbl/decrypter"
 	"crumbl/encrypter"
 	"crumbl/models/core"
@@ -21,7 +22,7 @@ func TestDecrypter(t *testing.T) {
 	owner1_pub := []byte("04e315a987bd79b9f49d3a1c8bd1ef5a401a242820d52a3f22505da81dfcd992cc5c6e2ae9bc0754856ca68652516551d46121daa37afc609036ab5754fe7a82a3")
 	owner1_pk, _ := utils.FromHex(string(owner1_pub))
 	owner1 := signer.Signer{
-		EncryptionAlgorithm: "ecies",
+		EncryptionAlgorithm: crypto.ECIES_ALGORITHM,
 		PrivateKey:          owner1_sk,
 		PublicKey:           owner1_pk,
 	}
@@ -41,10 +42,19 @@ func TestDecrypter(t *testing.T) {
 	trustee1_pub := []byte("040c96f971c0edf58fe4afbf8735581be05554a8a725eae2b7ad2b1c6fcb7b39ef4e7252ed5b17940a9201c089bf75cb11f97e5c53333a424e4ebcca36065e0bc0")
 	trustee1_pk, _ := utils.FromHex(string(trustee1_pub))
 	trustee1 := signer.Signer{
-		EncryptionAlgorithm: "ecies",
+		EncryptionAlgorithm: crypto.ECIES_ALGORITHM,
 		PrivateKey:          trustee1_sk,
 		PublicKey:           trustee1_pk,
 	}
 	_, err = decrypter.Decrypt(crumb, trustee1)
 	assert.Assert(t, err.Error() == "ecies: invalid message")
+
+	cipheredScala := "BBPhs8LxcFGG99l8rme3F8Yo9Zw9gVQPoo5kS45fcxXr+VpjW97ums9P235mJ8ZTpqeIPnkI7Ov2oI4Kydq7ffdq2PORmS/dDUISnDqN4hOqTutiZEWbbmZQcy8CkdkyplrgzVLhcSmrvwP/mg0QG4/EjwrTD+HZ5YLj7w=="
+	crumbScala := encrypter.Crumb{
+		Encrypted: core.Base64(cipheredScala),
+		Index:     1,
+		Length:    len(ciphered),
+	}
+	foundScala, err := decrypter.Decrypt(crumbScala, trustee1)
+	assert.Equal(t, foundScala.Deciphered.String(), "AgICAgJ2BFUDDk4=")
 }

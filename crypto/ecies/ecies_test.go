@@ -38,4 +38,11 @@ func TestDecrypt(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.DeepEqual(t, ref, decrypted)
+
+	cipheredScala := core.Base64("BEhU7cwY4QhZgTyEZ3vXoUUvwaX5a8vfCyyYDwIFvqOlLwa0iV2q6FikFQed7um8EbJRFh10P/zpqJsxJ2MGS+yjzut/85BxDHJf7Mp/kkST+bnRX1FVj1MIP+OERtPY7MZr6iq6XWQmO8S2qn4MGZAXdP3R9048eyk=")
+	decrypted, err = ecies.Decrypt(cipheredScala.Bytes(), sk, pk)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.DeepEqual(t, ref, decrypted)
 }

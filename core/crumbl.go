@@ -35,24 +35,24 @@ func (c *Crumbl) Process() (string, error) {
 }
 
 // ToFile save the crumbl to file, eventually appending it to an already filled file
-func (c *Crumbl) ToFile(filename string) error {
+func (c *Crumbl) ToFile(filename string) (string, error) {
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer f.Close()
 
 	crumbled, err := c.doCrumbl()
 	if err != nil {
-		return err
+		return "", err
 	}
 	// Add newline and write
 	_, err = f.Write([]byte(crumbled + "\n"))
 	if err != nil {
-		return err
+		return "", err
 	}
-	fmt.Printf("SUCCESS - crumbl successfully saved to %v\n", filename)
-	return nil
+	fmt.Fprintf(os.Stdout, "SUCCESS - crumbl successfully saved to %v\n", filename)
+	return crumbled, nil
 }
 
 // ToStdOut writes the crumbl to stdout

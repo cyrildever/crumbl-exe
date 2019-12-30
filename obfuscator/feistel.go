@@ -10,10 +10,6 @@ import (
 
 // Round is the function applied at each round of the obfuscation process to the right side of the Feistel cipher
 func (o Obfuscator) Round(item string, number int) (processed string, err error) {
-	if number < 1 {
-		err = errors.New("at least one round should be applied to Feistel cipher")
-		return
-	}
 	// First, add passed item to key extraction
 	addition, err := Add(item, Extract(o.Key, number, len(item)))
 	if err != nil {

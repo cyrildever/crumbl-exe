@@ -50,4 +50,12 @@ func TestDecrypt(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.DeepEqual(t, ref, decrypted)
+
+	// see 'crumb-jar/src/test/scala/io/crumbl/crypto/rsa/RSASpecs.scala' test
+	fromScala := core.Base64("S9MEYmEsIurjcMNnN/wSPDF9G/cpeFzmkD7utv2X3dqBo0SfI0IpduuAypcVg/d2qW/tWbKT1uxAUesqcAWn8flPQ2uECrMBdXl/rIGDQYUsA813LsGTCscUfvglyTWTRKDuYRUK91fJb6jsdfgg3onFDBkofdVg2EqQcyRxMK93RS8bJ86lN3K0Y0WgdqHstxwlJAwRPzJb+4MFLLdZlEtsWik0ys7zM9f3uvm34rSbeUg8sin63/1wAAMdcui9xDcf2bmwyO5vvDt9aAzBA3kK/BqPMBDe0+i8kzq3xOxtWfjZy8ZZB0tewNP9bkI0SNHikzHJPrd3fxwtdoeYLw==")
+	decrypted, err = rsa.Decrypt(fromScala.Decoded(), sk)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.DeepEqual(t, ref, decrypted)
 }

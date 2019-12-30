@@ -144,11 +144,16 @@ result, err := worker.Process(true)
 ```
 _NB: Passing `false` to the `Process()` method would not return any result or error, ie. mimic the behaviour of the executable._
 
-You may want to launch each process in separate goroutines.
+You may want to wrap each process in separate goroutines.
 
 #### Javascript Library ####
 
 You might want to check out the JS implementation for the Crumbl&trade;: [`crumbl-js`](https://github.com/edgewhere/crumbl-js), a Javascript client developed in TypeScript for generating secure data storage with trusted signing third-parties using the Crumbl&trade; technology patented by Edgewhere.
+
+
+#### Scala Library ####
+
+You might also want to check out the Scala implementation for the Crumbl&trade;: [`crumbl-jar`](https://github.com/edgewhere/crumbl-jar), a Scala client for the JVM and an executable JAR as well.
 
 
 ### License ###

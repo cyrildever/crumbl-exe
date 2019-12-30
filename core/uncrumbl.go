@@ -112,8 +112,12 @@ func (u *Uncrumbl) doUncrumbl() (uncrumbled []byte, err error) {
 	uncrumbs := make(map[int]decrypter.Uncrumb)
 	indexSet := make(map[int]bool)
 	for _, crumb := range crumbs {
-		if !indexSet[crumb.Index] {
-			indexSet[crumb.Index] = true
+		idx := crumb.Index
+		if !indexSet[idx] || indexSet[idx] != true {
+			indexSet[idx] = true
+		}
+		if (!u.IsOwner && idx == 0) || (u.IsOwner && idx != 0) {
+			continue
 		}
 		uncrumb, e := decrypter.Decrypt(crumb, u.Signer)
 		if e == nil {
@@ -136,7 +140,7 @@ func (u *Uncrumbl) doUncrumbl() (uncrumbled []byte, err error) {
 		hasAllUncrumbs = true
 	}
 	if u.IsOwner && !hasAllUncrumbs {
-		fmt.Fprintln(os.Stderr, "WARNING - missing crumbs to fully uncrumbl as data owner: only partial uncrumbs are returned")
+		fmt.Fprintln(os.Stderr, "WARNING - missing crumbs to fully uncrumbl as data owner: only partial uncrumbs to be returned")
 	}
 	if hasAllUncrumbs {
 		// Owner may recover fully-deciphered data

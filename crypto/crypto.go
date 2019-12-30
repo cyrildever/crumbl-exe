@@ -13,9 +13,15 @@ const (
 
 	// DEFAULT_HASH_LENGTH ...
 	DEFAULT_HASH_LENGTH = 64
+
+	// ECIES_ALGORITHM ...
+	ECIES_ALGORITHM = "ecies"
+
+	// RSA_ALGORITHM ...
+	RSA_ALGORITHM = "rsa"
 )
 
-var authorizedAlgorithms = "ecies:rsa" // TODO Add any new authorized algorithm name after a colon
+const authorizedAlgorithms = ECIES_ALGORITHM + ":" + RSA_ALGORITHM // TODO Add any new authorized algorithm name after a colon
 
 // ExistsAlgorithm ...
 func ExistsAlgorithm(name string) bool {
@@ -25,9 +31,9 @@ func ExistsAlgorithm(name string) bool {
 // GetKeyBytes returns the appropriate byte array for the passed key and algorithm name
 func GetKeyBytes(key string, algo string) (bytes []byte, err error) {
 	switch algo {
-	case "ecies":
+	case ECIES_ALGORITHM:
 		return utils.FromHex(key)
-	case "rsa":
+	case RSA_ALGORITHM:
 		return []byte(key), nil
 	default:
 		return []byte(key), nil
