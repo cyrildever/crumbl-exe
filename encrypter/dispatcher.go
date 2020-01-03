@@ -18,6 +18,17 @@ type Dispatcher struct {
 
 //--- METHODS
 
+var (
+	combinationsFor3 = [][][]int{
+		[][]int{[]int{1, 2}, []int{1, 3}, []int{2, 3}},
+		[][]int{[]int{1, 2}, []int{2, 3}, []int{1, 3}},
+		[][]int{[]int{1, 3}, []int{2, 3}, []int{1, 2}},
+		[][]int{[]int{1, 3}, []int{1, 2}, []int{2, 3}},
+		[][]int{[]int{2, 3}, []int{1, 3}, []int{1, 2}},
+		[][]int{[]int{2, 3}, []int{1, 2}, []int{1, 3}},
+	}
+)
+
 // Allocate returns a map of slice index -> trustees to sign, or an error if any.
 // It tries to uniformly distribute slices to trustees so that no trustee sign all slices and all slices are at least signed twice if possible.
 // Nota: the first slice (index 0) is reserved for data owners, so it should not be allocated.
@@ -44,18 +55,9 @@ func (d *Dispatcher) Allocate() (map[int][]signer.Signer, error) {
 	case 3:
 		// Slices must be allocated to n-1 trustees at most, and no trustee can have it all
 		rand.Seed(time.Now().UnixNano())
-		// TODO Enhance: too naive!
-		combinations := [][][]int{
-			[][]int{[]int{1, 2}, []int{1, 3}, []int{2, 3}},
-			[][]int{[]int{1, 2}, []int{2, 3}, []int{1, 3}},
-			[][]int{[]int{1, 3}, []int{2, 3}, []int{1, 2}},
-			[][]int{[]int{1, 3}, []int{1, 2}, []int{2, 3}},
-			[][]int{[]int{2, 3}, []int{1, 3}, []int{1, 2}},
-			[][]int{[]int{2, 3}, []int{1, 2}, []int{1, 3}},
-		}
-		chosen := rand.Intn(len(combinations))
+		chosen := rand.Intn(len(combinationsFor3))
 		for i := 0; i < 3; i++ {
-			idx := combinations[chosen][i]
+			idx := combinationsFor3[chosen][i]
 			allocation[i+1] = []signer.Signer{d.Trustees[idx[0]-1], d.Trustees[idx[1]-1]}
 		}
 	default:

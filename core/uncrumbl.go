@@ -27,7 +27,11 @@ type Uncrumbl struct {
 //--- METHODS
 
 // Process ...
-func (u *Uncrumbl) Process() ([]byte, error) {
+func (u *Uncrumbl) Process() (res []byte, err error) {
+	if len(u.Crumbled) == 0 {
+		err = errors.New("invalid empty crumbled input")
+		return
+	}
 	return u.doUncrumbl()
 }
 
@@ -39,7 +43,7 @@ func (u Uncrumbl) ToFile(filename string) error {
 	}
 	defer f.Close()
 
-	uncrumbled, err := u.doUncrumbl()
+	uncrumbled, err := u.Process()
 	if err != nil {
 		return err
 	}
@@ -55,7 +59,7 @@ func (u Uncrumbl) ToFile(filename string) error {
 
 // ToStdOut ...
 func (u *Uncrumbl) ToStdOut() (result string, err error) {
-	uncrumbled, err := u.doUncrumbl()
+	uncrumbled, err := u.Process()
 	if err != nil {
 		return
 	}
