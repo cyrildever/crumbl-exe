@@ -53,6 +53,10 @@ func ToUncrumb(unparsed string) (u Uncrumb, err error) {
 
 // Parse ...
 func Parse(unparsed string) (index int, dec string, err error) {
+	if len(unparsed) < 7 {
+		err = errors.New("unparsed string too short")
+		return
+	}
 	if strings.HasPrefix(unparsed, PARTIAL_PREFIX) {
 		unparsed = unparsed[len(PARTIAL_PREFIX):]
 	}

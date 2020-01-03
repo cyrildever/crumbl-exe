@@ -96,7 +96,7 @@ func (u *Uncrumbl) doUncrumbl() (uncrumbled []byte, err error) {
 
 	var crumbs []encrypter.Crumb
 	crumbsStr := parts[0][crypto.DEFAULT_HASH_LENGTH:]
-	for len(crumbsStr) > 0 {
+	for len(crumbsStr) > 7 {
 		nextLen, e := utils.HexToInt(crumbsStr[2:6])
 		if e != nil {
 			err = e

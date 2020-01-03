@@ -171,7 +171,8 @@ func (w *CrumblWorker) create(owners []signer.Signer, trustees []signer.Signer, 
 func (w *CrumblWorker) extract(user signer.Signer, isOwner bool, returnResult bool) (result string, err error) {
 	// TODO Add multiple-line handling (using one crumbl per line in input file)
 	var uncrumbs []decrypter.Uncrumb
-	if len(w.Data) > 1 {
+	minLength := len(core.VERSION) + 1 + crypto.DEFAULT_HASH_LENGTH + len(decrypter.PARTIAL_PREFIX) + 1
+	if len(w.Data) > minLength {
 		for _, u := range w.Data[1:] {
 			parts := strings.SplitN(u, ".", 2)
 			if parts[1] != core.VERSION {

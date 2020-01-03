@@ -36,11 +36,13 @@ func RightPad(str string, minLength int) string {
 
 // Unpad ...
 func Unpad(str string) string {
-	for strings.HasPrefix(str, string(LEFT_PADDING_CHARACTER)) {
-		str = str[1:]
-	}
-	for strings.HasSuffix(str, string(RIGHT_PADDING_CHARACTER)) {
-		str = str[:len(str)-1]
+	if len(str) > 0 {
+		for strings.HasPrefix(str, string(LEFT_PADDING_CHARACTER)) {
+			str = str[1:]
+		}
+		for strings.HasSuffix(str, string(RIGHT_PADDING_CHARACTER)) {
+			str = str[:len(str)-1]
+		}
 	}
 	return str
 }

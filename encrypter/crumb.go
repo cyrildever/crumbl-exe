@@ -45,6 +45,10 @@ func ToCrumb(unparsed string) (c Crumb, err error) {
 
 // Parse extracts the index, the encrypted length and text from the passed string, or returns an error
 func Parse(unparsed string) (index int, length int, enc string, err error) {
+	if len(unparsed) < 7 {
+		err = errors.New("unparsed string too short")
+		return
+	}
 	idxHex := unparsed[:2]
 	idx, err := utils.HexToInt(idxHex)
 	if err != nil {
