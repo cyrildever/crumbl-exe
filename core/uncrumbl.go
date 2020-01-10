@@ -36,25 +36,29 @@ func (u *Uncrumbl) Process() (res []byte, err error) {
 }
 
 // ToFile ...
-func (u Uncrumbl) ToFile(filename string) error {
-	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return err
+func (u Uncrumbl) ToFile(filename string) (result string, err error) {
+	f, e := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if e != nil {
+		err = e
+		return
 	}
 	defer f.Close()
 
-	uncrumbled, err := u.Process()
-	if err != nil {
-		return err
+	uncrumbled, e := u.Process()
+	if e != nil {
+		err = e
+		return
 	}
 	// Add newline
 	uncrumbled = append(uncrumbled, []byte("\n")...)
-	_, err = f.Write(uncrumbled)
-	if err != nil {
-		return err
+	_, e = f.Write(uncrumbled)
+	if e != nil {
+		err = e
+		return
 	}
 	fmt.Printf("SUCCESS - result saved in %v\n", filename)
-	return nil
+	result = string(uncrumbled)
+	return
 }
 
 // ToStdOut ...

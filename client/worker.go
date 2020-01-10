@@ -151,6 +151,9 @@ func (w *CrumblWorker) create(owners []signer.Signer, trustees []signer.Signer, 
 			err = e
 			return
 		}
+		if w.VerificationHash != "" && !strings.HasPrefix(res, w.VerificationHash) {
+			logWarning("verification hash is not coherent with data source'")
+		}
 		if returnResult {
 			result = res
 			return
@@ -161,6 +164,9 @@ func (w *CrumblWorker) create(owners []signer.Signer, trustees []signer.Signer, 
 	if !Check(e, returnResult) {
 		err = e
 		return
+	}
+	if w.VerificationHash != "" && !strings.HasPrefix(res, w.VerificationHash) {
+		logWarning("verification hash is not coherent with data source'")
 	}
 	if returnResult {
 		result = res
@@ -209,16 +215,22 @@ func (w *CrumblWorker) extract(user signer.Signer, isOwner bool, returnResult bo
 			err = e
 			return
 		}
+		if w.VerificationHash != "" && !strings.HasPrefix(res, w.VerificationHash) {
+			logWarning("verification hash is not coherent with uncrumbled data'")
+		}
 		if returnResult {
 			result = res
 			return
 		}
 		os.Exit(0)
 	}
-	e := uncrumbl.ToFile(w.Output)
+	res, e := uncrumbl.ToFile(w.Output)
 	if !Check(e, returnResult) {
 		err = e
 		return
+	}
+	if w.VerificationHash != "" && !strings.HasPrefix(res, w.VerificationHash) {
+		logWarning("verification hash is not coherent with uncrumbled data'")
 	}
 	return
 }
