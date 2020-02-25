@@ -69,7 +69,7 @@ func (s Slicer) Unapply(slices []Slice) (data string, err error) {
 
 // Split plits the passed data using a mask
 func (s *Slicer) Split(data string) (splits []string, err error) {
-	masks, err := s.buildSplitMask(len(data), SeedFor((data)))
+	masks, err := s.buildSplitMask(len(data), SeedFor(data))
 	if err != nil {
 		return
 	}
@@ -107,31 +107,35 @@ func (s *Slicer) buildSplitMask(dataLength int, seed Seed) (masks []mask, err er
 	nos := float64(s.NumberOfSlices)
 	dm := float64(s.DeltaMax)
 	averageSliceLength := math.Floor(dl / nos)
-	minLen := math.Max(averageSliceLength-math.Floor(dm/2), math.Floor(dl/(nos+1)+1))
-	maxLen := math.Min(averageSliceLength+math.Floor(dm/2), math.Ceil(dl/(nos-1)-1))
-	delta := math.Min(dm, maxLen-minLen)
-	length := 0
+	catchUp := dl - averageSliceLength*nos
+
+	length := 0.0
 	rand.Seed(int64(seed))
+	leftRound := nos
 	for dataLength > 0 {
-		randomNum := math.Min(math.Floor(rand.Float64()*(math.Min(maxLen, dl)+1-minLen)+minLen), float64(dataLength))
-		if randomNum == 0 {
-			continue
+		randomNum := rand.Float64()*dm + catchUp/leftRound - (dm+catchUp/leftRound)/2
+		addedNum := math.Min(float64(dataLength), math.Ceil(randomNum)+averageSliceLength)
+		// General rounding pb corrected at the end
+		if leftRound == 1 && length+addedNum < dl {
+			addedNum += dl - length - addedNum
 		}
-		b := math.Floor((dl - randomNum) / minLen)
-		r := math.Floor(float64((dataLength - int(randomNum)) % int(minLen)))
-		if r <= b*delta {
-			m := mask{
-				Start: length,
-				End:   int(math.Min(dl, float64(length)+randomNum)),
-			}
-			masks = append(masks, m)
-			length += int(randomNum)
-			dataLength -= int(randomNum)
+		m := mask{
+			Start: int(length),
+			End:   int(length + addedNum),
 		}
+		masks = append(masks, m)
+		catchUp = dl - length - averageSliceLength*leftRound
+		leftRound--
+		length += addedNum
+		dataLength -= int(addedNum)
 	}
 	if len(masks) == 0 {
 		err = errors.New("unable to build split masks")
 		return
+	}
+	if len(masks) != s.NumberOfSlices {
+		// If a seed behaves weirdly
+		return s.buildSplitMask(int(dl), Seed(int(seed)+1))
 	}
 	return
 }
