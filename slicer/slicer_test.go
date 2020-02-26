@@ -2,7 +2,10 @@ package slicer_test
 
 import (
 	"crumbl/slicer"
+	"math/rand"
+	"strconv"
 	"testing"
+	"time"
 
 	"gotest.tools/assert"
 )
@@ -34,7 +37,7 @@ func TestSliceApply(t *testing.T) {
 	for _, s := range slices2 {
 		assert.Equal(t, len(s), 11)
 	}
-	assert.Equal(t, slices2[3], slicer.Slice("44444444")) // It's predictive thanks to the seed
+	assert.Equal(t, slices2[3], slicer.Slice("4444444")) // It's predictive thanks to the seed
 }
 
 // TestSliceUnapply ...
@@ -79,4 +82,24 @@ func TestSeed(t *testing.T) {
 	data1 := "ab" // 97 + 98 = 195
 	seed1 := slicer.SeedFor(data1)
 	assert.Equal(t, seed1, slicer.Seed(195))
+}
+
+// TestSlicer should work under heavy load
+func TestSlicer(t *testing.T) {
+	for i := 1; i < 10000; i++ {
+		data := string(strconv.Itoa(rand.New(rand.NewSource(time.Now().UnixNano())).Intn(10) + i))
+		s := slicer.Slicer{
+			NumberOfSlices: 10,
+			DeltaMax:       slicer.GetDeltaMax(len(data), 10),
+		}
+		tmp, err := s.Apply(data)
+		if err != nil {
+			t.Fatal(err)
+		}
+		found, err := s.Unapply(tmp)
+		if err != nil {
+			t.Fatal(err)
+		}
+		assert.Equal(t, data, found)
+	}
 }
