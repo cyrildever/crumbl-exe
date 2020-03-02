@@ -256,7 +256,6 @@ func buildSigners(withMap map[string]string) []signer.Signer {
 	for pk, algo := range withMap {
 		pubkey, err := crypto.GetKeyBytes(pk, algo)
 		if err != nil {
-			fmt.Println("HERE " + pk + "$ " + algo)
 			logWarning(err.Error())
 			continue
 		}
@@ -361,7 +360,6 @@ func fillMap(dataKeys string, returnResult bool) (map[string]string, error) {
 			if path != "" {
 				if fileExists(path) {
 					key, e := ioutil.ReadFile(path)
-
 					if !Check(e, returnResult) {
 						return nil, e
 					}
