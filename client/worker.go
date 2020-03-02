@@ -364,7 +364,7 @@ func fillMap(dataKeys string, returnResult bool) (map[string]string, error) {
 						return nil, e
 					}
 					if crypto.ExistsAlgorithm(algo) {
-						theMap[string(key)] = algo
+						theMap[strings.Trim(string(key), "\n")] = algo
 					} else {
 						logWarning("invalid encryption algorithm in " + tuple)
 					}
