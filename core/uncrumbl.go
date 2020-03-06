@@ -98,22 +98,10 @@ func (u *Uncrumbl) doUncrumbl() (uncrumbled []byte, err error) {
 		fmt.Fprintln(os.Stderr, "WARNING - incompatible input verification hash with crumbl")
 	}
 
-	var crumbs []encrypter.Crumb
 	crumbsStr := parts[0][crypto.DEFAULT_HASH_LENGTH:]
-	for len(crumbsStr) > 7 {
-		nextLen, e := utils.HexToInt(crumbsStr[2:6])
-		if e != nil {
-			err = e
-			return
-		}
-		nextCrumb := crumbsStr[:nextLen+6]
-		crumb, e := encrypter.ToCrumb(nextCrumb)
-		if e != nil {
-			err = e
-			return
-		}
-		crumbs = append(crumbs, crumb)
-		crumbsStr = crumbsStr[nextLen+6:]
+	crumbs, err := parse(crumbsStr)
+	if err != nil {
+		return
 	}
 
 	// 2- Decrypt crumbs
@@ -195,5 +183,24 @@ func (u *Uncrumbl) doUncrumbl() (uncrumbled []byte, err error) {
 		uncrumbled = []byte(verificationHash + partialUncrumbs + "." + VERSION)
 	}
 
+	return
+}
+
+func parse(crumbsStr string) (crumbs []encrypter.Crumb, err error) {
+	for len(crumbsStr) > 7 {
+		nextLen, e := utils.HexToInt(crumbsStr[2:6])
+		if e != nil {
+			err = e
+			return
+		}
+		nextCrumb := crumbsStr[:nextLen+6]
+		crumb, e := encrypter.ToCrumb(nextCrumb)
+		if e != nil {
+			err = e
+			return
+		}
+		crumbs = append(crumbs, crumb)
+		crumbsStr = crumbsStr[nextLen+6:]
+	}
 	return
 }
