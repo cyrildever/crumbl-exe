@@ -178,8 +178,8 @@ func (w *CrumblWorker) extract(user signer.Signer, isOwner bool, returnResult bo
 	// TODO Add multiple-line handling (using one crumbl per line in input file)
 	var uncrumbs []decrypter.Uncrumb
 	minLength := len(core.VERSION) + 1 + crypto.DEFAULT_HASH_LENGTH + len(decrypter.PARTIAL_PREFIX) + 1
-	if len(w.Data) > minLength {
-		for _, u := range w.Data[1:] {
+	for _, u := range w.Data[1:] {
+		if len(u) > minLength {
 			parts := strings.SplitN(u, ".", 2)
 			if parts[1] != core.VERSION {
 				logWarning("wrong version for uncrumb: " + u)
@@ -198,6 +198,9 @@ func (w *CrumblWorker) extract(user signer.Signer, isOwner bool, returnResult bo
 						uncrumbs = append(uncrumbs, uncrumb)
 					}
 				}
+			} else {
+				logWarning("incompatible verification hash: " + vh)
+				continue
 			}
 		}
 	}
@@ -215,7 +218,8 @@ func (w *CrumblWorker) extract(user signer.Signer, isOwner bool, returnResult bo
 			err = e
 			return
 		}
-		if w.VerificationHash != "" && !strings.HasPrefix(res, w.VerificationHash) {
+		hashedRes, _ := crypto.Hash([]byte(res), crypto.DEFAULT_HASH_ENGINE)
+		if w.VerificationHash != "" && utils.ToHex(hashedRes) != w.VerificationHash {
 			logWarning("verification hash is not coherent with uncrumbled data'")
 		}
 		if returnResult {
