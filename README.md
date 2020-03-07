@@ -1,5 +1,11 @@
 # crumbl-exe #
 
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/edgewhere/crumbl-exe)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/edgewhere/crumbl-exe)
+![GitHub last commit](https://img.shields.io/github/last-commit/edgewhere/crumbl-exe)
+![GitHub issues](https://img.shields.io/github/issues/edgewhere/crumbl-exe)
+![GitHub](https://img.shields.io/github/license/edgewhere/crumbl-exe)
+
 crumbl-exe is both an executable and a Go client for generating secure data storage with trusted signing third-parties using the Crumbl&trade; technology patented by [Edgewhere](https://www.edgewhere.fr).
 
 If you're interesting in using the library, please [contact us](mailto:contact@edgewhere.fr).
@@ -122,25 +128,36 @@ NB: Error(s) and/or warning message(s) are all sent to stderr.
 ```golang
 import "github.com/edgewhere/crumbl-exe"
 ```
-_NB: The repository being still private, this kind of import is not possible for now. See with our team on how to implement it._
 
-Construct a new CrumblWorker client by passing to it all the arguments otherwise passed in the executable as flags (see above).
+Construct a new `CrumblWorker` client by passing to it all the arguments otherwise passed in the executable as flags (see above).
 Then, launch its process.
 
 For example, the code below reproduces the command-line instruction above for crumbl creation:
 ```golang
-worker := client.CrumblWorker{
-      Mode:             client.CREATION,
-      Input:            "",
-      Output:           "myFile.dat",
-      OwnerKeys:        "ecies:path/to/myKey.pub",
-      OwnerSecret:      "",
-      SignerKeys:       "ecies:path/to/trustee1.pub,rsa:path/to/trustee2.pub",
-      SignerSecret:     "",
-      VerificationHash: "",
-      Data:             []string{"myDataToCrumbl"},
+import (
+      "fmt"
+      "github.com/edgewhere/crumbl-exe/client"
+)
+
+func main() {
+      data := "myDataToCrumbl"
+      worker := client.CrumblWorker{
+            Mode:             client.CREATION,
+            Input:            "",
+            Output:           "myFile.dat",
+            OwnerKeys:        "ecies:path/to/myKey.pub",
+            OwnerSecret:      "",
+            SignerKeys:       "ecies:path/to/trustee1.pub,rsa:path/to/trustee2.pub",
+            SignerSecret:     "",
+            VerificationHash: "",
+            Data:             []string{},
+      }
+      crumbled, err := worker.Process(true)
+      if err == nil {
+            // Do something with it
+            fmt.Printf("%s once crumbled: %s\n", data, crumbled)
+      }
 }
-result, err := worker.Process(true)
 ```
 _NB: Passing `false` to the `Process()` method would not return any result or error, ie. mimic the behaviour of the executable._
 
@@ -175,7 +192,8 @@ You might also want to check out the Scala implementation for the Crumbl&trade;:
 
 ### License ###
 
-The use of the Crumbl&trade; executable or library for commercial purpose is subject to fees for commercial purpose and to the respect of the [EULA](LICENSE.md) terms for everyone. All technologies are protected by patents owned by Edgewhere.
+The use of the Crumbl&trade; executable or library for commercial purpose is subject to fees for commercial purpose and to the respect of the [BSD-2-Clause-patent License](LICENSE).
+All technologies are protected by patents owned by Edgewhere.
 Please [contact us](mailto:contact@edgehere.fr) to get further information.
 
 
