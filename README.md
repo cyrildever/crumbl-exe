@@ -44,6 +44,10 @@ All these steps could be done using command-line instructions with the [executab
 #### Executable ####
 
 ```console
+git clone https://github.com/edgewhere/crumbl-exe.git && cd crumbl-exe && go build
+```
+
+```console
 Usage of ./crumbl:
   -c    create a crumbled string from source
   -in string
@@ -192,7 +196,7 @@ You might also want to check out the Scala implementation for the Crumbl&trade;:
 
 ### License ###
 
-The use of the Crumbl&trade; executable or library for commercial purpose is subject to fees for commercial purpose and to the respect of the [BSD-2-Clause-patent License](LICENSE).
+The use of the Crumbl&trade; executable or library for commercial purpose is subject to fees for commercial purpose and to the respect of the [BSD-2-Clause-Patent License](LICENSE).
 All technologies are protected by patents owned by Edgewhere.
 Please [contact us](mailto:contact@edgehere.fr) to get further information.
 
