@@ -1,12 +1,13 @@
 package decrypter
 
 import (
-	"crumbl/models/core"
-	"crumbl/slicer"
-	"crumbl/utils"
 	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/edgewhere/crumbl-exe/models/core"
+	"github.com/edgewhere/crumbl-exe/slicer"
+	"github.com/edgewhere/crumbl-exe/utils"
 )
 
 const (

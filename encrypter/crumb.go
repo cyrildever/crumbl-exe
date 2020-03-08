@@ -1,10 +1,11 @@
 package encrypter
 
 import (
-	"crumbl/models/core"
-	"crumbl/utils"
 	"errors"
 	"fmt"
+
+	"github.com/edgewhere/crumbl-exe/models/core"
+	"github.com/edgewhere/crumbl-exe/utils"
 )
 
 //--- TYPES

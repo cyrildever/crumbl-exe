@@ -1,13 +1,14 @@
 package encrypter
 
 import (
-	"crumbl/crypto"
-	"crumbl/crypto/ecies"
-	"crumbl/crypto/rsa"
-	"crumbl/models/core"
-	"crumbl/models/signer"
-	"crumbl/slicer"
 	"errors"
+
+	"github.com/edgewhere/crumbl-exe/crypto"
+	"github.com/edgewhere/crumbl-exe/crypto/ecies"
+	"github.com/edgewhere/crumbl-exe/crypto/rsa"
+	"github.com/edgewhere/crumbl-exe/models/core"
+	"github.com/edgewhere/crumbl-exe/models/signer"
+	"github.com/edgewhere/crumbl-exe/slicer"
 )
 
 // Encrypt returns the base64-encoded encrypted slice as Crumb:

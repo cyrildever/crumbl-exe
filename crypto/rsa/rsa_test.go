@@ -1,11 +1,12 @@
 package rsa_test
 
 import (
-	"crumbl/crypto/rsa"
-	"crumbl/models/core"
 	"fmt"
 	"io/ioutil"
 	"testing"
+
+	"github.com/edgewhere/crumbl-exe/crypto/rsa"
+	"github.com/edgewhere/crumbl-exe/models/core"
 
 	"gotest.tools/assert"
 )

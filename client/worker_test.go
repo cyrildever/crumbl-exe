@@ -1,10 +1,11 @@
 package client_test
 
 import (
-	"crumbl/client"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/edgewhere/crumbl-exe/client"
 
 	"gotest.tools/assert"
 )

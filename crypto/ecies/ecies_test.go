@@ -1,12 +1,13 @@
 package ecies_test
 
 import (
-	"crumbl/crypto/ecies"
-	"crumbl/models/core"
-	"crumbl/utils"
 	"fmt"
 	"io/ioutil"
 	"testing"
+
+	"github.com/edgewhere/crumbl-exe/crypto/ecies"
+	"github.com/edgewhere/crumbl-exe/models/core"
+	"github.com/edgewhere/crumbl-exe/utils"
 
 	"gotest.tools/assert"
 )

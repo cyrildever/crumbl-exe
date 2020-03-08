@@ -1,11 +1,12 @@
 package slicer
 
 import (
-	"crumbl/utils"
 	"errors"
 	"math"
 	"math/rand"
 	"strings"
+
+	"github.com/edgewhere/crumbl-exe/utils"
 )
 
 const (

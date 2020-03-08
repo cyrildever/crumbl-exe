@@ -1,10 +1,11 @@
 package crypto
 
 import (
-	"crumbl/utils"
 	"crypto/sha256"
 	"errors"
 	"strings"
+
+	"github.com/edgewhere/crumbl-exe/utils"
 )
 
 const (

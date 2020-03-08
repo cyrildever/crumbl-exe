@@ -1,9 +1,10 @@
 package main
 
 import (
-	"crumbl/client"
 	"errors"
 	"flag"
+
+	"github.com/edgewhere/crumbl-exe/client"
 )
 
 /** Usage:

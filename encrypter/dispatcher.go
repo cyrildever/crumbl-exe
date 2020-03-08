@@ -2,10 +2,11 @@ package encrypter
 
 import (
 	"bytes"
-	"crumbl/models/signer"
 	"errors"
 	"math/rand"
 	"time"
+
+	"github.com/edgewhere/crumbl-exe/models/signer"
 )
 
 //--- TYPES

@@ -12,7 +12,7 @@
 *.out
 
 crumbl
-crumbl.exe
+crumbl*exe
 
 .DS_Store
 .vscode

@@ -1,15 +1,16 @@
 package core
 
 import (
-	"crumbl/crypto"
-	"crumbl/encrypter"
-	"crumbl/models/signer"
-	"crumbl/obfuscator"
-	"crumbl/slicer"
-	"crumbl/utils"
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/edgewhere/crumbl-exe/crypto"
+	"github.com/edgewhere/crumbl-exe/encrypter"
+	"github.com/edgewhere/crumbl-exe/models/signer"
+	"github.com/edgewhere/crumbl-exe/obfuscator"
+	"github.com/edgewhere/crumbl-exe/slicer"
+	"github.com/edgewhere/crumbl-exe/utils"
 )
 
 const (

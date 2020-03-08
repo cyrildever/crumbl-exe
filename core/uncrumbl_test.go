@@ -1,13 +1,14 @@
 package core_test
 
 import (
-	"crumbl/core"
-	"crumbl/crypto"
-	"crumbl/decrypter"
-	"crumbl/models/signer"
-	"crumbl/utils"
 	"strings"
 	"testing"
+
+	"github.com/edgewhere/crumbl-exe/core"
+	"github.com/edgewhere/crumbl-exe/crypto"
+	"github.com/edgewhere/crumbl-exe/decrypter"
+	"github.com/edgewhere/crumbl-exe/models/signer"
+	"github.com/edgewhere/crumbl-exe/utils"
 
 	"gotest.tools/assert"
 )

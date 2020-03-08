@@ -1,8 +1,9 @@
 package core_test
 
 import (
-	"crumbl/core"
 	"testing"
+
+	"github.com/edgewhere/crumbl-exe/core"
 
 	"gotest.tools/assert"
 )

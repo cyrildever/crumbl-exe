@@ -1,11 +1,12 @@
 package obfuscator
 
 import (
-	"crumbl/utils"
 	"crypto/sha256"
 	"errors"
 	"math"
 	"strings"
+
+	"github.com/edgewhere/crumbl-exe/utils"
 )
 
 // Round is the function applied at each round of the obfuscation process to the right side of the Feistel cipher

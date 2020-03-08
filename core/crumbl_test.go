@@ -1,13 +1,14 @@
 package core_test
 
 import (
-	"crumbl/core"
-	"crumbl/crypto"
-	"crumbl/models/signer"
-	"crumbl/utils"
 	"fmt"
 	"io/ioutil"
 	"testing"
+
+	"github.com/edgewhere/crumbl-exe/core"
+	"github.com/edgewhere/crumbl-exe/crypto"
+	"github.com/edgewhere/crumbl-exe/models/signer"
+	"github.com/edgewhere/crumbl-exe/utils"
 )
 
 var (

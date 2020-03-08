@@ -1,8 +1,9 @@
 package obfuscator
 
 import (
-	"crumbl/utils"
 	"errors"
+
+	"github.com/edgewhere/crumbl-exe/utils"
 )
 
 const (

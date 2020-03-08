@@ -1,11 +1,6 @@
 package client
 
 import (
-	"crumbl/core"
-	"crumbl/crypto"
-	"crumbl/decrypter"
-	"crumbl/models/signer"
-	"crumbl/utils"
 	"errors"
 	"flag"
 	"fmt"
@@ -13,6 +8,12 @@ import (
 	"os"
 	"runtime"
 	"strings"
+
+	"github.com/edgewhere/crumbl-exe/core"
+	"github.com/edgewhere/crumbl-exe/crypto"
+	"github.com/edgewhere/crumbl-exe/decrypter"
+	"github.com/edgewhere/crumbl-exe/models/signer"
+	"github.com/edgewhere/crumbl-exe/utils"
 )
 
 //--- TYPES

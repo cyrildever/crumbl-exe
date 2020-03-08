@@ -1,11 +1,12 @@
 package slicer_test
 
 import (
-	"crumbl/slicer"
 	"math/rand"
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/edgewhere/crumbl-exe/slicer"
 
 	"gotest.tools/assert"
 )

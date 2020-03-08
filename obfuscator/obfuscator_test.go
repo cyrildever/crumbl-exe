@@ -2,9 +2,10 @@ package obfuscator_test
 
 import (
 	"bytes"
-	"crumbl/obfuscator"
-	"crumbl/utils"
 	"testing"
+
+	"github.com/edgewhere/crumbl-exe/obfuscator"
+	"github.com/edgewhere/crumbl-exe/utils"
 
 	"gotest.tools/assert"
 )

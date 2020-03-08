@@ -2,9 +2,10 @@ package encrypter_test
 
 import (
 	"bytes"
-	"crumbl/encrypter"
-	"crumbl/models/signer"
 	"testing"
+
+	"github.com/edgewhere/crumbl-exe/encrypter"
+	"github.com/edgewhere/crumbl-exe/models/signer"
 
 	"gotest.tools/assert"
 )

@@ -1,8 +1,9 @@
 package utils_test
 
 import (
-	"crumbl/utils"
 	"testing"
+
+	"github.com/edgewhere/crumbl-exe/utils"
 
 	"gotest.tools/assert"
 )
