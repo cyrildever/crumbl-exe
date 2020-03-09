@@ -172,7 +172,7 @@ func (u *Uncrumbl) doUncrumbl() (uncrumbled []byte, err error) {
 		// 7a- Return uncrumbled data, ie. original source normally
 		uncrumbled = []byte(deobfuscated)
 	} else {
-		// Trustee only could return his own uncrumbs
+		// Trustee may only return his own uncrumbs
 
 		// 5b- Build partial uncrumbs
 		var partialUncrumbs string

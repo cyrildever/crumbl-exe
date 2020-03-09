@@ -5,7 +5,7 @@ import (
 )
 
 // Base64 is the base64 string representation of a byte array.
-// NB: if the passed string is not a valid base64 representation, it will not throw an error but rather returns empty or nil items when methods are called.
+// NB: if the passed string is not a valid base64 representation, it will not throw an error but rather returns an empty or nil item when methods are called.
 type Base64 string
 
 // Bytes ...
