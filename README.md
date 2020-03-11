@@ -4,7 +4,7 @@
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/edgewhere/crumbl-exe)
 ![GitHub last commit](https://img.shields.io/github/last-commit/edgewhere/crumbl-exe)
 ![GitHub issues](https://img.shields.io/github/issues/edgewhere/crumbl-exe)
-![GitHub](https://img.shields.io/github/license/edgewhere/crumbl-exe)
+![NPM](https://img.shields.io/npm/l/crumbl-js)
 
 crumbl-exe is both an executable and a Go client for generating secure data storage with trusted signing third-parties using the Crumbl&trade; technology patented by [Edgewhere](https://www.edgewhere.fr).
 
