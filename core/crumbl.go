@@ -7,7 +7,6 @@ import (
 
 	"github.com/edgewhere/crumbl-exe/encrypter"
 	"github.com/edgewhere/crumbl-exe/hasher"
-	"github.com/edgewhere/crumbl-exe/models/core"
 	"github.com/edgewhere/crumbl-exe/models/signer"
 	"github.com/edgewhere/crumbl-exe/obfuscator"
 	"github.com/edgewhere/crumbl-exe/slicer"
