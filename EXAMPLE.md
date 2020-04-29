@@ -5,7 +5,7 @@ The following describes a working example of how to use the Crumbl&trade; execut
 1. Create a crumbl with all stakeholders
 
     ```
-    ./crumbl -c --owner-keys ecies:crypto/ecies/keys/owner1.pub --signer-keys ecies:crypto/ecies/keys/trustee1.pub,rsa:crypto/rsa/keys/trustee2.pub cdever@edgewhere.fr
+    ./crumbl-exe -c --owner-keys ecies:crypto/ecies/keys/owner1.pub --signer-keys ecies:crypto/ecies/keys/trustee1.pub,rsa:crypto/rsa/keys/trustee2.pub cdever@edgewhere.fr
     ```
     You may add the `-out path/to/exampleCrumbl.dat` flag to save the result to a `exampleCrumbl.dat` file.
 
@@ -13,28 +13,28 @@ The following describes a working example of how to use the Crumbl&trade; execut
 
     For the first trustee, using ECIES encryption:
     ```
-    ./crumbl -x --signer-keys ecies:crypto/ecies/keys/trustee1.pub --signer-secret crypto/ecies/keys/trustee1.sk 580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d0000a8BIHuhYKKUwPqFY+e1TpnJUhCva9EghtLvl9W7B1i5HKW7s7eXOMlfmKqJUHIj4MuuYvJmI8ptva6ijVjAHH7QpvhIM8uWCNHqj04Tr/mtK78jz3E8OIflc4FXpsbQj12C6GH8p7Lv6d6l14pPecSLVgcQ/ovsPFnC3fKJw==010158D2M61pYiQBspzGLzsUpAmjIIsjHtmMH/5orCf/due6JSUSzOJCqNCm/rs+wbd4VHXijTRxbFADTUDoUy3nv4IJyUnFsXwUFB4a3mvx9HO9i47+0IgRkpDoxRvDBdHxVVlvBVR37ld3eZDKeAn69IdGkhkxOb9HBb4xzux3u1dgBvbtpw+6toNV5z3LWgM+c0NRNtRjKNMAR5QBH8bYOCQjAfWeTlZS83Q5cB6KeaAQOmRx+8+5oU6jzX6tcw98K2ivl8r6BU+rhSLaxzD2SCAqhY+LDXtObtTUQNVulJMqU6cpWh0AwqZ21yqkMvB8PqVqxAmi/a9Yy5mwHtRj3jHg==0200a8BFp7WtWEW3zJzXCvwRXneYhqYGIBNhm4tyBVmPDI+WN/DNGj4pYRAuvljIBCZZU4IG+EHIvi82FEjR991h6+ZNYBP0WpLRwvITwfzb0gbz3fgDKnCVUjasZjlapQrQ51Um8IYImFggUGOFPm1sZys0QfSBcHisKDpP5nKA==.1
+    ./crumbl-exe -x --signer-keys ecies:crypto/ecies/keys/trustee1.pub --signer-secret crypto/ecies/keys/trustee1.sk 580fb8a91f05833200dea7d33536aaec990d596924455990c20378d960eeb1be0000a8BHGyTE7dAX6q4Eg4RlTxI50D6/wdR84mD1GS3HJUWPz8zBprQr+iltEW1nexSpLz+0dSgvDlf5FRc7CADkyPD5YtOHyNZt3nu1mwEyqzU9NVWpki848wLfO945WeLYQNsG5YrlnK9rNK3tHmvnh/gFUl7kWAKNJe6NoFuw==0100a8BPemmd/YgSelAr9vHfosGk29VtZ/DuwDmCUkWhDwgF8eOZSQluHLlV8YSE3c6mhOZT7MWJ6uXNQ5dVmZdgPAt+jh00Iu7aIPskDrEBm0LX96dGNDuepfbRno2mNdk+8NPaMkDUtdmSEPHVWZMFhYWh6yel8qXofMKufHdQ==020158JXT8koyYnDaVted+sgSKmdDCpkcXAFgu1SxCtdC/e55LLx9vVxBbq53z9lhlhIpapuFMpxnaQis/boEhQlG7pL/FyHWLudS3tGdyhUSzs5eWeh/F/XXaf1MZ0aahRlWbMa7uz3oas+ATJf/z9JI3QBSxnVTIEVnSpE6vp7u3BiElR5JKl7FX6BN8zftGlsl+WN7dMPcSJ0H72+o9DH/IizW7GHmeM+p2CG1nqPbd1Kg6NJqtlju6+xS43lWAciDVi1CPfWtou5SO7hlp+JQqlXR00ZE3Gegx7eYPj00BMCoJfN3mKQ/gDYLyJn4whntITAhz2aV3AY5/Zs2F8oGAdA==.1
     ```
-    The result should be: `580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%02AgICAgICAgkYUkI=.1`
+    The result should be: `580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%01AgIEVQMOTg9cRwk=.1`
 
     For the second trustee, using RSA encryption and an input file:
     ```
-    ./crumbl -x -in exampleCrumbl.dat --signer-keys rsa:crypto/rsa/keys/trustee2.pub --signer-secret crypto/rsa/keys/trustee2.sk
+    ./crumbl-exe -x -in exampleCrumbl.dat --signer-keys rsa:crypto/rsa/keys/trustee2.pub --signer-secret crypto/rsa/keys/trustee2.sk
     ```
-    The result should be: `580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%01AgICBFUDDk4PXEc=.1`
+    The result should be: `580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%02AgICAgICAgIYUkI=.1`
 
     Here again, you may add the `-out` flag to save these results to files.
 
 3. Finalize the extraction as the owner
 
     ```
-    ./crumbl -x --owner-keys ecies:crypto/ecies/keys/owner1.pub --owner-secret crypto/ecies/keys/owner1.sk -vh 580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d 580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d0000a8BIHuhYKKUwPqFY+e1TpnJUhCva9EghtLvl9W7B1i5HKW7s7eXOMlfmKqJUHIj4MuuYvJmI8ptva6ijVjAHH7QpvhIM8uWCNHqj04Tr/mtK78jz3E8OIflc4FXpsbQj12C6GH8p7Lv6d6l14pPecSLVgcQ/ovsPFnC3fKJw==010158D2M61pYiQBspzGLzsUpAmjIIsjHtmMH/5orCf/due6JSUSzOJCqNCm/rs+wbd4VHXijTRxbFADTUDoUy3nv4IJyUnFsXwUFB4a3mvx9HO9i47+0IgRkpDoxRvDBdHxVVlvBVR37ld3eZDKeAn69IdGkhkxOb9HBb4xzux3u1dgBvbtpw+6toNV5z3LWgM+c0NRNtRjKNMAR5QBH8bYOCQjAfWeTlZS83Q5cB6KeaAQOmRx+8+5oU6jzX6tcw98K2ivl8r6BU+rhSLaxzD2SCAqhY+LDXtObtTUQNVulJMqU6cpWh0AwqZ21yqkMvB8PqVqxAmi/a9Yy5mwHtRj3jHg==0200a8BFp7WtWEW3zJzXCvwRXneYhqYGIBNhm4tyBVmPDI+WN/DNGj4pYRAuvljIBCZZU4IG+EHIvi82FEjR991h6+ZNYBP0WpLRwvITwfzb0gbz3fgDKnCVUjasZjlapQrQ51Um8IYImFggUGOFPm1sZys0QfSBcHisKDpP5nKA==.1 580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%01AgICBFUDDk4PXEc=.1 580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%02AgICAgICAgkYUkI=.1
+    ./crumbl-exe -x --owner-keys ecies:crypto/ecies/keys/owner1.pub --owner-secret crypto/ecies/keys/owner1.sk -vh 580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d 580fb8a91f05833200dea7d33536aaec99df7af5098d296c1bf90c28cebf76d70000a8BKOR0GMVcYJzGjzJ6AU2Sq15QrxbTql/gkWpW5mddRjqpnmDym4HdkBl9Pt9bSPYEcXiBqJqUcTm0oZIevcqWlZPjM4GbBdL6qgR/wBAXZ1I1zah4czAJBMKMdbmOyuAo06NsCu0bqX0DkcZt2UuOax9ATVQymOiDwHzSg==0100a8BHYwWaREFtdRInDh5c/mweXM0SitlvO7hDzlAC8F3TvpYewDaBn4/FiFonKbINTwPQeoibIkXMFw+HKkXn5FEJ8pNtWalbgAFoO2Iy++FguMOt0aH00PVyV4LNBrEy9RUx5C1tJ5kxM6wTua/3mXsOMtXcjoVPIldF+zLg==020158ciYehulbTIg2p8EueDXRWl7EmnSsLo+sbOPsogMamWxs0MkzXhqPhpTfgKsBnnQ4g32rnwvQs5JyVfOR33LKz+XIgiwSSszOE96TTSp6EMDlEuijp/PK1qmCha/TAJ+o8odJy6tasON/OwWCRUq6hX+ZwKaw1s+xYWpsK7u1ugAtitjpo66xt0LZTtZpmAqT9jZa+1CXQLUsT/TGHovsq45GZJe9zLnuPgxVKjbHrS9xHKSU1P7aQ7zcaZwh+PAmxu+egFXC5U5YYeFmoCBXbN9dk8/sG+qb/T5Z1wVhcogVic6aYNmigxY/DpoErUCooyEGwJVunu+7vpgFeMnz+w==.1 580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%01AgIEVQMOTg9cRwk=.1 580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%02AgICAgICAgIYUkI=.1
     ```
     The uncrumbled data (sent to stdout) should be: `cdever@edgewhere.fr`
 
     Alternatively, you may use an input file for the crumbl:
      ```
-    ./crumbl -x -in exampleCrumbl.dat --owner-keys ecies:crypto/ecies/keys/owner1.pub --owner-secret crypto/ecies/keys/owner1.sk -vh 580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d 580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%01AgICBFUDDk4PXEc=.1 580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%02AgICAgICAgkYUkI=.1
+    ./crumbl-exe -x -in exampleCrumbl.dat --owner-keys ecies:crypto/ecies/keys/owner1.pub --owner-secret crypto/ecies/keys/owner1.sk -vh 580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d 580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%01AgIEVQMOTg9cRwk=.1 580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%02AgICAgICAgIYUkI=.1
     ```
 
 As of the latest version, the library only processes one crumbl at a time, ie. only the first line in an input file.

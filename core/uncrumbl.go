@@ -9,6 +9,7 @@ import (
 	"github.com/edgewhere/crumbl-exe/crypto"
 	"github.com/edgewhere/crumbl-exe/decrypter"
 	"github.com/edgewhere/crumbl-exe/encrypter"
+	"github.com/edgewhere/crumbl-exe/hasher"
 	"github.com/edgewhere/crumbl-exe/models/signer"
 	"github.com/edgewhere/crumbl-exe/obfuscator"
 	"github.com/edgewhere/crumbl-exe/utils"
@@ -94,15 +95,19 @@ func (u *Uncrumbl) doUncrumbl() (uncrumbled []byte, err error) {
 		return
 	}
 
-	verificationHash := parts[0][0:crypto.DEFAULT_HASH_LENGTH]
-	if u.VerificationHash != verificationHash {
-		fmt.Fprintln(os.Stderr, "WARNING - incompatible input verification hash with crumbl")
-	}
-
 	crumbsStr := parts[0][crypto.DEFAULT_HASH_LENGTH:]
 	crumbs, err := parse(crumbsStr)
 	if err != nil {
 		return
+	}
+
+	hashered := parts[0][0:crypto.DEFAULT_HASH_LENGTH]
+	verificationHash, err := hasher.Unapply(hashered, crumbs)
+	if err != nil {
+		return
+	}
+	if u.VerificationHash != verificationHash {
+		fmt.Fprintln(os.Stderr, "WARNING - incompatible input verification hash with crumbl")
 	}
 
 	// 2- Decrypt crumbs
