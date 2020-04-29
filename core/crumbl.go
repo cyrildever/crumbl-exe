@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/edgewhere/crumbl-exe/crypto"
 	"github.com/edgewhere/crumbl-exe/encrypter"
+	"github.com/edgewhere/crumbl-exe/hasher"
 	"github.com/edgewhere/crumbl-exe/models/signer"
 	"github.com/edgewhere/crumbl-exe/obfuscator"
 	"github.com/edgewhere/crumbl-exe/slicer"
@@ -121,7 +121,7 @@ func (c *Crumbl) doCrumbl() (crumbled string, err error) {
 	}
 
 	// 4-Hash the source string
-	hSrc, err := crypto.Hash([]byte(c.Source), crypto.DEFAULT_HASH_ENGINE)
+	hashered, err := hasher.Apply(c.Source, crumbs)
 	if err != nil {
 		return
 	}
@@ -131,7 +131,7 @@ func (c *Crumbl) doCrumbl() (crumbled string, err error) {
 	for _, c := range crumbs {
 		stringifiedCrumbs = append(stringifiedCrumbs, c.String())
 	}
-	crumbled = utils.ToHex(hSrc) + strings.Join(stringifiedCrumbs, "") + "." + VERSION
+	crumbled = hashered + strings.Join(stringifiedCrumbs, "") + "." + VERSION
 
 	return
 }
