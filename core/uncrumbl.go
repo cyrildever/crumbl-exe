@@ -89,20 +89,7 @@ func (u *Uncrumbl) ToStdOut() (result string, err error) {
 // the verification hash being prefixed for tracking purpose, and the version at the end after a dot.
 func (u *Uncrumbl) doUncrumbl() (uncrumbled []byte, err error) {
 	// 1- Parse
-	parts := strings.SplitN(u.Crumbled, ".", 2)
-	if parts[1] != VERSION {
-		err = errors.New("incompatible version: " + parts[1])
-		return
-	}
-
-	crumbsStr := parts[0][crypto.DEFAULT_HASH_LENGTH:]
-	crumbs, err := parse(crumbsStr)
-	if err != nil {
-		return
-	}
-
-	hashered := parts[0][0:crypto.DEFAULT_HASH_LENGTH]
-	verificationHash, err := hasher.Unapply(hashered, crumbs)
+	verificationHash, crumbs, err := ExtractData(u.Crumbled)
 	if err != nil {
 		return
 	}
@@ -192,7 +179,30 @@ func (u *Uncrumbl) doUncrumbl() (uncrumbled []byte, err error) {
 	return
 }
 
-func parse(crumbsStr string) (crumbs []encrypter.Crumb, err error) {
+// ExtractData ...
+func ExtractData(crumbled string) (verificationHash string, crumbs encrypter.Crumbs, err error) {
+	parts := strings.SplitN(crumbled, ".", 2)
+	if parts[1] != VERSION {
+		err = errors.New("incompatible version: " + parts[1])
+		return
+	}
+
+	crumbsStr := parts[0][crypto.DEFAULT_HASH_LENGTH:]
+	crms, err := parse(crumbsStr)
+	if err != nil {
+		return
+	}
+
+	hashered := parts[0][0:crypto.DEFAULT_HASH_LENGTH]
+	vh, err := hasher.Unapply(hashered, crms)
+	if err != nil {
+		return
+	}
+
+	return vh, crms, nil
+}
+
+func parse(crumbsStr string) (crumbs encrypter.Crumbs, err error) {
 	for len(crumbsStr) > 7 {
 		nextLen, e := utils.HexToInt(crumbsStr[2:6])
 		if e != nil {

@@ -74,3 +74,16 @@ func Parse(unparsed string) (index int, length int, enc string, err error) {
 	enc = e
 	return
 }
+
+// Crumbs ...
+type Crumbs []Crumb
+
+// GetAt returns the crumbs having the passed index
+func (cc Crumbs) GetAt(index int) (crumbs []Crumb) {
+	for _, crumb := range cc {
+		if crumb.Index == index {
+			crumbs = append(crumbs, crumb)
+		}
+	}
+	return
+}
