@@ -219,10 +219,6 @@ func (w *CrumblWorker) extract(user signer.Signer, isOwner bool, returnResult bo
 			err = e
 			return
 		}
-		hashedRes, _ := crypto.Hash([]byte(res), crypto.DEFAULT_HASH_ENGINE)
-		if w.VerificationHash != "" && utils.ToHex(hashedRes) != w.VerificationHash {
-			logWarning("verification hash is not coherent with uncrumbled data'")
-		}
 		if returnResult {
 			result = res
 			return
@@ -234,8 +230,8 @@ func (w *CrumblWorker) extract(user signer.Signer, isOwner bool, returnResult bo
 		err = e
 		return
 	}
-	if w.VerificationHash != "" && !strings.HasPrefix(res, w.VerificationHash) {
-		logWarning("verification hash is not coherent with uncrumbled data'")
+	if returnResult {
+		result = res
 	}
 	return
 }
