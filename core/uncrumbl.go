@@ -94,7 +94,7 @@ func (u *Uncrumbl) doUncrumbl() (uncrumbled []byte, err error) {
 		return
 	}
 	if u.VerificationHash != verificationHash {
-		fmt.Fprintln(os.Stderr, "WARNING - incompatible input verification hash with crumbl")
+		fmt.Fprintln(os.Stderr, "WARNING - incompatible input verification hash with crumbl", "u.VerificationHash", u.VerificationHash, "verificationHash", verificationHash)
 	}
 
 	// 2- Decrypt crumbs

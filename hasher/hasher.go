@@ -3,7 +3,6 @@ package hasher
 import (
 	"errors"
 	"sort"
-	"strings"
 
 	"github.com/edgewhere/crumbl-exe/crypto"
 	"github.com/edgewhere/crumbl-exe/encrypter"
@@ -44,7 +43,11 @@ func Apply(source string, crumbs []encrypter.Crumb) (string, error) {
 		return "", errors.New("owner's crumbs not present") // TODO Typed error
 	}
 	sort.Strings(sortedOwnerCrumbs)
-	concat := core.Base64(strings.Join(sortedOwnerCrumbs, "")).Bytes()
+
+	var concat []byte
+	for _, c := range sortedOwnerCrumbs {
+		concat = append(concat, core.Base64(c).Bytes()...)
+	}
 	mask := buildMask(concat, NUMBER_OF_CHARACTERS/2)
 	lastBytes, _ := utils.FromHex(lastChars)
 	xored, err := xor.Bytes(lastBytes, mask)
@@ -75,7 +78,11 @@ func Unapply(hashered string, crumbs []encrypter.Crumb) (string, error) {
 		return "", errors.New("owner's crumbs not present") // TODO Typed error
 	}
 	sort.Strings(sortedOwnerCrumbs)
-	concat := core.Base64(strings.Join(sortedOwnerCrumbs, "")).Bytes()
+
+	var concat []byte
+	for _, c := range sortedOwnerCrumbs {
+		concat = append(concat, core.Base64(c).Bytes()...)
+	}
 	mask := buildMask(concat, NUMBER_OF_CHARACTERS/2)
 	lastBytes, err := xor.Bytes(xored, mask)
 	if err != nil {
