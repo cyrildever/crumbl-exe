@@ -3,6 +3,7 @@ package obfuscator
 import (
 	"errors"
 
+	"github.com/edgewhere/crumbl-exe/crypto"
 	"github.com/edgewhere/crumbl-exe/utils"
 )
 
@@ -40,11 +41,34 @@ func (o Obfuscator) Apply(data string) (obfuscated []byte, err error) {
 }
 
 // Unapply transforms the passed obfuscated byte array to a deobfuscated string through a Feistel cipher
-func (o Obfuscator) Unapply(obfuscated []byte) (deobfuscated string, err error) {
+func (o Obfuscator) Unapply(obfuscated []byte, verificationHash string) (deobfuscated string, err error) {
 	if len(string(obfuscated))%2 != 0 {
-		err = errors.New("invalid obfuscated data")
+		found := false
+		for i := 0; i < len(obfuscated); i++ {
+			begin := string(obfuscated)[:i]
+			end := string(obfuscated)[i:]
+			attempt := begin + string(utils.LEFT_PADDING_CHARACTER) + end
+			if d, err := o.doUnapply([]byte(attempt)); err == nil {
+				hashedData, e := crypto.Hash([]byte(d), crypto.DEFAULT_HASH_ENGINE)
+				if e != nil {
+					continue
+				}
+				if utils.ToHex(hashedData) == verificationHash {
+					deobfuscated = d
+					found = true
+					break
+				}
+			}
+		}
+		if !found {
+			err = errors.New("invalid obfuscated data")
+		}
 		return
 	}
+	return o.doUnapply(obfuscated)
+}
+
+func (o Obfuscator) doUnapply(obfuscated []byte) (deobfuscated string, err error) {
 	// Apply the Feistel cipher
 	parts, err := Split(string(obfuscated))
 	if err != nil {

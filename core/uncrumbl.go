@@ -150,7 +150,7 @@ func (u *Uncrumbl) doUncrumbl() (uncrumbled []byte, err error) {
 			Key:    obfuscator.DEFAULT_KEY_STRING,
 			Rounds: obfuscator.DEFAULT_ROUNDS,
 		}
-		deobfuscated, e := obfuscator.Unapply(obfuscated)
+		deobfuscated, e := obfuscator.Unapply(obfuscated, verificationHash)
 		if e != nil {
 			err = e
 			return

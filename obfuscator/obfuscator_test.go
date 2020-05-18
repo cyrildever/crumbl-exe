@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/edgewhere/crumbl-exe/crypto"
 	"github.com/edgewhere/crumbl-exe/obfuscator"
 	"github.com/edgewhere/crumbl-exe/utils"
 
@@ -24,15 +25,17 @@ func TestObfuscatorApply(t *testing.T) {
 
 // TestObfuscatorUnapply ...
 func TestObfuscatorUnapply(t *testing.T) {
+	ref := "Edgewhere"
+	verificationHash, _ := crypto.Hash([]byte(ref), crypto.DEFAULT_HASH_ENGINE)
 	obfuscated, _ := utils.FromHex("3d7c0a0f51415a521054")
 	deobfuscated, err := obfuscator.Obfuscator{
 		Key:    obfuscator.DEFAULT_KEY_STRING,
 		Rounds: obfuscator.DEFAULT_ROUNDS,
-	}.Unapply(obfuscated)
+	}.Unapply(obfuscated, utils.ToHex(verificationHash))
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, deobfuscated, "Edgewhere")
+	assert.Equal(t, deobfuscated, ref)
 }
 
 // TestAdd ...
