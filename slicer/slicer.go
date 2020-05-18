@@ -106,8 +106,8 @@ type mask struct {
 func (s *Slicer) buildSplitMask(dataLength int, seed Seed) (masks []mask, err error) {
 	dl := float64(dataLength)
 	nos := float64(s.NumberOfSlices)
-	dm := float64(s.DeltaMax)
 	averageSliceLength := math.Floor(dl / nos)
+	dm := math.Min(float64(s.DeltaMax), averageSliceLength-1) // used delta max cannot be higher than average size - 1
 	catchUp := dl - averageSliceLength*nos
 
 	length := 0.0
