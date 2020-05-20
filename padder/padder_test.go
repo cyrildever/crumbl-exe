@@ -1,13 +1,14 @@
 package padder_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/edgewhere/crumbl-exe/padder"
 	"github.com/edgewhere/crumbl-exe/utils"
 	"gotest.tools/assert"
 )
+
+// Equivalent to crumbl-js/Padder/index.spec.ts
 
 // TestApply ...
 func TestApply(t *testing.T) {
@@ -62,7 +63,6 @@ func TestApply(t *testing.T) {
 	alreadyEvenButTooShort := []byte{4, 4}
 	wishedLength := 4
 	padded, _, _ = padder.Apply(alreadyEvenButTooShort, wishedLength, true)
-	fmt.Println(padded)
 	assert.DeepEqual(t, padded, []byte{2, 2, 4, 4})
 	assert.Equal(t, len(padded), wishedLength)
 
@@ -89,7 +89,7 @@ func TestUnapply(t *testing.T) {
 	assert.DeepEqual(t, unpadded3, []byte{2, 4})
 	assert.Equal(t, padChar, padder.ALTERNATE_PADDING_CHARACTER_2)
 
-	evenData := []byte{255, 255}
+	evenData := []byte{127, 127}
 	unpadded4, padChar, err := padder.Unapply(evenData)
 	if err != nil {
 		t.Fatal(err)
@@ -102,7 +102,7 @@ func TestUnapply(t *testing.T) {
 	assert.DeepEqual(t, unpadded5, evenZero)
 	assert.Equal(t, padChar, padder.NO_PADDING_CHARACTER) // doesn't mean that if has taken zero value as pad character
 
-	wrongPadded := []byte{255, 254, 253}
+	wrongPadded := []byte{127, 126, 125}
 	_, _, err = padder.Unapply(wrongPadded)
 	assert.Error(t, err, "invalid padded data: wrong padding")
 }
