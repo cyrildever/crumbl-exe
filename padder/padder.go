@@ -2,7 +2,9 @@ package padder
 
 import (
 	"errors"
+	"fmt"
 	"math"
+	"os"
 
 	"github.com/edgewhere/crumbl-exe/utils"
 )
@@ -17,6 +19,8 @@ import (
 // and `false` as the third, eg. ```
 // 		padded, _, err := padder.Apply(data, maxSliceLength, false)
 // ```
+//
+// The Unapply() operation will raise a WARNING if the data is not of even length and the prepend size doesn't seem to be respected.
 
 const (
 	// ALTERNATE_PADDING_CHARACTER_1 ...
@@ -24,6 +28,9 @@ const (
 
 	// ALTERNATE_PADDING_CHARACTER_2 ...
 	ALTERNATE_PADDING_CHARACTER_2 rune = 5 // Unicode U+0005: enquiry
+
+	// NO_PADDING_CHARACTER ...
+	NO_PADDING_CHARACTER rune = 0 // rune zero value is int32(0)
 
 	// PREPEND_SIZE is the minimum number of prepended padding character in the padded result
 	PREPEND_SIZE = 2
@@ -95,22 +102,39 @@ func Apply(slice []byte, length int, buildEven bool) (padded []byte, padChar run
 }
 
 // Unapply removes the left padding from the passed padded data.
-func Unapply(padded []byte) (slice []byte, err error) {
-	if len(padded) < PREPEND_SIZE+1 {
+func Unapply(padded []byte) (slice []byte, padChar rune, err error) {
+	if len(padded) < 2 {
 		err = errors.New("invalid padded data: data too short")
 		return
 	}
 
 	// 1 - Detect padding character
-	padChar := padded[0]
-	if padded[PREPEND_SIZE-1] != padChar {
-		err = errors.New("invalid padded data: wrong padding")
+	pc := padded[0]
+	if pc != byte(utils.LEFT_PADDING_CHARACTER) &&
+		pc != byte(ALTERNATE_PADDING_CHARACTER_1) &&
+		pc != byte(ALTERNATE_PADDING_CHARACTER_2) {
+		if len(padded)%2 == 0 {
+			// It's probably a data that would have been padded only if it were of odd length,
+			// hence probably padded with 'buildEven' set to `true`
+			slice = padded
+		} else {
+			err = errors.New("invalid padded data: wrong padding")
+		}
 		return
 	}
 
-	// 2 - Do unpad
+	// 2 - Test prepend sequence
+	if len(padded) < PREPEND_SIZE+1 {
+		err = errors.New("invalid data: padded data too short")
+		return
+	}
+	if padded[PREPEND_SIZE-1] != pc && len(padded)%2 == 1 {
+		fmt.Fprintln(os.Stderr, "WARNING - possibly wrong padding: data is not of even length and prepend size wasn't respected") // TODO Change to error?
+	}
+
+	// 3 - Do unpad
 	unpadded := padded
-	for len(unpadded) > 0 && unpadded[0] == padChar {
+	for len(unpadded) > 0 && unpadded[0] == pc {
 		unpadded = unpadded[1:]
 	}
 	if len(unpadded) == 0 {
@@ -118,5 +142,5 @@ func Unapply(padded []byte) (slice []byte, err error) {
 		return
 	}
 
-	return unpadded, nil
+	return unpadded, rune(pc), nil
 }

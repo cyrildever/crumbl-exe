@@ -73,17 +73,36 @@ func TestApply(t *testing.T) {
 // TestUnapply ...
 func TestUnapply(t *testing.T) {
 	padded1 := []byte{2, 2, 3, 4, 5}
-	unpadded1, err := padder.Unapply(padded1)
+	unpadded1, padChar, err := padder.Unapply(padded1)
 	if err != nil {
 		t.Fatal(err)
 	}
 	assert.DeepEqual(t, unpadded1, []byte{3, 4, 5})
+	assert.Equal(t, padChar, utils.LEFT_PADDING_CHARACTER)
 
 	padded2 := []byte{2, 2, 2}
-	_, err = padder.Unapply(padded2)
+	_, _, err = padder.Unapply(padded2)
 	assert.Error(t, err, "invalid padded data: all pad chars")
 
 	padded3 := []byte{5, 5, 5, 2, 4}
-	unpadded3, _ := padder.Unapply(padded3)
+	unpadded3, padChar, _ := padder.Unapply(padded3)
 	assert.DeepEqual(t, unpadded3, []byte{2, 4})
+	assert.Equal(t, padChar, padder.ALTERNATE_PADDING_CHARACTER_2)
+
+	evenData := []byte{255, 255}
+	unpadded4, padChar, err := padder.Unapply(evenData)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.DeepEqual(t, unpadded4, evenData)
+	assert.Equal(t, padChar, padder.NO_PADDING_CHARACTER) // rune zero value
+
+	evenZero := []byte{0, 0}
+	unpadded5, padChar, _ := padder.Unapply(evenZero)
+	assert.DeepEqual(t, unpadded5, evenZero)
+	assert.Equal(t, padChar, padder.NO_PADDING_CHARACTER) // doesn't mean that if has taken zero value as pad character
+
+	wrongPadded := []byte{255, 254, 253}
+	_, _, err = padder.Unapply(wrongPadded)
+	assert.Error(t, err, "invalid padded data: wrong padding")
 }

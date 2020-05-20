@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/edgewhere/crumbl-exe/utils"
+	"github.com/edgewhere/crumbl-exe/padder"
 )
 
 const (
@@ -44,7 +44,15 @@ func (s Slicer) Apply(data string) (slices []Slice, err error) {
 	}
 	fixedLength := int(math.Floor(float64(len(data)/s.NumberOfSlices))) + s.DeltaMax
 	for _, split := range splits {
-		slice := utils.LeftPad(split, fixedLength)
+		if len(split) == 0 {
+			// TODO Fix buildSplitMask()
+			continue
+		}
+		slice, _, e := padder.Apply([]byte(split), fixedLength, false)
+		if e != nil {
+			err = e
+			return
+		}
 		slices = append(slices, Slice(slice))
 	}
 	if len(slices) != s.NumberOfSlices {
@@ -62,7 +70,12 @@ func (s Slicer) Unapply(slices []Slice) (data string, err error) {
 	}
 	var splits []string
 	for _, slice := range slices {
-		splits = append(splits, utils.Unpad(string(slice)))
+		unpadded, _, e := padder.Unapply([]byte(slice))
+		if e != nil {
+			err = e
+			return
+		}
+		splits = append(splits, string(unpadded))
 	}
 	data = strings.Join(splits, "")
 	return
@@ -107,7 +120,7 @@ func (s *Slicer) buildSplitMask(dataLength int, seed Seed) (masks []mask, err er
 	dl := float64(dataLength)
 	nos := float64(s.NumberOfSlices)
 	averageSliceLength := math.Floor(dl / nos)
-	dm := math.Min(float64(s.DeltaMax), averageSliceLength-1) // used delta max cannot be higher than average size - 1
+	dm := math.Max(0, math.Min(float64(s.DeltaMax), averageSliceLength-1)) // used delta max can neither be higher than average size - 1 nor lower than 0
 	catchUp := dl - averageSliceLength*nos
 
 	length := 0.0
