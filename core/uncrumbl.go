@@ -150,7 +150,7 @@ func (u *Uncrumbl) doUncrumbl() (uncrumbled []byte, err error) {
 			Key:    obfuscator.DEFAULT_KEY_STRING,
 			Rounds: obfuscator.DEFAULT_ROUNDS,
 		}
-		deobfuscated, e := obfuscator.Unapply(obfuscated, verificationHash)
+		deobfuscated, e := obfuscator.Unapply(obfuscated)
 		if e != nil {
 			err = e
 			return
@@ -158,7 +158,8 @@ func (u *Uncrumbl) doUncrumbl() (uncrumbled []byte, err error) {
 
 		// 6a- Check
 		if !collector.Check([]byte(deobfuscated)) {
-			fmt.Fprintln(os.Stderr, "WARNING - source has not checked verification hash") // TODO Change it as an error?
+			err = errors.New("source has not checked verification hash")
+			return
 		}
 
 		// 7a- Return uncrumbled data, ie. original source normally

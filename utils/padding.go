@@ -4,6 +4,8 @@ import (
 	"strings"
 )
 
+// Only kept for legacy compliance
+
 const (
 	// LEFT_PADDING_CHARACTER ...
 	LEFT_PADDING_CHARACTER rune = 2 // Unicode U+0002: start of text

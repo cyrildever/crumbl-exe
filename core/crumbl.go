@@ -9,8 +9,8 @@ import (
 	"github.com/edgewhere/crumbl-exe/hasher"
 	"github.com/edgewhere/crumbl-exe/models/signer"
 	"github.com/edgewhere/crumbl-exe/obfuscator"
+	"github.com/edgewhere/crumbl-exe/padder"
 	"github.com/edgewhere/crumbl-exe/slicer"
-	"github.com/edgewhere/crumbl-exe/utils"
 )
 
 const (
@@ -80,18 +80,24 @@ func (c *Crumbl) doCrumbl() (crumbled string, err error) {
 		return
 	}
 
-	// 2-Slice
-	numberOfSlices := 1 + min(len(c.Trustees), slicer.MAX_SLICES) // Owners only sign the first slice
-	deltaMax := slicer.GetDeltaMax(len(obfuscated), numberOfSlices)
-	slices, err := slicer.Slicer{
-		NumberOfSlices: numberOfSlices,
-		DeltaMax:       deltaMax,
-	}.Apply(utils.LeftPad(string(obfuscated), slicer.MIN_INPUT_SIZE))
+	// 2-Pad
+	padded, _, err := padder.Apply(obfuscated, len(obfuscated), true)
 	if err != nil {
 		return
 	}
 
-	// 3-Encrypt
+	// 3-Slice
+	numberOfSlices := 1 + min(len(c.Trustees), slicer.MAX_SLICES) // Owners only sign the first slice
+	deltaMax := slicer.GetDeltaMax(len(padded), numberOfSlices)
+	slices, err := slicer.Slicer{
+		NumberOfSlices: numberOfSlices,
+		DeltaMax:       deltaMax,
+	}.Apply(string(padded))
+	if err != nil {
+		return
+	}
+
+	// 4-Encrypt
 	var crumbs []encrypter.Crumb
 	for _, owner := range c.Owners {
 		crumb, e := encrypter.Encrypt(slices[0], 0, owner)
@@ -120,13 +126,13 @@ func (c *Crumbl) doCrumbl() (crumbled string, err error) {
 		}
 	}
 
-	// 4-Hash the source string
+	// 5-Hash the source string
 	hashered, err := hasher.Apply(c.Source, crumbs)
 	if err != nil {
 		return
 	}
 
-	// 5- Finalize the output string
+	// 6- Finalize the output string
 	var stringifiedCrumbs []string
 	for _, c := range crumbs {
 		stringifiedCrumbs = append(stringifiedCrumbs, c.String())

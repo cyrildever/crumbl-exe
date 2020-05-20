@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/edgewhere/crumbl-exe/crypto"
+	"github.com/edgewhere/crumbl-exe/padder"
 	"github.com/edgewhere/crumbl-exe/utils"
 )
 
@@ -37,7 +38,12 @@ func (c *Collector) ToObfuscated() (obfuscated []byte, err error) {
 			err = fmt.Errorf("missing slice with index: %d", i)
 			return
 		}
-		o += utils.Unpad(string(uncrumb.ToSlice()))
+		unpadded, _, e := padder.Unapply([]byte(uncrumb.ToSlice()))
+		if e != nil {
+			err = e
+			return
+		}
+		o += string(unpadded)
 	}
 	obfuscated = []byte(o)
 	return
