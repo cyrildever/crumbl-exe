@@ -10,15 +10,15 @@ import (
 /** Usage:
  *
  *	To create a crumbled e-mail:
- *	`./crumbl -c -out theCrumbl.dat --owner-keys ecies:myKey.pub --signer-keys ecies:edgewhere.pub,rsa:"C:\keys\trustee.pub" cdever@edgewhere.fr`
+ *	`./crumbl-exe -c -out theCrumbl.dat --owner-keys ecies:myKey.pub --signer-keys ecies:edgewhere.pub,rsa:"C:\keys\trustee.pub" cdever@edgewhere.fr`
  *
  *	To extract a crumbled data as the data owner:
- *	`./crumbl -x -out myEmails.txt --owner-keys ecies:myKey.pub --owner-secret myKey.sk -vh <hash> <crumbled> <uncrumbs ...>`
+ *	`./crumbl-exe -x -out myEmails.txt --owner-keys ecies:myKey.pub --owner-secret myKey.sk -vh <hash> <crumbled> <uncrumbs ...>`
  *	or (if using an input file for the crumbl):
- *	`./crumbl -x -in theCrumbl.dat -out myEmails.txt --owner-keys ecies:myKey.pub --owner-secret myKey.sk -vh <hash> <uncrumbs ...>`
+ *	`./crumbl-exe -x -in theCrumbl.dat -out myEmails.txt --owner-keys ecies:myKey.pub --owner-secret myKey.sk -vh <hash> <uncrumbs ...>`
  *
  *	To decrypt crumbs as a signer:
- *	`./crumbl -x -out myUncrumbs.txt --signer-keys ecies:edgewhere.pub --signer-secret edgewhere.sk <crumbled>`
+ *	`./crumbl-exe -x -out myUncrumbs.txt --signer-keys ecies:edgewhere.pub --signer-secret edgewhere.sk <crumbled>`
  *
  *	As of the latest version, the library only processes one crumbl at a time.
  */

@@ -1,14 +1,15 @@
 # crumbl-exe #
 
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/edgewhere/crumbl-exe)
-![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/edgewhere/crumbl-exe)
-![GitHub last commit](https://img.shields.io/github/last-commit/edgewhere/crumbl-exe)
-![GitHub issues](https://img.shields.io/github/issues/edgewhere/crumbl-exe)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/cyrildever/crumbl-exe)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/cyrildever/crumbl-exe)
+![GitHub last commit](https://img.shields.io/github/last-commit/cyrildever/crumbl-exe)
+![GitHub issues](https://img.shields.io/github/issues/cyrildever/crumbl-exe)
 ![NPM](https://img.shields.io/npm/l/crumbl-js)
 
-crumbl-exe is both an executable and a Go client for generating secure data storage with trusted signing third-parties using the Crumbl&trade; technology patented by [Edgewhere](https://www.edgewhere.fr).
+crumbl-exe is both an executable and a Go client for generating secure data storage with trusted signing third-parties using the Crumbl&trade; technology patented by Cyril Dever for [Edgewhere](https://www.edgewhere.fr).
 
 If you're interesting in using the library, please [contact us](mailto:contact@edgewhere.fr).
+
 
 ### Process ###
 
@@ -48,7 +49,7 @@ git clone https://github.com/edgewhere/crumbl-exe.git && cd crumbl-exe && go bui
 ```
 
 ```console
-Usage of ./crumbl:
+Usage of ./crumbl-exe:
   -c    create a crumbled string from source
   -in string
         file to read an existing crumbl from (WARNING: do not add the crumbl string in the command-line arguments too)
@@ -101,7 +102,7 @@ Usage of ./crumbl:
 
     For example, here is a call to partially uncrumbl a _crumbl_ placed in a file:
     ```console
-    user:~$ ./crumbl -x -in theCrumbl.dat --signer-keys rsa:path/to/trustee2.pub --signer-secret path/to/trustee2.sk
+    user:~$ ./crumbl-exe -x -in theCrumbl.dat --signer-keys rsa:path/to/trustee2.pub --signer-secret path/to/trustee2.sk
     123fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%01AgICAgKWqJ/v0/4=.1
     ```
     The second line above is an example of partial uncrumb sent to stdout because the `-out` wasn't defined.
@@ -119,7 +120,7 @@ Usage of ./crumbl:
 
     For example, here is a call to get the _crumbl_ deciphered using the last scenario:
     ```console
-    user:~$ ./crumbl -x -in theCrumbl.dat -vh 123fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d --owner-keys ecies:path/to/myKey.pub --owner-secret path/to/myKey.sk 123fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%01AgICAgKWqJ/v0/4=.1 123fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%02AgICAgKEEqTinyo=.1
+    user:~$ ./crumbl-exe -x -in theCrumbl.dat -vh 123fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d --owner-keys ecies:path/to/myKey.pub --owner-secret path/to/myKey.sk 123fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%01AgICAgKWqJ/v0/4=.1 123fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%02AgICAgKEEqTinyo=.1
     myDataToCrumbl
     ```
 
@@ -193,12 +194,12 @@ You may want to wrap each process in separate goroutines.
 
 #### Javascript Library ####
 
-You might want to check out the JS implementation for the Crumbl&trade;: [`crumbl-js`](https://github.com/edgewhere/crumbl-js), a Javascript client developed in TypeScript for generating secure data storage with trusted signing third-parties using the Crumbl&trade; technology patented by Edgewhere.
+You might want to check out the JS implementation for the Crumbl&trade;: [`crumbl-js`](https://github.com/cyrildever/crumbl-js), a Javascript client developed in TypeScript for generating secure data storage with trusted signing third-parties using the Crumbl&trade; technology patented by Cyril Dever for Edgewhere.
 
 
 #### Scala Library ####
 
-You might also want to check out the Scala implementation for the Crumbl&trade;: [`crumbl-jar`](https://github.com/edgewhere/crumbl-jar), a Scala client for the JVM and an executable JAR as well.
+You might also want to check out the Scala implementation for the Crumbl&trade;: [`crumbl-jar`](https://github.com/cyrildever/crumbl-jar), a Scala client for the JVM and an executable JAR as well.
 
 
 ### License ###
@@ -209,4 +210,4 @@ Please [contact us](mailto:contact@edgehere.fr) to get further information.
 
 
 <hr />
-&copy; 2019-2020 Edgewhere SAS. All rights reserved.
+&copy; 2019-2020 Cyril Dever. All rights reserved.
