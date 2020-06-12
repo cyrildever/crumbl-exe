@@ -3,7 +3,7 @@ package obfuscator
 import (
 	"errors"
 
-	"github.com/edgewhere/crumbl-exe/padder"
+	"github.com/cyrildever/crumbl-exe/padder"
 )
 
 const (

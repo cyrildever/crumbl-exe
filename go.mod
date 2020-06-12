@@ -1,4 +1,4 @@
-module github.com/edgewhere/crumbl-exe
+module github.com/cyrildever/crumbl-exe
 
 go 1.12
 

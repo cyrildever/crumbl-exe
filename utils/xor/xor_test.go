@@ -3,7 +3,7 @@ package xor_test
 import (
 	"testing"
 
-	"github.com/edgewhere/crumbl-exe/utils/xor"
+	"github.com/cyrildever/crumbl-exe/utils/xor"
 	"gotest.tools/assert"
 )
 

@@ -3,7 +3,7 @@ package xor
 import (
 	"fmt"
 
-	"github.com/edgewhere/crumbl-exe/models/core"
+	"github.com/cyrildever/crumbl-exe/models/core"
 )
 
 // Base64 function XOR two Base64-encoded string and returns the Base64-encoded result string

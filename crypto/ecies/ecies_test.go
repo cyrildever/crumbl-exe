@@ -5,9 +5,9 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/edgewhere/crumbl-exe/crypto/ecies"
-	"github.com/edgewhere/crumbl-exe/models/core"
-	"github.com/edgewhere/crumbl-exe/utils"
+	"github.com/cyrildever/crumbl-exe/crypto/ecies"
+	"github.com/cyrildever/crumbl-exe/models/core"
+	"github.com/cyrildever/crumbl-exe/utils"
 
 	"gotest.tools/assert"
 )

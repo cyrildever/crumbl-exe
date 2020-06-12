@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/edgewhere/crumbl-exe/slicer"
+	"github.com/cyrildever/crumbl-exe/slicer"
 
 	"gotest.tools/assert"
 )

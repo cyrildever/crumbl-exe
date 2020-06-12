@@ -4,11 +4,11 @@ import (
 	"errors"
 	"sort"
 
-	"github.com/edgewhere/crumbl-exe/crypto"
-	"github.com/edgewhere/crumbl-exe/encrypter"
-	"github.com/edgewhere/crumbl-exe/models/core"
-	"github.com/edgewhere/crumbl-exe/utils"
-	"github.com/edgewhere/crumbl-exe/utils/xor"
+	"github.com/cyrildever/crumbl-exe/crypto"
+	"github.com/cyrildever/crumbl-exe/encrypter"
+	"github.com/cyrildever/crumbl-exe/models/core"
+	"github.com/cyrildever/crumbl-exe/utils"
+	"github.com/cyrildever/crumbl-exe/utils/xor"
 )
 
 // The Hasher generates a modified hash unique to a source to prepend the crumbs in the finalized Crumbl.

@@ -3,7 +3,7 @@ package core_test
 import (
 	"testing"
 
-	"github.com/edgewhere/crumbl-exe/core"
+	"github.com/cyrildever/crumbl-exe/core"
 
 	"gotest.tools/assert"
 )

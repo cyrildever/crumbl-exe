@@ -3,8 +3,8 @@ package encrypter_test
 import (
 	"testing"
 
-	"github.com/edgewhere/crumbl-exe/encrypter"
-	"github.com/edgewhere/crumbl-exe/models/core"
+	"github.com/cyrildever/crumbl-exe/encrypter"
+	"github.com/cyrildever/crumbl-exe/models/core"
 
 	"gotest.tools/assert"
 )

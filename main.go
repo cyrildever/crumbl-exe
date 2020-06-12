@@ -4,7 +4,7 @@ import (
 	"errors"
 	"flag"
 
-	"github.com/edgewhere/crumbl-exe/client"
+	"github.com/cyrildever/crumbl-exe/client"
 )
 
 /** Usage:

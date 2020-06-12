@@ -3,9 +3,9 @@ package decrypter
 import (
 	"fmt"
 
-	"github.com/edgewhere/crumbl-exe/crypto"
-	"github.com/edgewhere/crumbl-exe/padder"
-	"github.com/edgewhere/crumbl-exe/utils"
+	"github.com/cyrildever/crumbl-exe/crypto"
+	"github.com/cyrildever/crumbl-exe/padder"
+	"github.com/cyrildever/crumbl-exe/utils"
 )
 
 //--- TYPES

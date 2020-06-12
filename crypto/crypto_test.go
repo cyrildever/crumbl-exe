@@ -3,8 +3,8 @@ package crypto_test
 import (
 	"testing"
 
-	"github.com/edgewhere/crumbl-exe/crypto"
-	"github.com/edgewhere/crumbl-exe/utils"
+	"github.com/cyrildever/crumbl-exe/crypto"
+	"github.com/cyrildever/crumbl-exe/utils"
 
 	"gotest.tools/assert"
 )

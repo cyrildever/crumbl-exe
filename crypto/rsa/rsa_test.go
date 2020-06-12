@@ -5,8 +5,8 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/edgewhere/crumbl-exe/crypto/rsa"
-	"github.com/edgewhere/crumbl-exe/models/core"
+	"github.com/cyrildever/crumbl-exe/crypto/rsa"
+	"github.com/cyrildever/crumbl-exe/models/core"
 
 	"gotest.tools/assert"
 )

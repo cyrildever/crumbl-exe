@@ -9,11 +9,11 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/edgewhere/crumbl-exe/core"
-	"github.com/edgewhere/crumbl-exe/crypto"
-	"github.com/edgewhere/crumbl-exe/decrypter"
-	"github.com/edgewhere/crumbl-exe/models/signer"
-	"github.com/edgewhere/crumbl-exe/utils"
+	"github.com/cyrildever/crumbl-exe/core"
+	"github.com/cyrildever/crumbl-exe/crypto"
+	"github.com/cyrildever/crumbl-exe/decrypter"
+	"github.com/cyrildever/crumbl-exe/models/signer"
+	"github.com/cyrildever/crumbl-exe/utils"
 )
 
 //--- TYPES

@@ -131,7 +131,7 @@ NB: Error(s) and/or warning message(s) are all sent to stderr.
 #### Go Library ####
 
 ```golang
-import "github.com/edgewhere/crumbl-exe"
+import "github.com/cyrildever/crumbl-exe"
 ```
 
 Construct a new `CrumblWorker` client by passing to it all the arguments otherwise passed in the executable as flags (see above).
@@ -141,7 +141,7 @@ For example, the code below reproduces the command-line instruction above for cr
 ```golang
 import (
       "fmt"
-      "github.com/edgewhere/crumbl-exe/client"
+      "github.com/cyrildever/crumbl-exe/client"
 )
 
 func main() {
@@ -185,7 +185,7 @@ result, err := worker.Process(true)
 
 Also, there is a method to only extract the verification hash and the crumbs from a crumbled data.
 ```golang
-import  "github.com/edgewhere/crumbl-exe/core"
+import  "github.com/cyrildever/crumbl-exe/core"
 
 verificationHash, crumbs, err := core.ExtractData(crumbled)
 ```

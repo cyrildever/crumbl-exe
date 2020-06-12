@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/edgewhere/crumbl-exe/models/core"
-	"github.com/edgewhere/crumbl-exe/slicer"
-	"github.com/edgewhere/crumbl-exe/utils"
+	"github.com/cyrildever/crumbl-exe/models/core"
+	"github.com/cyrildever/crumbl-exe/slicer"
+	"github.com/cyrildever/crumbl-exe/utils"
 )
 
 const (

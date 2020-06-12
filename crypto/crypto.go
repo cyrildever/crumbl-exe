@@ -5,7 +5,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/edgewhere/crumbl-exe/utils"
+	"github.com/cyrildever/crumbl-exe/utils"
 )
 
 const (

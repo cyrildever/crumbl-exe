@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/edgewhere/crumbl-exe/models/signer"
+	"github.com/cyrildever/crumbl-exe/models/signer"
 )
 
 //--- TYPES

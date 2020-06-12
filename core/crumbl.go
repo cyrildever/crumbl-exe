@@ -5,12 +5,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/edgewhere/crumbl-exe/encrypter"
-	"github.com/edgewhere/crumbl-exe/hasher"
-	"github.com/edgewhere/crumbl-exe/models/signer"
-	"github.com/edgewhere/crumbl-exe/obfuscator"
-	"github.com/edgewhere/crumbl-exe/padder"
-	"github.com/edgewhere/crumbl-exe/slicer"
+	"github.com/cyrildever/crumbl-exe/encrypter"
+	"github.com/cyrildever/crumbl-exe/hasher"
+	"github.com/cyrildever/crumbl-exe/models/signer"
+	"github.com/cyrildever/crumbl-exe/obfuscator"
+	"github.com/cyrildever/crumbl-exe/padder"
+	"github.com/cyrildever/crumbl-exe/slicer"
 )
 
 const (

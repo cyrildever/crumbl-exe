@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/edgewhere/crumbl-exe/padder"
+	"github.com/cyrildever/crumbl-exe/padder"
 )
 
 const (

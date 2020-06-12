@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/edgewhere/crumbl-exe/obfuscator"
-	"github.com/edgewhere/crumbl-exe/utils"
+	"github.com/cyrildever/crumbl-exe/obfuscator"
+	"github.com/cyrildever/crumbl-exe/utils"
 
 	"gotest.tools/assert"
 )

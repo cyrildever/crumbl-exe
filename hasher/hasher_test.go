@@ -4,11 +4,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/edgewhere/crumbl-exe/crypto"
-	"github.com/edgewhere/crumbl-exe/encrypter"
-	"github.com/edgewhere/crumbl-exe/hasher"
-	"github.com/edgewhere/crumbl-exe/models/core"
-	"github.com/edgewhere/crumbl-exe/utils"
+	"github.com/cyrildever/crumbl-exe/crypto"
+	"github.com/cyrildever/crumbl-exe/encrypter"
+	"github.com/cyrildever/crumbl-exe/hasher"
+	"github.com/cyrildever/crumbl-exe/models/core"
+	"github.com/cyrildever/crumbl-exe/utils"
 	"gotest.tools/assert"
 )
 

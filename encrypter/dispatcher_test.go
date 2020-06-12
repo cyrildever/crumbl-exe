@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/edgewhere/crumbl-exe/encrypter"
-	"github.com/edgewhere/crumbl-exe/models/signer"
+	"github.com/cyrildever/crumbl-exe/encrypter"
+	"github.com/cyrildever/crumbl-exe/models/signer"
 
 	"gotest.tools/assert"
 )

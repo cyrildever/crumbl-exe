@@ -3,8 +3,8 @@ package decrypter_test
 import (
 	"testing"
 
-	"github.com/edgewhere/crumbl-exe/decrypter"
-	"github.com/edgewhere/crumbl-exe/models/core"
+	"github.com/cyrildever/crumbl-exe/decrypter"
+	"github.com/cyrildever/crumbl-exe/models/core"
 
 	"gotest.tools/assert"
 )

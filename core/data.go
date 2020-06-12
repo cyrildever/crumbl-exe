@@ -4,9 +4,9 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/edgewhere/crumbl-exe/crypto"
-	"github.com/edgewhere/crumbl-exe/decrypter"
-	"github.com/edgewhere/crumbl-exe/encrypter"
+	"github.com/cyrildever/crumbl-exe/crypto"
+	"github.com/cyrildever/crumbl-exe/decrypter"
+	"github.com/cyrildever/crumbl-exe/encrypter"
 )
 
 // GetCrumbs returns the underlying slices of the passed crumbled string

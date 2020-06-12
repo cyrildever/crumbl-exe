@@ -6,7 +6,7 @@ import (
 	"math"
 	"os"
 
-	"github.com/edgewhere/crumbl-exe/utils"
+	"github.com/cyrildever/crumbl-exe/utils"
 )
 
 // The 'padder' module adds left padding to a passed byte array with Apply(), and reverse the operation with Unapply().

@@ -3,12 +3,12 @@ package decrypter
 import (
 	"errors"
 
-	"github.com/edgewhere/crumbl-exe/crypto"
-	"github.com/edgewhere/crumbl-exe/crypto/ecies"
-	"github.com/edgewhere/crumbl-exe/crypto/rsa"
-	"github.com/edgewhere/crumbl-exe/encrypter"
-	"github.com/edgewhere/crumbl-exe/models/core"
-	"github.com/edgewhere/crumbl-exe/models/signer"
+	"github.com/cyrildever/crumbl-exe/crypto"
+	"github.com/cyrildever/crumbl-exe/crypto/ecies"
+	"github.com/cyrildever/crumbl-exe/crypto/rsa"
+	"github.com/cyrildever/crumbl-exe/encrypter"
+	"github.com/cyrildever/crumbl-exe/models/core"
+	"github.com/cyrildever/crumbl-exe/models/signer"
 )
 
 // Decrypt decrypts the passed encrypted Crumb and returns it as an Uncrumb

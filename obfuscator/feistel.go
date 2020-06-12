@@ -6,7 +6,7 @@ import (
 	"math"
 	"strings"
 
-	"github.com/edgewhere/crumbl-exe/utils"
+	"github.com/cyrildever/crumbl-exe/utils"
 )
 
 // Round is the function applied at each round of the obfuscation process to the right side of the Feistel cipher
