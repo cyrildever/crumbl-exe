@@ -18,7 +18,7 @@ func (o Obfuscator) Round(item string, number int) (processed string, err error)
 	}
 	// Then, hash the addition
 	h := sha256.New()
-	h.Write([]byte(addition))
+	_, _ = h.Write([]byte(addition))
 	// Finally, keep what's needed
 	processed = Extract(utils.ToHex(h.Sum(nil)), number, len(item))
 	return
