@@ -17,6 +17,9 @@ type Crumb struct {
 	Length    int
 }
 
+// Crumbs ...
+type Crumbs []Crumb
+
 //--- METHODS
 
 // String transforms the Crumb into its stringified representation.
@@ -29,6 +32,18 @@ type Crumb struct {
 func (c *Crumb) String() string {
 	return fmt.Sprintf("%02x", c.Index) + fmt.Sprintf("%04x", c.Length) + c.Encrypted.String()
 }
+
+// GetAt returns the crumbs having the passed index
+func (cc Crumbs) GetAt(index int) (crumbs []Crumb) {
+	for _, crumb := range cc {
+		if crumb.Index == index {
+			crumbs = append(crumbs, crumb)
+		}
+	}
+	return
+}
+
+//--- FUNCTIONS
 
 // ToCrumb ...
 func ToCrumb(unparsed string) (c Crumb, err error) {
@@ -72,18 +87,5 @@ func Parse(unparsed string) (index int, length int, enc string, err error) {
 	index = idx
 	length = ln
 	enc = e
-	return
-}
-
-// Crumbs ...
-type Crumbs []Crumb
-
-// GetAt returns the crumbs having the passed index
-func (cc Crumbs) GetAt(index int) (crumbs []Crumb) {
-	for _, crumb := range cc {
-		if crumb.Index == index {
-			crumbs = append(crumbs, crumb)
-		}
-	}
 	return
 }

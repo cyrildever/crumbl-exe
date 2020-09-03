@@ -1,7 +1,6 @@
 package encrypter
 
 import (
-	"bytes"
 	"errors"
 	"math/rand"
 	"time"
@@ -21,12 +20,12 @@ type Dispatcher struct {
 
 var (
 	combinationsFor3 = [][][]int{
-		[][]int{[]int{1, 2}, []int{1, 3}, []int{2, 3}},
-		[][]int{[]int{1, 2}, []int{2, 3}, []int{1, 3}},
-		[][]int{[]int{1, 3}, []int{2, 3}, []int{1, 2}},
-		[][]int{[]int{1, 3}, []int{1, 2}, []int{2, 3}},
-		[][]int{[]int{2, 3}, []int{1, 3}, []int{1, 2}},
-		[][]int{[]int{2, 3}, []int{1, 2}, []int{1, 3}},
+		{[]int{1, 2}, []int{1, 3}, []int{2, 3}},
+		{[]int{1, 2}, []int{2, 3}, []int{1, 3}},
+		{[]int{1, 3}, []int{2, 3}, []int{1, 2}},
+		{[]int{1, 3}, []int{1, 2}, []int{2, 3}},
+		{[]int{2, 3}, []int{1, 3}, []int{1, 2}},
+		{[]int{2, 3}, []int{1, 2}, []int{1, 3}},
 	}
 )
 
@@ -66,15 +65,4 @@ func (d *Dispatcher) Allocate() (map[int][]signer.Signer, error) {
 		return nil, err
 	}
 	return allocation, nil
-}
-
-func contains(signers []signer.Signer, item signer.Signer) bool {
-	for _, s := range signers {
-		if s.EncryptionAlgorithm == item.EncryptionAlgorithm &&
-			bytes.Equal(s.PrivateKey, item.PrivateKey) &&
-			bytes.Equal(s.PublicKey, item.PublicKey) {
-			return true
-		}
-	}
-	return false
 }

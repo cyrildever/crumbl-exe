@@ -236,7 +236,7 @@ func (w *CrumblWorker) extract(user signer.Signer, isOwner bool, returnResult bo
 	return
 }
 
-//--- utilities
+//--- FUNCTIONS
 
 // Check ...
 func Check(e error, returnResult bool) bool {

@@ -51,6 +51,8 @@ func Complement(item []byte) []byte {
 	return complement
 }
 
+//--- ERRORS
+
 // NotSameLengthError ...
 type NotSameLengthError struct {
 	message string

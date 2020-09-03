@@ -93,6 +93,8 @@ func (s *Slicer) Split(data string) (splits []string, err error) {
 	return
 }
 
+//--- FUNCTIONS
+
 // GetDeltaMax ...
 func GetDeltaMax(dataLength int, numberOfSlices int) int {
 	sliceSize := dataLength / numberOfSlices

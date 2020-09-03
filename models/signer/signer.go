@@ -1,5 +1,7 @@
 package signer
 
+//--- TYPES
+
 // Signer ...
 type Signer struct {
 	EncryptionAlgorithm string `json:"algorithm"`

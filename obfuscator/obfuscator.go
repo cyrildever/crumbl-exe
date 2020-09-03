@@ -14,11 +14,15 @@ const (
 	DEFAULT_ROUNDS = 10
 )
 
+//--- TYPES
+
 // Obfuscator ...
 type Obfuscator struct {
 	Key    string
 	Rounds int
 }
+
+//--- METHODS
 
 // Apply transforms the passed string to an obfuscated byte array through a Feistel cipher
 func (o Obfuscator) Apply(data string) (obfuscated []byte, err error) {
