@@ -42,7 +42,7 @@ func (s Slicer) Apply(data string) (slices []Slice, err error) {
 	if err != nil {
 		return
 	}
-	fixedLength := int(math.Floor(float64(len(data)/s.NumberOfSlices))) + s.DeltaMax
+	fixedLength := int(float64(len(data)/s.NumberOfSlices)) + s.DeltaMax
 	for _, split := range splits {
 		if len(split) == 0 {
 			// TODO Fix buildSplitMask()

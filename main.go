@@ -71,7 +71,10 @@ func main() {
 		VerificationHash: *hash,
 		Data:             data,
 	}
-	worker.Process(false)
+	_, err := worker.Process(false)
+	if err != nil {
+		panic(err)
+	}
 }
 
 //--- utilities
