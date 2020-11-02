@@ -125,14 +125,14 @@ func (s *Slicer) buildSplitMask(dataLength int, seed Seed) (masks []mask, err er
 	dm := math.Max(0, math.Min(float64(s.DeltaMax), averageSliceLength-1)) // used delta max can neither be higher than average size - 1 nor lower than 0
 	catchUp := dl - averageSliceLength*nos
 
-	length := 0.0
+	length := 0.
 	rand.Seed(int64(seed))
 	leftRound := nos
 	for dataLength > 0 {
-		randomNum := rand.Float64()*dm/2 + math.Floor(catchUp/leftRound)
+		randomNum := rand.Float64()*dm/2. + math.Floor(catchUp/leftRound)
 		addedNum := math.Min(float64(dataLength), math.Ceil(randomNum)+averageSliceLength)
 		// General rounding pb corrected at the end
-		if leftRound == 1 && length+addedNum < dl {
+		if leftRound == 1. && length+addedNum < dl {
 			addedNum += dl - length - addedNum
 		}
 		m := mask{

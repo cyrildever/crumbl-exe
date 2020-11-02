@@ -6,8 +6,8 @@ import (
 
 // RegexSplit splits a string using a regular expression.
 // see https://stackoverflow.com/questions/4466091/split-string-using-regular-expression-in-go
-func RegexSplit(text string, delimeter string) []string {
-	reg := regexp.MustCompile(delimeter)
+func RegexSplit(text string, delimiter string) []string {
+	reg := regexp.MustCompile(delimiter)
 	indexes := reg.FindAllStringIndex(text, -1)
 	laststart := 0
 	result := make([]string, len(indexes)+1)
