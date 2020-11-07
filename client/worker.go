@@ -35,11 +35,8 @@ type CrumblWorker struct {
 type CrumblMode string
 
 const (
-	// CREATION ...
-	CREATION = CrumblMode("crumbl")
-
-	// EXTRACTION ...
-	EXTRACTION = CrumblMode("uncrumbl")
+	CREATION   CrumblMode = "crumbl"
+	EXTRACTION CrumblMode = "uncrumbl"
 )
 
 //--- METHODS

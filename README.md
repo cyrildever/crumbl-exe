@@ -190,7 +190,39 @@ import  "github.com/cyrildever/crumbl-exe/core"
 verificationHash, crumbs, err := core.ExtractData(crumbled)
 ```
 
+Finally, you can also create a _crumbl_ by directly using the library if you have the public keys available at runtime:
+```golang
+import (
+	"github.com/cyrildever/crumbl-exe/core"
+	"github.com/cyrildever/crumbl-exe/crypto"
+	"github.com/cyrildever/crumbl-exe/models/signer"
+)
+
+owners := []signer.Signer{{
+      EncryptionAlgorithm: crypto.ECIES_ALGORITHM,
+      PublicKey:           emitterPublicKey.Bytes(),
+}, {
+      EncryptionAlgorithm: crypto.ECIES_ALGORITHM,
+      PublicKey:           beneficiaryPublicKey.Bytes(),
+}}
+var trustees []signer.Signer
+for _, s := range signers {
+      trustees = append(trustees, signer.Signer{
+            EncryptionAlgorithm: s.EncryptionAlgorithm,
+            PublicKey:           s.PublicKey.Bytes(),
+      })
+}
+crumbl := core.Crumbl{
+      Source:     "someSourceToCrumbl",
+      HashEngine: crypto.DEFAULT_HASH_ENGINE,
+      Owners:     owners,
+      Trustees:   trustees,
+}
+crumbled, err := crumbl.Process()
+```
+
 You may want to wrap each process in separate goroutines.
+
 
 #### Javascript Library ####
 
