@@ -42,10 +42,13 @@ func (s Slicer) Apply(data string) (slices []Slice, err error) {
 	if err != nil {
 		return
 	}
+	if len(splits) != s.NumberOfSlices {
+		err = errors.New("wrong number of splits")
+		return
+	}
 	fixedLength := int(float64(len(data)/s.NumberOfSlices)) + s.DeltaMax
 	for _, split := range splits {
 		if len(split) == 0 {
-			// TODO Fix buildSplitMask()
 			continue
 		}
 		slice, _, e := padder.Apply([]byte(split), fixedLength, false)
@@ -118,6 +121,7 @@ type mask struct {
 	End   int
 }
 
+// TODO Enhance algorithm
 func (s *Slicer) buildSplitMask(dataLength int, seed Seed) (masks []mask, err error) {
 	dl := float64(dataLength)
 	nos := float64(s.NumberOfSlices)
@@ -140,7 +144,7 @@ func (s *Slicer) buildSplitMask(dataLength int, seed Seed) (masks []mask, err er
 			End:   int(length + addedNum),
 		}
 		masks = append(masks, m)
-		catchUp = dl - length - averageSliceLength*leftRound
+		catchUp = dl - length - averageSliceLength*leftRound - addedNum
 		leftRound--
 		length += addedNum
 		dataLength -= int(addedNum)

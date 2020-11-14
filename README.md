@@ -221,7 +221,7 @@ crumbl := core.Crumbl{
 crumbled, err := crumbl.Process()
 ```
 
-You may want to wrap each process in separate goroutines.
+You may want to wrap each process into separate goroutines.
 
 
 #### Javascript Library ####

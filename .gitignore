@@ -13,6 +13,6 @@
 
 crumbl
 crumbl*exe
-
+*.log
 .DS_Store
 .vscode
