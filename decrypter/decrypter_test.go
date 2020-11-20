@@ -9,7 +9,6 @@ import (
 	"github.com/cyrildever/crumbl-exe/models/core"
 	"github.com/cyrildever/crumbl-exe/models/signer"
 	"github.com/cyrildever/crumbl-exe/utils"
-
 	"gotest.tools/assert"
 )
 
@@ -57,5 +56,8 @@ func TestDecrypter(t *testing.T) {
 		Length:    len(ciphered),
 	}
 	foundScala, err := decrypter.Decrypt(crumbScala, trustee1)
+	if err != nil {
+		t.Fatal(err)
+	}
 	assert.Equal(t, foundScala.Deciphered.String(), "AgICAgJ2BFUDDk4=")
 }

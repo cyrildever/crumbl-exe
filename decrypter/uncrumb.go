@@ -58,9 +58,7 @@ func Parse(unparsed string) (index int, dec string, err error) {
 		err = errors.New("unparsed string too short")
 		return
 	}
-	if strings.HasPrefix(unparsed, PARTIAL_PREFIX) {
-		unparsed = unparsed[len(PARTIAL_PREFIX):]
-	}
+	unparsed = strings.TrimPrefix(unparsed, PARTIAL_PREFIX)
 	idxHex := unparsed[:2]
 	idx, err := utils.HexToInt(idxHex)
 	if err != nil {

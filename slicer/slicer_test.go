@@ -39,7 +39,7 @@ func TestSliceApply(t *testing.T) {
 	for _, s := range slices2 {
 		assert.Equal(t, len(s), 13)
 	}
-	assert.Equal(t, slices2[3], slicer.Slice("4444444")) // It's predictive thanks to the seed
+	assert.Equal(t, slices2[3], slicer.Slice("44444444")) // It's predictive thanks to the seed
 }
 
 // TestSliceUnapply ...

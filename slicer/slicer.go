@@ -144,7 +144,7 @@ func (s *Slicer) buildSplitMask(dataLength int, seed Seed) (masks []mask, err er
 			End:   int(length + addedNum),
 		}
 		masks = append(masks, m)
-		catchUp = dl - length - averageSliceLength*leftRound - addedNum
+		catchUp = dl - length - averageSliceLength*leftRound - (addedNum - averageSliceLength)
 		leftRound--
 		length += addedNum
 		dataLength -= int(addedNum)
