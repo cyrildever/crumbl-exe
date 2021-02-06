@@ -127,7 +127,7 @@
         distributed among the different participants and can't be discovered by a single procedure which would allow breaking a unique encryption code. 
         We show that this distribution of crumbs and their separate encryption considerably increases the security of the storage since, in the absence 
         of a participant, the message can't be recovered. Furthermore, the algorithm doesn't allow anyone other than the rightful owner of the original 
-        message to know in clear all or part of the data at any time whatsoever.
+        message to know in clear all or part of the data at any time whatsoever. This technique is pending patent\footnotemark.
     \end{abstract}
 }
 
@@ -137,6 +137,8 @@
 
 % Print the title
 \maketitle
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]{filed under registration number \texttt{FR1908258} at INPI on July 19, 2019}}
 
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
@@ -149,12 +151,61 @@ encryption for the storage and recovery of stored data and their decryption are 
 
 This complexity comes with the added burden of the risk that the encryption key is always susceptible to being broken and/or hacked.
 
-The goal of our new algorithm, called the \texttt{crumbl} technology, is to develop simple yet particularly effective means for securing data storage.
+The goal of our new algorithm, called the \texttt{crumbl}\textregistered~technology, is to develop simple yet particularly effective means for securing 
+data storage.
 
-Our procedure describes a method of secure storage of a source data, owned by one (or more) holder(s), using already proven techniques of asymmetric 
-encryption with the participation of so-called trusted third parties, each having a pair of private and public keys.
+Our procedure describes a method of secure storage of a source data, owned by one (or more) \emph{holder(s)}, using already proven techniques of 
+asymmetric encryption with the participation of so-called trusted third parties, each having a pair of private and public keys.
 
-\section{The Algorithm}
+%----------------------------------------------------------------------------------------
+
+\section{Basic Definitions}
+
+\begin{definition}[Source Data]
+    \label{sourceData}
+    The source data $d$ is the data that has to be protected by the \texttt{crumbl} encryption protocol.
+\end{definition}
+
+\begin{definition}[Crumbl]
+    \label{crumbl}
+    A \emph{crumbl} (or crumbled string) is the final result of the encryption of a source data through the \texttt{crumbl} process.
+    Among other elements, it uses crumbs which come from slices of the source data.
+\end{definition}
+
+\begin{definition}[Crumb]
+    \label{crumb}
+    A crumb $\varsigma$ is an encrypted portion of data of size $n$ in its binary form:
+    \begin{equation}
+        \label{eq:crumb}
+        \varsigma := \sum_{j=0}^{n-1} x_j \mid x_j \in \{ 0, 1 \}
+    \end{equation}
+    It could be the byte array itself or any string representation of it (hexadecimal, binary, base-64, \dots).
+
+    When presented with a lower index (eg. $\varsigma_8$), it indicates the order (starting at $0$) in which to eventually concatenate it with the 
+    others. With an added upper index (eg. $\varsigma^\pi)$, it indicates its signer ($\pi$) during encryption.
+
+    A set of crumbs can only be assigned to one source data. In other words, it is obvious that one can't mix a crumb $c1$ from a data $d1$ with a 
+    crumb $c2$ from a data $d2$.
+\end{definition}
+
+\begin{definition}[Slice]
+    \label{slice}
+    A slice $\sigma$ is a padded plaintext portion of the source data.
+
+    Let $\mu()$ be a padding function and $\mu^{-1}()$ its inverse. For $t$ slices made out of a source data $d$, we have:
+    \begin{small}
+        \begin{equation}
+            \label{eq:slice}
+            \left\{
+                \begin{array}{l}
+                    \sigma_i := \mu \Big[ \left( \frac{d}{t} \right)_i \Big] \\ \\
+                    d := \mu^{-1}(\sigma_0) \mathbin\Vert \mu^{-1}(\sigma_1) \mathbin\Vert \dots \mathbin\Vert \mu^{-1}(\sigma_{t-1}) \\
+                \end{array}
+            \right.
+        \end{equation}
+    \end{small}
+\end{definition}
+
 
 Lorem ipsum...
 
