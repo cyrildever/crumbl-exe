@@ -206,8 +206,41 @@ asymmetric encryption with the participation of so-called trusted third parties,
     \end{small}
 \end{definition}
 
+%----------------------------------------------------------------------------------------
 
-Lorem ipsum...
+\section{The Protocol}
+
+\begin{definition}[Participant]
+    \label{participant}
+    A participant $\pi \in P$ (or signer) is defined by his pair of public ($PK$) and private ($SK$) keys unique to an \texttt{crumbl} operation 
+    he is taking part along with other participants/signers.
+
+    \begin{equation}
+        \label{eq:participant}
+        \begin{array}{rl}
+            \pi: P &\to (\mathcal{K} \times \mathcal{K}) \\
+                \pi_i &\mapsto (\pi_i^{SK}, \pi_i^{PK}) \\
+        \end{array}
+    \end{equation}
+
+    There are two kinds of participants involved in the process:
+    \begin{itemize}
+        \item The holders who wish to protect their asset, ie. the source data;
+        \item The trusted third parties, generally being corporations and the main sponsors of the system, who only participate in data 
+            encryption/decryption as signers and are paid for it.
+    \end{itemize}
+\end{definition}
+
+\begin{definition}[Holder]
+    The holder is the only participant able to have access to the data in clear, ie. the source data.
+    He could be the rightful owner of the data or anyone to whom the latter delegates its use.
+
+    He is (or they are, should there be more than one holder involved in an operation) the signer(s) of a special crumb: $\varsigma_0$, ie. the one 
+    with index $0$.
+\end{definition}
+
+There must be at least one holder and one trusted third party in the list of participants\footnote{We shall see that maximum security starts with at 
+least four participants: one holder and three trusted third parties.}.
 
 %\vfill\eject % To force break column if need be
 \tableofcontents % Uncomment to add a table of contents
