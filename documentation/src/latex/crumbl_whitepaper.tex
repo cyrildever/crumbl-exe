@@ -242,6 +242,66 @@ asymmetric encryption with the participation of so-called trusted third parties,
 There must be at least one holder and one trusted third party in the list of participants\footnote{We shall see that maximum security starts with at 
 least four participants: one holder and three trusted third parties.}.
 
+\subsection{Encryption}
+
+Algorithm \ref{algo:encryption} presents the encryption protocol of the \texttt{crumbl}\textregistered~technology.
+
+\vspace{1em} % one line separation
+
+Let $p$ be the number of participants forming the set $P \gets \{ \pi_p\}$ of signers, $P_0 \in P$ the subset of holders, and $P_\tau \in P$ the subset 
+of trusted third parties with $P_0 \cup P_\tau = P$.
+
+And let $H$ be the holder of the source data $d$.
+
+Finally, let $\mathfrak{c}()$ be the encryption function of the \texttt{crumbl}\footnote{It could be any asymmetric protocol as long as it is available 
+for $H$. Thus, we assume that $H$ knows beforehand which protocol uses each participant $\pi_i$; therefore, he'd be using the appropriate 
+$\mathfrak{c}_{\pi_i}()$ function.}:
+\begin{equation}
+    \label{eq:encrypt}
+    \begin{array}{rl}
+        \mathfrak{c}: \qquad \quad \omega \times \mathcal{K} &\to \omega \\
+                (msg, pubkey) &\mapsto \mathfrak{c}(msg, pubkey) \\
+    \end{array}
+\end{equation}
+\begin{algorithm}
+    \KwIn{$d$, $P$}
+    \KwOut{$Cr$}
+    \If{$|d| = 0 \vee |P| < 2$}{
+        \Return
+    }
+    initialize a new set of crumbs: $\mathcal{C} \gets \emptyset$; \\
+    ask all participants $\pi_i \in P \setminus {\pi_H}$ for their new public key; \\
+    each participant $\pi_i$ creates a new pair of keys along with a request ID $\pi_i^{RID}$, this tuple being stored for future use in the decryption 
+        process; \\
+    $d$ is prepared and split into a set of $t$ slices $\{ \sigma_0, \dots, \sigma_{t-1} \}$ with: $t = |P_\tau| + 1$; \\
+    $H$ encrypts $\sigma_0$ with his own new public key: $$
+        \mathcal{C} \gets \varsigma_0^{\pi_H} := \mathfrak{c}_{\pi_H}(\sigma_0, \pi_H^{PK})
+    $$ \\
+    \While{$H$ receives each participant's public key ($\pi_i^{PK}$)}{
+        \eIf{$\pi_i \in P_0$}{
+            $H$ encrypts $\sigma_0$: $$
+                \mathcal{C} \gets \varsigma_0^{\pi_{i}} := \mathfrak{c}_{\pi_i}(\sigma_0, \pi_i^{PK})
+            $$ \\
+        }{
+            all other slices are encrypted by $H$ with the received public key: $$
+            \begin{array}{l}
+                \forall j \in \{ \sigma_1, \dots, \sigma_{t-1} \}: \\
+                \quad \mathcal{C} \gets \varsigma_j^{\pi_{i}} := \mathfrak{c}_{\pi_i}(\sigma_j, \pi_i^{PK})
+            \end{array}
+            $$ \\
+        }
+    }
+    $Cr$ is finalized by $H$ using $d$ and the set of all crumbs $\mathcal{C}$; \\
+    \Return{$Cr$}
+    \caption{Encryption protocol}
+    \label{algo:encryption}
+\end{algorithm}
+
+If not empty, the output crumbl $Cr$ can be stored anywhere, by any of the stakeholders and/or some outsourcer (eg. a hosting service). In any case, 
+$H$ should store a tuple of references to $Cr$ (or $d$) and the keypair used for the operation. 
+
+As shown, everything takes place in $H$ environment which guarantees that the source data is never sent, let alone known, by any other stakeholder.
+
 %\vfill\eject % To force break column if need be
 \tableofcontents % Uncomment to add a table of contents
 
