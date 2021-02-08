@@ -210,6 +210,10 @@ asymmetric encryption with the participation of so-called trusted third parties,
 
 \section{The Protocol}
 
+\begin{definition}[Operation]
+    An operation takes a source data and encrypts it with the \texttt{crumbl}, or back.
+\end{definition}
+
 \begin{definition}[Participant]
     \label{participant}
     A participant $\pi \in P$ (or signer) is defined by his pair of public ($PK$) and private ($SK$) keys unique to an \texttt{crumbl} operation 
@@ -264,10 +268,11 @@ $\mathfrak{c}_{\pi_i}()$ function.}:
     \end{array}
 \end{equation}
 \begin{algorithm}
+    \SetKwProg{throw}{throw}{}{}
     \KwIn{$d$, $P$}
     \KwOut{$Cr$}
     \If{$|d| = 0 \vee |P| < 2$}{
-        \Return
+        \throw{error}{}
     }
     initialize a new set of crumbs: $\mathcal{C} \gets \emptyset$; \\
     ask all participants $\pi_i \in P \setminus {\pi_H}$ for their new public key; \\
@@ -297,27 +302,43 @@ $\mathfrak{c}_{\pi_i}()$ function.}:
     \label{algo:encryption}
 \end{algorithm}
 
-If not empty, the output crumbl $Cr$ can be stored anywhere, by any of the stakeholders and/or some outsourcer (eg. a hosting service). In any case, 
-$H$ should store a tuple of references to $Cr$ (or $d$) and the keypair used for the operation. 
-
 As shown, everything takes place in $H$ environment which guarantees that the source data is never sent, let alone known, by any other stakeholder.
 
+If no error is raised, the output crumbl $Cr$ can be stored anywhere, by any of the stakeholders and/or some outsourcer (eg. a hosting service). In any 
+case, $H$ should store a tuple of references to $Cr$ (or $d$) and the keypair used for the operation. He may also store its verification hash and use 
+it for that purpose.
+
+\begin{definition}[Verification Hash]
+    \label{verificationHash}
+    A verification hash $V$ is made of the concatenation of the 32 first characters of a crumbled string $Cr$:
+    \begin{equation}
+        \label{eq:verificationHash}
+        V := \mathbin\Vert_{i=1}^{32} Cr[i]
+    \end{equation}
+    where $Cr[i]$ is the $i$-th character of $Cr$.
+
+    The verification hash is unique to an operation \textemdash~see Definition \ref{hashered}.
+
+    It is generally used for search or storage purposes. For example, our latest implementation requires that we ask a hosting service for a crumbl by 
+    sending its verification hash.
+
+    By definition, it is verified that\footnote{We will use this notation in the rest of the document when we want to assert that a passed $V$ is $Cr$'s 
+    appropriate verification hash.}: $V \subset Cr$.
+\end{definition}
+
 %\vfill\eject % To force break column if need be
-\tableofcontents % Uncomment to add a table of contents
+% \tableofcontents % Uncomment to add a table of contents
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
 
-\begin{thebibliography}{99} % Bibliography
-
-\bibitem[1]{feistel:hf}
-Horst Feistel. \emph{Cryptography and Computer Privacy}, Scientific American, 1973.
-
-\bibitem[2]{Permutations:lr}
-Michael Luby, Charles Rackoff. \emph{How to Construct Pseudorandom Permutations from Pseudorandom Functions}, SIAM Journal on Computing, 1988.
-
-\end{thebibliography}
+% \begin{thebibliography}{99} % Bibliography
+%
+% \bibitem[1]{feistel:hf}
+% Horst Feistel. \emph{Cryptography and Computer Privacy}, Scientific American, 1973.
+%
+% \end{thebibliography}
 
 %----------------------------------------------------------------------------------------
 
