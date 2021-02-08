@@ -326,6 +326,80 @@ it for that purpose.
     appropriate verification hash.}: $V \subset Cr$.
 \end{definition}
 
+\subsection{Decryption}
+
+Algorithm \ref{algo:decryption} presents the decryption protocol.
+
+\vspace{1em} % one line separation
+
+Let $P'_\tau$ a subset of $P_\tau$ of size $1 \leq n \leq |P_\tau| - 1$, and $H_1$ one of the signing holders that wishes to recover the data.
+
+And let $HR()$ be the hashered function \textemdash~see (\ref{eq:hashered}).
+
+Finally, let $\mathfrak{D}()$ be the decryption function of the \texttt{crumbl}:
+\begin{equation}
+    \label{eq:decrypt}
+    \begin{array}{rl}
+        \mathfrak{D}: \quad \mathbb{N} \times \omega \times \mathcal{K} &\to \omega \\
+                (j, Cr, privkey) &\mapsto \mathfrak{D}(j, Cr, privkey) \\
+    \end{array}
+\end{equation}
+with $j$ being the $j$-th crumb in $Cr$.
+
+\begin{algorithm}
+    \SetKwProg{throw}{throw}{}{}
+    \KwIn{$Cr$, a decrypter $\pi_{H_1} \in P_0$, $P'_\tau$, an optional $V$}
+    \KwOut{$d$}
+    \uIf{$V \neq \emptyset \wedge V \not\subset Cr$}{
+        \throw{error}{}
+    }\uElseIf{$V = \emptyset$}{
+        $V \gets \mathbin\Vert_{i=1}^{32}(Cr)$; \\ 
+    }
+    initialize a new set of slices $S \gets \emptyset$; \\
+    from $Cr$, we set the number of needed slices $t$; \\
+    % initialize a new set of crumbs: $\mathcal{C} \gets \{ \varsigma_{\pi_n} \mid \pi_n \in P_0 \cup P'_\tau \}$; \\
+    \For{$i \gets 0$ \KwTo $p = |P'_\tau| - 1$ \KwBy $1$}{
+        $H1$ requests his decrypted crumbs to trusted third party $\pi_i$; \\
+    }
+    \ForEach{participant $\pi_i$}{
+        initialize $j \gets 1$; \\
+        \Repeat{$j = t$}{
+            \If{$\exists \sigma_j := \mathfrak{D}(j, Cr, \pi_i^{SK})$}{
+                $\pi_i$ sends his slice $\sigma_j$; \\
+            }
+            $j \gets j + 1$; \\
+        }
+    }
+    \While{$|S| \neq t$ \emph{AND} \\\qquad $H1$ receives new slice $\sigma_j$}{
+        \If{$\sigma_j \not\in S$}{
+            $S \gets \sigma_j$; \\
+        }
+    }
+    $H1$ decrypts his own crumb: $S \gets \mathfrak{D}(0, Cr, \pi_{H1}^{SK})$; \\
+    use (\ref{eq:slice}) to recover $d$:$$
+        d \gets \mu^{-1}(\sigma_0) \mathbin\Vert \mu^{-1}(\sigma_1) \mathbin\Vert \dots \mathbin\Vert \mu^{-1}(\sigma_{t-1})
+    $$ \\
+    \If{$HR(d) \neq V$}{
+        \throw{error}{}
+    }
+    \Return{$d$}
+    \caption{Decryption protocol}
+    \label{algo:decryption}
+\end{algorithm}
+
+\vspace{1em} % one line separation // TODO Get rid of it?
+
+Lorem ipsum ... % // TODO
+
+\begin{definition}[Hashered Prefix]
+    \label{hashered}
+    Lorem ipsum ... % // TODO
+    \begin{equation}
+        \label{eq:hashered}
+        HR: % // TODO
+    \end{equation}
+\end{definition}
+
 %\vfill\eject % To force break column if need be
 % \tableofcontents % Uncomment to add a table of contents
 
