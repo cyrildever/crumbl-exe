@@ -182,10 +182,11 @@ asymmetric encryption with the participation of so-called trusted third parties,
     It could be the byte array itself or any string representation of it (hexadecimal, binary, base-64, \dots).
 
     When presented with a lower index (eg. $\varsigma_8$), it indicates the order (starting at $0$) in which to eventually concatenate it with the 
-    others. With an added upper index (eg. $\varsigma^\pi)$, it indicates its signer ($\pi$) during encryption.
+    others. With an added upper index (eg. $\varsigma^\pi)$, it indicates its signer ($\pi$) during encryption. Finally, an upper left index refers to 
+    the current operation (eg. ${}^{O_1}\varsigma$ for operation $O_1$).
 
-    A set of crumbs can only be assigned to one source data. In other words, it is obvious that one can't mix a crumb $c1$ from a data $d1$ with a 
-    crumb $c2$ from a data $d2$.
+    A set of crumbs can only be assigned to one source data. In other words, it is obvious that one can't mix a crumb $\varsigma_1$ from a data $d_1$ 
+    with a crumb $\varsigma_2$ from a data $d_2$.
 \end{definition}
 
 \begin{definition}[Slice]
@@ -410,9 +411,11 @@ If there's no error, the returned item is a copy of the original source data as 
 
 This section describes the detailed encryption process used in the $\mathfrak{c}()$ and $\mathcal{D}()$ functions in the above protocol.
 
+Let us first give a more precise definition of a crumbl through its actual representation as a crumbled string.
 \begin{definition}[Crumbled string]
     \label{crumbledString}
-    The final crumbled string $Cr$ is made of the concatenation of a so-called hashered prefix with the base-64 string representation of all the crumbs:
+    The final crumbled string $Cr$ is made of the concatenation of a so-called hashered prefix with the concatenation of the base-64 string 
+    representation of all the crumbs:
     \begin{equation}
         \label{eq:crumbledString}
         Cr := \upsilon(d) \mathbin\Vert \left( \sum_{i=0}^t \sum_{j=0}^p (\varsigma_i^{\pi_j})_{64} \right)
@@ -444,7 +447,9 @@ implementation because of its native availability in most browsers.}.
 
     \vspace{1em} % one line separation
 
-    Let $HR()$ be the hashering function that takes $h^-$ and the set of crumbs $\mathcal{C}$, and returns the second part of the hashered prefix.
+    Let $HR()$ be the hashering function that takes $h^-$ and the set of crumbs $\mathcal{C}$, and returns the second part of the hashered prefix
+    \footnote{Recall that when using a map, like $\mathcal{C}$, the first sorting is made on the keys which are the crumb numbers ranging from $0$ 
+    to $t \in \mathbb{N}$.}.
     \begin{equation}
         \label{eq:hashering}
         \begin{array}{rl}
@@ -466,40 +471,48 @@ implementation because of its native availability in most browsers.}.
     The use of the hashering function ($HR()$) ensures the hashered prefix uniqueness.
 
     \begin{proof}
-        Let $d$ be a source data owned by $\pi_{h}$, and $Cr_1$ and $Cr_2$ the results of the \texttt{crumbl} process from two operations $O_1$ and 
-        $O_2$ (respectively initiated by $\pi_{h_{O_1}}$ and $\pi_{h_{O_2}}$).
+        Let $d$ be a source data owned by $\pi_{h}$, and ${}^{O_1}Cr$ and ${}^{O_2}Cr$ the results of the \texttt{crumbl} process from two operations 
+        $O_1$ and $O_2$ initiated by $\pi_h$.
 
-        We are trying to prove that, for $O_1$ and $O_2$, their respective crumbled string ($Cr^{O_1}$ and $Cr^{O_2}$) will be different as long as at 
-        least $\pi_{h}$ respects the process (even if some or all other participants don't play fair).
+        We are trying to prove that ${}^{O_1}Cr$ and ${}^{O_2}Cr$ will be different as long as at least $\pi_{h}$ respects the process (even though 
+        some or all other participants don't play fair).
 
         Thanks to Definition \ref{participant}, we know that $\pi_h$ would use different keypairs for $O_1$ and $0_2$ such as:$$
-            \varsigma_0^{\pi_{h_{O_1}}} \neq \varsigma_0^{\pi_{h_{O_2}}}
+            {}^{O_1}\varsigma_0^{\pi_h} \neq {}^{O_2}\varsigma_0^{\pi_h}
         $$
 
-        Because (\ref{eq:hashering}) uses $sort()$, we known that $\varsigma_0$ will always be the first crumb used to build the hashered prefix.
+        Because (\ref{eq:hashering}) uses $sort()$ in $HR()$, we know that $\varsigma_0$ will always be the first crumb used to build the hashered 
+        prefix.
         
         Therefore, through (\ref{eq:hashered}), let $x_1$ and $x_2$ be the hashered prefixes during $O_1$ and $O_2$, we have:$$
         \begin{array}{l}
             \left\{
                 \begin{array}{ll}
-                    x_1 \gets \upsilon(d, \mathcal{C}_1) &\iff \mathcal{C}_1 := \{ \varsigma_0^{\pi_{h_{O_1}}}, \dots \} \\
-                    x_2 \gets \upsilon(d, \mathcal{C}_2) &\iff \mathcal{C}_2 := \{ \varsigma_0^{\pi_{h_{O_2}}}, \dots \} \\
+                    x_1 \gets \upsilon(d, \mathcal{C}_1) &\iff \mathcal{C}_1 := \{ {}^{O_1}\varsigma_0^{\pi_h}, \dots \} \\
+                    x_2 \gets \upsilon(d, \mathcal{C}_2) &\iff \mathcal{C}_2 := \{ {}^{O_2}\varsigma_0^{\pi_h}, \dots \} \\
                 \end{array}
             \right. \\ \\
             \quad \Rightarrow x_1 \neq x_2 \\
             \end{array}
         $$
         
-        With (\ref{eq:crumbledString}), we can conclude that:$$
-            \forall \pi_h, d: \textrm{if } \pi_{h_{O_1}} \neq \pi_{h_{O_2}} \textrm{ then } Cr^{O_1} \neq Cr^{O_2}
-        $$
+        Using (\ref{eq:crumbledString}), we see that for a $d \in \omega$:$$
+        \begin{array}{l}
+            \left\{
+                \begin{array}{l}
+                    {}^{O_1}Cr := x1 \mathbin\Vert \left( \sum_{i=0}^t \sum_{j=0}^p ({}^{O_1}\varsigma_i^{\pi_j})_{64} \right) \\
+                    {}^{O_2}Cr := x2 \mathbin\Vert \left( \sum_{i=0}^t \sum_{j=0}^p ({}^{O_2}\varsigma_i^{\pi_j})_{64} \right) \\
+                \end{array}
+            \right. \\ \\
+            \quad \Rightarrow \textrm{if } \pi_{h_{O_1}} \neq \pi_{h_{O_2}} \textrm{ then } {}^{O_1}Cr \neq {}^{O_2}Cr \\
+        \end{array}$$
+
+        By construction, each $Cr$ is unique at least thanks to the uniqueness of its hashered prefix if one participant (and even more so a holder) 
+        respects the protocol.
     \end{proof}
 \end{definition}
 
-Prepended to the crumbs, this prefix gives the crumbled string absolute uniqueness, in particular between two different operations on the same source 
-data.
-
-Furthermore, it allows easy indexing.
+Prepended to the crumbs, not only does this prefix gives the crumbled string absolute uniqueness, but it also allows easy indexing.
 
 \subsection{Crumb and uncrumb}
 
