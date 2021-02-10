@@ -258,8 +258,8 @@ of trusted third parties with $P_0 \cup P_\tau = P$.
 And let $H$ be the holder of the source data $d$.
 
 Finally, let $\mathfrak{c}()$ be the encryption function of the \texttt{crumbl}\footnote{It could be any asymmetric protocol as long as it is available 
-for $H$. Thus, we assume that $H$ knows beforehand which protocol uses each participant $\pi_i$; therefore, he'd be using the appropriate 
-$\mathfrak{c}_{\pi_i}()$ function.}:
+for $H$ in the \emph{words} space $\omega$. Thus, we assume that $H$ knows which protocol uses each participant $\pi_i$; therefore, he'd be using the 
+appropriate $\mathfrak{c}_{\pi_i}()$ function.}:
 \begin{equation}
     \label{eq:encrypt}
     \begin{array}{rl}
@@ -279,9 +279,11 @@ $\mathfrak{c}_{\pi_i}()$ function.}:
     each participant $\pi_i$ creates a new pair of keys along with a request ID $\pi_i^{RID}$, this tuple being stored for future use in the decryption 
         process; \\
     $d$ is prepared and split into a set of $t$ slices $\{ \sigma_0, \dots, \sigma_{t-1} \}$ with: $t = |P_\tau| + 1$; \\
-    $H$ encrypts $\sigma_0$ with his own new public key: $$
+    $H$ encrypts $\sigma_0$ with his own new public key:
+    \begin{equation}
+        \label{eq:crumb0}
         \mathcal{C} \gets \varsigma_0^{\pi_H} := \mathfrak{c}_{\pi_H}(\sigma_0, \pi_H^{PK})
-    $$ \\
+    \end{equation} \\
     \While{$H$ receives each participant's public key ($\pi_i^{PK}$)}{
         \eIf{$\pi_i \in P_0$}{
             $H$ encrypts $\sigma_0$: $$
@@ -310,10 +312,10 @@ it for that purpose.
 
 \begin{definition}[Verification Hash]
     \label{verificationHash}
-    A verification hash $V$ is made of the concatenation of the 32 first characters of a crumbled string $Cr$:
+    A verification hash $V$ is made of the concatenation of the 64 first characters of a crumbled string $Cr$:
     \begin{equation}
         \label{eq:verificationHash}
-        V := \mathbin\Vert_{i=1}^{32} Cr[i]
+        V := \mathbin\Vert_{i=1}^{64} Cr[i]
     \end{equation}
     where $Cr[i]$ is the $i$-th character of $Cr$.
 
@@ -322,8 +324,8 @@ it for that purpose.
     It is generally used for search or storage purposes\footnote{For example, our latest implementation requires that we ask a hosting service for a 
     crumbl by sending its verification hash.}.
 
-    By definition, it is verified that\footnote{We will use this notation in the rest of the document when we want to assert that a passed $V$ is $Cr$'s 
-    appropriate verification hash.}: $V \subset Cr$.
+    By definition, it is verified that\footnote{We will use the notation $V \subset Cr$ in the rest of the document when we want to assert that a 
+    passed $V$ is $Cr$'s appropriate verification hash.}: $V \subset Cr$.
 \end{definition}
 
 \subsection{Decryption}
@@ -334,7 +336,8 @@ Algorithm \ref{algo:decryption} presents the decryption protocol.
 
 Let $P'_\tau$ a subset of $P_\tau$ of size $1 \leq n \leq |P_\tau| - 1$, and $H_1$ one of the signing holders that wishes to recover the data.
 
-And let $\Phi()$ be the hashered function \textemdash~see (\ref{eq:hashered}).
+And let $\upsilon(d)$ be the hashered function to build a verification hash for a data $d$ \textemdash~see (\ref{eq:hashered}), and 
+\texttt{MIN\_LENGTH} $ > 64$ the minimum required length of a crumbled string.
 
 Finally, let $\mathfrak{D}()$ be the decryption function of the \texttt{crumbl}:
 \begin{equation}
@@ -352,11 +355,11 @@ with $j$ being the $j$-th crumb.
     \KwOut{the data $d$ or an error}
     \uIf{$V \neq \emptyset \wedge V \not\subset Cr$}{
         \throw{invalid verification hash}{}
-    }\uElseIf{$V = \emptyset$}{
-        $V \gets \mathbin\Vert_{i=1}^{32}(Cr)$; \\
+    }\uElseIf{$|Cr| < $ \emph{\texttt{MIN\_LENGTH}}}{
+        \throw{invalid crumbled string}{}
     }
-    from $Cr$, get the number $t$ of needed slices; \\
-    initialize a new set of slices $S \gets \emptyset$; \\
+    from $Cr$, get the number $t$ of slices; \\
+    initialize a new set of slices $\mathcal{S} \gets \emptyset$; \\
     set the timeout limit $\theta$; \\
     initialize $R$ the map of received messages by $H1$ with cardinality $t$: $\forall i \in [1..t]: R_i \gets \emptyset$; \\
     \For{$i \gets 1$ \KwTo $p$ \KwBy $1$}{
@@ -373,12 +376,12 @@ with $j$ being the $j$-th crumb.
     }
     \For{$j \gets 1$ \KwTo $|R|$ \KwBy $1$}{
         process received $\sigma_j^{\pi_i}$: $\sigma_j \gets \sigma_j^{\pi_i}$; \\
-        \If{$\sigma_j \not\in S$}{
-            $S \gets \sigma_j$; \\
+        \If{$\sigma_j \not\in \mathcal{S}$}{
+            $\mathcal{S} \gets \sigma_j$; \\
         }
     }
-    \If{$|S| \neq t$}{
-        \throw{missing ($t - |S|$) slices}{}
+    \If{$|\mathcal{S}| \neq t$}{
+        \throw{missing ($t - |\mathcal{S}|$) slices}{}
     }
     $H_1$ decrypts crumb $0$:
     \eIf{$\exists \sigma_0 := \mathfrak{D}(0, Cr, {H_1}^{SK})$} {
@@ -386,10 +389,10 @@ with $j$ being the $j$-th crumb.
     }{
         \throw{$H_1$ is not a holder}{}
     }
-    use (\ref{eq:slice}) to recover $d$:$$
+    use (\ref{eq:slice}) on $\mathcal{S} := \{ \sigma_t \}$ to recover $d$:$$
         d \gets \mu^{-1}(\sigma_0) \mathbin\Vert \mu^{-1}(\sigma_1) \mathbin\Vert \dots \mathbin\Vert \mu^{-1}(\sigma_{t-1})
     $$ \\
-    \If{$\Phi(d) \neq V$}{
+    \If{$V \neq \emptyset \wedge \upsilon(d) \neq V$}{
         \throw{invalid recovered data $d$ against verification hash $V$}{}
     }
     \Return{$d$}
@@ -397,7 +400,7 @@ with $j$ being the $j$-th crumb.
     \label{algo:decryption}
 \end{algorithm}
 
-\vspace{1em} % one line separation // TODO Get rid of it?
+\vspace{1em} % one line separation
 
 If there's no error, the returned item is a copy of the original source data as a string.
 
@@ -405,18 +408,102 @@ If there's no error, the returned item is a copy of the original source data as 
 
 \section{The Process}
 
-\begin{definition}[Hashered Prefix]
-    \label{hashered}
-    Lorem ipsum ... % // TODO
+This section describes the detailed encryption process used in the $\mathfrak{c}()$ and $\mathcal{D}()$ functions in the above protocol.
+
+\begin{definition}[Crumbled string]
+    \label{crumbledString}
+    The final crumbled string $Cr$ is made of the concatenation of a so-called hashered prefix with the base-64 string representation of all the crumbs:
     \begin{equation}
-        \label{eq:hashered}
-        \Phi: % // TODO
+        \label{eq:crumbledString}
+        Cr := \upsilon(d) \mathbin\Vert \left( \sum_{i=0}^t \sum_{j=0}^p (\varsigma_i^{\pi_j})_{64} \right)
+    \end{equation}
+    where we use the symbol $\sum$ in the end part of (\ref{eq:crumbledString}) for concatenation\footnote{From now on, we may use this notation 
+    whenever it's clear in the explanation, or the $\sum^{\mathbin\Vert}$ alternative when applied on a full set/array.}.
+\end{definition}
+
+\subsection{A unique prefix}
+
+Let $sort(items)$ be the function that returns a lexicographically sorted set of items\footnote{
+    If the items are presented as a map, they are first lexicographically sorted on their keys, then their values are also lexicographically sorted.
+}, and $cut(word, at)$ the function that splits the passed $word$ in two after the $at$-th character.
+
+And let $\mathfrak{h}()$ be a secure cryptographic hashing function returning a 256-bits hash\footnote{We use the \texttt{SHA-256} algorithm in our 
+implementation because of its native availability in most browsers.}.
+
+\begin{definition}[Hashered prefix]
+    \label{hashered}
+    We build the hashered prefix by concatenating two parts:
+    \begin{itemize}
+        \item The 32 first characters of the hexadecimal string representation of the hash of the source data (using $\mathfrak{h}()$): $h^+$;
+        \item The 32 last characters of this hash ($h^-$) XORed with the padded lexicographically sorted owners' crumbs concatenation in hexadecimal.
+    \end{itemize}
+    \begin{equation}
+        \label{eq:hashAndSplit}
+        \Rightarrow h^+, h^- := cut \left( \mathfrak{h}(d), 32 \right)
     \end{equation}
 
+    \vspace{1em} % one line separation
+
+    Let $HR()$ be the hashering function that takes $h^-$ and the set of crumbs $\mathcal{C}$, and returns the second part of the hashered prefix.
+    \begin{equation}
+        \label{eq:hashering}
+        \begin{array}{rl}
+            HR: \omega \times \omega^t &\to \omega \\
+                (h^-, \mathcal{C}) &\mapsto h^- \oplus \left( \sum^{\mathbin\Vert} sort(\mathcal{C}) \right)
+        \end{array} 
+    \end{equation}
+
+    The full hashering function $\upsilon()$ takes the source data $d$ and its associated set of crumbs to return the hashered prefix using 
+    (\ref{eq:hashAndSplit}) in the process to build $h^+$ and $h^-$:
+    \begin{equation}
+        \label{eq:hashered}
+        \begin{array}{rl}
+            \upsilon: \quad \omega \times \omega^t &\to \omega \\
+                (d, \mathcal{C}) &\mapsto \upsilon(d, \mathcal{C}) := h^+ \mathbin\Vert HR(h^-, \mathcal{C}) \\
+        \end{array}
+    \end{equation}
+
+    The use of the hashering function ($HR()$) ensures the hashered prefix uniqueness.
+
     \begin{proof}
-        Lorem ipsum ... % // TODO Proof of the uniqueness per operation
+        Let $d$ be a source data owned by $\pi_{h}$, and $Cr_1$ and $Cr_2$ the results of the \texttt{crumbl} process from two operations $O_1$ and 
+        $O_2$ (respectively initiated by $\pi_{h_{O_1}}$ and $\pi_{h_{O_2}}$).
+
+        We are trying to prove that, for $O_1$ and $O_2$, their respective crumbled string ($Cr^{O_1}$ and $Cr^{O_2}$) will be different as long as at 
+        least $\pi_{h}$ respects the process (even if some or all other participants don't play fair).
+
+        Thanks to Definition \ref{participant}, we know that $\pi_h$ would use different keypairs for $O_1$ and $0_2$ such as:$$
+            \varsigma_0^{\pi_{h_{O_1}}} \neq \varsigma_0^{\pi_{h_{O_2}}}
+        $$
+
+        Because (\ref{eq:hashering}) uses $sort()$, we known that $\varsigma_0$ will always be the first crumb used to build the hashered prefix.
+        
+        Therefore, through (\ref{eq:hashered}), let $x_1$ and $x_2$ be the hashered prefixes during $O_1$ and $O_2$, we have:$$
+        \begin{array}{l}
+            \left\{
+                \begin{array}{ll}
+                    x_1 \gets \upsilon(d, \mathcal{C}_1) &\iff \mathcal{C}_1 := \{ \varsigma_0^{\pi_{h_{O_1}}}, \dots \} \\
+                    x_2 \gets \upsilon(d, \mathcal{C}_2) &\iff \mathcal{C}_2 := \{ \varsigma_0^{\pi_{h_{O_2}}}, \dots \} \\
+                \end{array}
+            \right. \\ \\
+            \quad \Rightarrow x_1 \neq x_2 \\
+            \end{array}
+        $$
+        
+        With (\ref{eq:crumbledString}), we can conclude that:$$
+            \forall \pi_h, d: \textrm{if } \pi_{h_{O_1}} \neq \pi_{h_{O_2}} \textrm{ then } Cr^{O_1} \neq Cr^{O_2}
+        $$
     \end{proof}
 \end{definition}
+
+Prepended to the crumbs, this prefix gives the crumbled string absolute uniqueness, in particular between two different operations on the same source 
+data.
+
+Furthermore, it allows easy indexing.
+
+\subsection{Crumb and uncrumb}
+
+Lorem ipsum ... % // TODO
 
 %\vfill\eject % To force break column if need be
 % \tableofcontents % Uncomment to add a table of contents
