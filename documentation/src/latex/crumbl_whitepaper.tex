@@ -69,6 +69,18 @@
 \newcommand{\mod}[1]{\ \mathrm{mod}\ #1}
 
 %----------------------------------------------------------------------------------------
+%	LOW LEVEL SECTIONS
+%----------------------------------------------------------------------------------------
+
+\usepackage{titlesec}
+
+\setcounter{secnumdepth}{4} % eq. subsubsubsection
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+%----------------------------------------------------------------------------------------
 %	LISTINGS
 %----------------------------------------------------------------------------------------
 
@@ -484,7 +496,7 @@ implementation because of its native availability in most browsers.}.
         Because (\ref{eq:hashering}) uses $sort()$ in $HR()$, we know that $\varsigma_0$ will always be the first crumb used to build the hashered 
         prefix.
         
-        Therefore, through (\ref{eq:hashered}), let $x_1$ and $x_2$ be the hashered prefixes during $O_1$ and $O_2$, we have:$$
+        Therefore, let $x_1$ and $x_2$ be the hashered prefixes during $O_1$ and $O_2$, through (\ref{eq:hashered}) we have:$$
         \begin{array}{l}
             \left\{
                 \begin{array}{ll}
@@ -496,7 +508,7 @@ implementation because of its native availability in most browsers.}.
             \end{array}
         $$
         
-        Using (\ref{eq:crumbledString}), we see that for a $d \in \omega$:$$
+        Using (\ref{eq:crumbledString}), we see that for the same $d \in \omega$:$$
         \begin{array}{l}
             \left\{
                 \begin{array}{l}
@@ -514,23 +526,112 @@ implementation because of its native availability in most browsers.}.
 
 Prepended to the crumbs, not only does this prefix gives the crumbled string absolute uniqueness, but it also allows easy indexing.
 
+\subsection{A step-by-step construct}
+
+\subsubsection{Tools}
+
+\paragraph{Obfuscation}
+
+Let $\mathfrak{F}()$ be an implementation of an almost Format-Preserving Encryption scheme based on a Feistel\cite{feistel:hf} cipher\footnote{We use 
+our own implementation described in \cite{Feistel:cyd}.}.
+
+$\mathfrak{F}()$ is used as our obfuscation tool in the process. It returns an obfuscated word of even length when applied on a source data, and the 
+exact copy of the source data when applied on its obfuscated version.
+
+\paragraph{Padding}
+
+\begin{algorithm}
+    \KwIn{a message $m$, the minimum size $s$ for the output}
+    \KwOut{the appropriately padded message if necessary}
+    let $l$ be the length of $m$: $l \gets |m|$; \\
+    $\delta \gets l - s$; \\
+    \eIf{$\delta \geq 0$}{
+        \Return{$m$}
+    }{
+        \eIf{$m[0] = \emph{\texttt{PAD}}_0$}{
+            \eIf{$m[l-1] = \emph{\texttt{PAD}}_1$}{
+                \Return{$\left( \emph{\texttt{PAD}}_2 \times \delta \right) \mathbin\Vert m$}
+            }{
+                \Return{$\left( \emph{\texttt{PAD}}_1 \times \delta \right) \mathbin\Vert m$}
+            }
+        }{
+            \eIf{$m[l-1] = \emph{\texttt{PAD}}_0$}{
+                \eIf{$m[0] = \emph{\texttt{PAD}}_1$}{
+                    \Return{$\left( \emph{\texttt{PAD}}_2 \times \delta \right) \mathbin\Vert m$}
+                }{
+                    \Return{$\left( \emph{\texttt{PAD}}_1 \times \delta \right) \mathbin\Vert m$}
+                }
+            }{
+                \Return{$\left( \emph{\texttt{PAD}}_0 \times \delta \right) \mathbin\Vert m$}
+            }
+        }
+    }
+    \caption{Padding function $\mathcal{P}$}
+    \label{algo:padding}
+\end{algorithm}
+
+We herein define some padding (and respective unpadding) features such as an input returns unmodified if its length is greater than the wanted minimum 
+size (in case of padding), or if it wasn't padded in the first place (in case of unpadding).
+
+Let $\texttt{PAD}_0$, $\texttt{PAD}_1$ and $\texttt{PAD}_2$ be three special padding characters\footnote{In our implementation, we use the following 
+UTF-8 characters:
+\begin{itemize}
+    \item $\texttt{PAD}_0 \gets$ \texttt{U+0002} (start-of-text) character;
+    \item $\texttt{PAD}_1 \gets$ \texttt{U+0004} (end-of-transmission) character;
+    \item $\texttt{PAD}_2 \gets$ \texttt{U+0005} (enquiry) character.
+\end{itemize}}, and $\_$ the symbol used when a variable should be discarded.
+
+The reason why we use these three different kinds of padding characters is because of the way the Feistel cipher works during obfuscation: by switching 
+left and right parts of the input data, we might take the risk to be mistaken at the end of the unpadding process should we choose padding characters 
+that are the same than one of the two ends of the input, hence the different options for the padding character.
+
+Algorithm \ref{algo:padding} describes $\mathcal{P}()$, this special padding function.
+
+In our implementation, we also add an optional parameter to $\mathcal{P}$ to be sure to return a padded input of even length, therefore modifying a bit 
+the flow of operations in the final function \footnote{Check out the code in Go (\url{https://github.com/cyrildever/feistel} or in TypeScript  
+(\url{https://github.com/cyrildever/feistel-cipher}).}.
+
+And Algorithm \ref{aglo:unpadding} shows $\mathcal{P}^{-1}()$, the reverse unpadding function.
+
+\begin{algorithm}
+    \KwIn{an eventually padded message $m$}
+    \KwOut{the unpadded message}
+    \eIf{$m[0] \neq \emph{\texttt{PAD}}_0 \wedge m[0] \neq \emph{\texttt{PAD}}_1 \wedge m[0] \neq \emph{\texttt{PAD}}_2$}{
+        \Return{$m$}
+    }{
+        $\_, m' \gets cut(m, 1)$; \\
+        \While{$m'[0] \in \{ \emph{\texttt{PAD}}_0, \emph{\texttt{PAD}}_1, \emph{\texttt{PAD}}_2 \}$}{
+            $\_, m' \gets cut(m', 1)$; \\
+        }
+        \Return{$m'$}
+    }
+    \caption{Unpadding function $\mathcal{P}^{-1}$}
+    \label{aglo:unpadding}
+\end{algorithm}
+
+Obviously, we have: $$\forall d \in \omega: d' := \mathcal{P}(d) \iff d := \mathcal{P}^{-1}(d')$$
+
 \subsection{Crumb and uncrumb}
 
 Lorem ipsum ... % // TODO
 
 %\vfill\eject % To force break column if need be
-% \tableofcontents % Uncomment to add a table of contents
+\tableofcontents % Uncomment to add a table of contents
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
 
-% \begin{thebibliography}{99} % Bibliography
-%
-% \bibitem[1]{feistel:hf}
-% Horst Feistel. \emph{Cryptography and Computer Privacy}, Scientific American, 1973.
-%
-% \end{thebibliography}
+\begin{thebibliography}{99} % Bibliography
+
+\bibitem[1]{feistel:hf}
+Horst Feistel. \emph{Cryptography and Computer Privacy}, Scientific American, 1973.
+
+\bibitem[2]{Feistel:cyd}
+Cyril Dever. \emph{Feistel Cipher with Hash Round Function}, 2021.
+\\\small\url{https://github.com/cyrildever/feistel}
+
+\end{thebibliography}
 
 %----------------------------------------------------------------------------------------
 
