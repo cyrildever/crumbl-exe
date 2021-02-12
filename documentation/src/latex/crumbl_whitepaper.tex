@@ -749,8 +749,104 @@ possession of the holder $\pi_H$, he can run Algorithm \ref{algo:deconstruct} th
     \label{algo:deconstruct}
 \end{algorithm}
 
+%----------------------------------------------------------------------------------------
+
+\section{Security and Resilience}
+\label{security}
+
+It is easy to prove that the \texttt{crumbl}\texttrademark~ technology can be implemented in a secure and resilient way.
+
+\subsection{A secure system}
+
+\begin{definition}[Secure]
+    \label{secure}
+    We define the system to be fully \emph{secure} if it doesn't only rely on a "classic" asymmetric or symmetric encryption scheme with one keypair 
+    eventually shared.
+\end{definition}
+
+\begin{proposition}
+    \label{prop:min1}
+    If there is at least one holder $\pi_H$ and one trusted third party $\pi_\tau$, then the system is \emph{secure}.
+\end{proposition}
+
+\begin{proof}
+    We start by proving that the system can't be secure if only one actor is present.
+
+    \vspace{1em} % one line separation
+
+    By design, only $\pi_H$ can encrypt the crumb $\varsigma_0$.
+    
+    Therefore, if $\pi_\tau$ is alone, the system is not working, let alone secure.
+    
+    And if $\pi_\tau$ is encrypting $\varsigma_0$, he is acting as a holder.
+    Now this implies that the lonely holder is encrypting all the crumbs, which is the very definition of a non-secure "classic" encryption scheme.
+
+    \vspace{1em} % one line separation
+
+    Secondly, if the two participants are present and $\pi_H \neq \pi_\tau$, then neither of them will have access to the other's keypair to decrypt the 
+    other's crumb(s). 
+    
+    Moreover, $\pi_\tau$ doesn't have access to $\varsigma_0$; thus, he can't finalize the decryption process at all.
+    This also means that, should $\pi_H$ disappear or loses his secret key for the operation ${}^O\pi_H^{PK}$, the data won't ever be recovered. Thus,
+    the system is secure in that case.
+
+    \vspace{1em} % one line separation
+
+    If $\pi_H$ respects the encryption protocol, he wouldn't encrypt all the crumbs, leaving at least one crumb $\varsigma_i \mid i \neq 0$ only 
+    encrypted by $\pi_\tau$; thus, he will need the latter to eventually finalize the decryption process, proving the system is secure in the absence of 
+    one necessary participant.
+    
+    Finally, by construction, it is not a "classic" encryption scheme anymore. Therefore, the system is \emph{secure}.
+\end{proof}
+
+\subsection{A resilient system}
+
+\begin{definition}[Resilient]
+    \label{resilient}
+    We define the system to be \emph{resilient} if the failure of a trusted third party doesn't prevent a holder to recover his data.
+\end{definition}
+
+\begin{proposition}
+    \label{prop:ttp3}
+    Let $\mathcal{G}_\tau$ be the total possible set of trusted third parties, and ${}^OP_\tau \subset {}^OP \subset \mathcal{G}_\tau$ the actual 
+    trusted third parties participating in an operation $O$, if its cardinality $|{}^OP_\tau| \geq 3$ and $|\mathcal{G}_\tau| > |{}^OP_\tau|$ then the 
+    \texttt{crumbl}\texttrademark~ protocol is both secure and resilient as long as the system enforces a replacement mechanism for any failing trusted 
+    third party $\in \mathcal{G}_\tau$.
+\end{proposition}
+
+\begin{proof}
+    We first prove that, although the system using one trusted third party is secure (cf. Definition \ref{secure}), it is not \emph{resilient}.
+    Indeed, if the one and only trusted third party fails, then the holder is left with at least one missing crumb, and therefore can't recover the 
+    data anymore.
+
+    \vspace{1em} % one line separation
+
+    In the same way, if there are two trusted third parties ($\pi_{\tau_1}$ and $\pi_{\tau_2}$) involved, as by construction each trusted third party 
+    encrypts $t-2$ crumbs, there is at least one crumb that only $\pi_{\tau_1}$ doesn't encrypt while $\pi_{\tau_2}$ does (and vice-versa).
+    
+    So, if either one of them fails, the system is still not resilient.
+
+    \vspace{1em} % one line separation
+
+    Finally, if there are 3 participating trusted third parties $\pi_{\tau_1}, \pi_{\tau_2}, \pi_{\tau_3} \in P_\tau$, from (\ref{eq:crumb0}) and 
+    (\ref{eq:crumbTT}), we have: \emph{(for instance with one holder $\pi_H \in P_0$)}$$
+        \begin{array}{l}
+            \mathcal{C}^{\pi_H} := \{ \varsigma_0 \} \\
+            \mathcal{C}^{\pi_{\tau_1}} := \{ \varsigma_1, \varsigma_2 \} \\
+            \mathcal{C}^{\pi_{\tau_2}} := \{ \varsigma_1, \varsigma_3 \} \\
+            \mathcal{C}^{\pi_{\tau_3}} := \{ \varsigma_2, \varsigma_3 \} \\
+            \iff \mathcal{C} := \mathcal{C}^{\pi_H} \cup \mathcal{C}^{\pi_{\tau_1}} \cup \mathcal{C}^{\pi_{\tau_2}} \cup \mathcal{C}^{\pi_{\tau_3}} \\
+        \end{array}
+    $$
+    It is easy to see that if any of the trusted third party fails, the other two still have the full set of crumbs under their control, eg. if 
+    $\pi_{\tau_1}$ fails, then $\mathcal{C}^{\pi_{\tau_2}} \cup \mathcal{C}^{\pi_{\tau_3}} := \{ \varsigma_1, \varsigma_2, \varsigma_3 \}$ which will 
+    allow $\pi_H$ with his own $\varsigma_0$ to rebuild the complete set $\mathcal{C}$ of the operation, and therefore recover the data.
+
+    And so on and so forth the more you add trusted third party participants and respects the allocation rule (cf. Proposition \ref{prop:allocation}).
+\end{proof}
+
 %\vfill\eject % To force break column if need be
-% \tableofcontents % Uncomment to add a table of contents
+%\tableofcontents % Uncomment to add a table of contents
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
