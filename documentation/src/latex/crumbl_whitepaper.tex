@@ -718,6 +718,37 @@ In any case, the allocation rule must respect the following Proposition:
     We will see in the proof of Proposition \ref{prop:ttp3} that this case corresponds to a secure and resilient system.
 \end{proposition}
 
+\subsubsection{Deconstruct}
+
+The inverse method (to recover a source data from a crumbl $Cr$) involves the respect of the decryption protocol (see Algorithm \ref{algo:decryption}).
+Therefore, the holder $\pi_H$ that wants to recover the data must first gather the decrypted crumbs from the trusted third parties.
+
+As seen above, the allocation of crumbs at encryption respects the following formula: each trusted third party may only encrypt at most $t-1$ crumbs.
+
+It follows that at least two trusted third parties are necessary (and could be enough) to get all the needed decrypted crumbs. As soon as they are in 
+possession of the holder $\pi_H$, he can run Algorithm \ref{algo:deconstruct} that indeed details the last steps of the decryption protocol 
+\textemdash~see Algorithm \ref{algo:decryption}.
+\begin{algorithm}
+    \SetKwProg{throw}{throw}{}{}
+    \KwIn{$Cr$, $\pi_H^{SK}$, $\mathcal{S}' := \mathcal{S} \setminus \varsigma_0$, an optional verification hash $V$}
+    \KwOut{the recovered data or an error}
+    from $Cr$, get the number $t$ of slices; \\
+    \If{$|\mathcal{S}'| \neq t - 1$}{
+        \throw{not enough third-party slices}{}
+    }
+    initialize $\mathcal{S} \gets \mathcal{S}'$; \\
+    $\pi_H$ decrypts his own crumb $\varsigma_0$: $\mathcal{S} \gets \varsigma_0 := \mathfrak{D}(0, Cr, \pi_H^{SK})$; \\
+    use \ref{eq:slice} to build the recovered data $d$:$$ 
+        d \gets \sum_{i=0}^{t-1} \mu^{-1}(\mathcal{S}_i)
+    $$ \\
+    \If{$V \neq \emptyset \wedge \upsilon(d) \neq V$}{
+        \throw{invalid verification hash}{}
+    }
+    \Return{$d$}
+    \caption{From slices to data}
+    \label{algo:deconstruct}
+\end{algorithm}
+
 %\vfill\eject % To force break column if need be
 % \tableofcontents % Uncomment to add a table of contents
 
