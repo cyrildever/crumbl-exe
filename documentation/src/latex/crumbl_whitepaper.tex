@@ -87,6 +87,7 @@
 \usepackage{amsthm}
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
 
 \theoremstyle{remark}
 \newtheorem*{remark}{Note}
@@ -119,7 +120,7 @@
 %----------------------------------------------------------------------------------------
 
 \usepackage[english]{datetime2}
-\DTMsavedate{thedate}{2020-09-18}
+\DTMsavedate{thedate}{2019-09-18}
 
 \setlength{\droptitle}{-5\baselineskip} % Move the title up
 
@@ -163,7 +164,7 @@ encryption for the storage and recovery of stored data and their decryption are 
 
 This complexity comes with the added burden of the risk that the encryption key is always susceptible to being broken and/or hacked.
 
-The goal of our new algorithm, called the \texttt{crumbl}\textregistered~technology, is to develop simple yet particularly effective means for securing 
+The goal of our new algorithm, called the \texttt{crumbl}\texttrademark~ technology, is to develop simple yet particularly effective means for securing 
 data storage.
 
 Our procedure describes a method of secure storage of a source data, owned by one (or more) \emph{holder(s)}, using already proven techniques of 
@@ -261,7 +262,7 @@ least four participants: one holder and three trusted third parties.}.
 
 \subsection{Encryption}
 
-Algorithm \ref{algo:encryption} presents the encryption protocol of the \texttt{crumbl}\textregistered~technology.
+Algorithm \ref{algo:encryption} presents the encryption protocol of the \texttt{crumbl}\texttrademark~ technology.
 
 \vspace{1em} % one line separation
 
@@ -303,12 +304,14 @@ appropriate $\mathfrak{c}_{\pi_i}()$ function.}:
                 \mathcal{C} \gets \varsigma_0^{\pi_{i}} := \mathfrak{c}_{\pi_i}(\sigma_0, \pi_i^{PK})
             $$ \\
         }{
-            all other slices are encrypted by $H$ with the received public key: $$
-            \begin{array}{l}
-                \forall j \in \{ \sigma_1, \dots, \sigma_{t-1} \}: \\
-                \quad \mathcal{C} \gets \varsigma_j^{\pi_{i}} := \mathfrak{c}_{\pi_i}(\sigma_j, \pi_i^{PK})
-            \end{array}
-            $$ \\
+            all other slices are encrypted by $H$ with the received public key:
+            \begin{equation}
+                \label{eq:crumbTT}
+                \begin{array}{l}
+                    \forall j \in \{ \sigma_1, \dots, \sigma_{t-1} \}: \\
+                    \quad \mathcal{C} \gets \varsigma_j^{\pi_{i}} := \mathfrak{c}_{\pi_i}(\sigma_j, \pi_i^{PK})
+                \end{array}
+            \end{equation} \\
         }
     }
     $Cr$ is finalized by $H$ using $d$ and the set of all crumbs $\mathcal{C}$; \\
@@ -566,7 +569,7 @@ exact copy of the source data when applied on its obfuscated version.
             }
         }
     }
-    \caption{Padding function $\mathcal{\mu}$}
+    \caption{Padding function $\mu$}
     \label{algo:padding}
 \end{algorithm}
 
@@ -585,13 +588,13 @@ The reason why we use these three different kinds of padding characters is becau
 left and right parts of the input data, we might take the risk to be mistaken at the end of the unpadding process should we choose padding characters 
 that are the same than one of the two ends of the input, hence the different options for the padding character.
 
-Algorithm \ref{algo:padding} describes $\mathcal{\mu}()$, this special padding function.
+Algorithm \ref{algo:padding} describes this special padding function $\mu()$.
 
-In our implementation, we also add an optional parameter to $\mathcal{\mu}$ to be sure to return a padded input of even length, therefore modifying a bit 
+In our implementation, we also add an optional parameter to $\mu$ to be sure to return a padded input of even length, therefore modifying a bit 
 the flow of operations in the final function \footnote{Check out the code in Go (\url{https://github.com/cyrildever/feistel} or in TypeScript  
 (\url{https://github.com/cyrildever/feistel-cipher}).}.
 
-And Algorithm \ref{aglo:unpadding} shows $\mathcal{\mu}^{-1}()$, the reverse unpadding function.
+And Algorithm \ref{algo:unpadding} shows $\mu^{-1}()$, the reverse unpadding function.
 
 \begin{algorithm}
     \KwIn{an eventually padded message $m$}
@@ -605,11 +608,11 @@ And Algorithm \ref{aglo:unpadding} shows $\mathcal{\mu}^{-1}()$, the reverse unp
         }
         \Return{$m'$}
     }
-    \caption{Unpadding function $\mathcal{\mu}^{-1}$}
-    \label{aglo:unpadding}
+    \caption{Unpadding function $\mu^{-1}$}
+    \label{algo:unpadding}
 \end{algorithm}
 
-Obviously, we have: $$\forall d \in \omega: d' := \mathcal{\mu}(d) \iff d := \mathcal{\mu}^{-1}(d')$$
+Obviously, we have: $$\forall d \in \omega: d' := \mu(d) \iff d := \mu^{-1}(d')$$
 
 \paragraph{Slicing}
 
@@ -679,8 +682,41 @@ Let $K$ be a secret key and $N$ the number of rounds to use for obfuscation.
     \label{algo:construct}
 \end{algorithm}
 
-The allocation method may differ depending on the security and continuity preferences of the system. The more trusted third parties encrypt crumbs, the 
-heaviest the result, but the more resilient the system can be.
+The allocation method may differ depending on the security and continuity preferences of the system.
+The more trusted third parties encrypt crumbs, the heavier the result, the longer the $Cr$, but the more resilient the system can be (see section 
+\ref{security}).
+
+In any case, the allocation rule must respect the following Proposition:
+
+\begin{proposition}
+    \label{prop:allocation}
+    Let $\mathcal{C}' := \mathcal{C} \setminus \varsigma_0$ be the set of crumbs to allocate to $\pi_i \in P_\tau \forall i := [1, \dots, t-1]$.
+    Each $\pi_i$ must have at most $t-2$ crumbs to encrypt and the allocation should be evenly distributed among the participants such as 
+    \begin{equation}
+        \label{eq:allocation}
+        \sum_{i=1}^{t-1} P(\varsigma_i) = 1 \iff P(\varsigma_i) = \frac{1}{|P_\tau|}
+    \end{equation}  
+    ensuring maximum resilience to the system.
+
+    For example, with three participants, we have $$
+    |P_\tau| \gets 3 \Rightarrow P(\varsigma_i) = \frac{1}{3}
+    $$
+    which necessarily leads to the following distribution of crumbs:$$
+        \begin{array}{l}
+            \mathcal{C}^{\pi_{\tau_1}} := \{ \varsigma_1, \varsigma_2 \} \\
+            \mathcal{C}^{\pi_{\tau_2}} := \{ \varsigma_1, \varsigma_3 \} \\
+            \mathcal{C}^{\pi_{\tau_3}} := \{ \varsigma_2, \varsigma_3 \} \\ \\
+            \Rightarrow \left\{
+                \begin{array}{l}
+                    P(\varsigma_1) = \frac{1}{6} + \frac{1}{6} = \frac{1}{3} \\ \\
+                    P(\varsigma_2) = \frac{1}{3} \\ \\
+                    P(\varsigma_3) = \frac{1}{3} \\
+                \end{array}
+            \right.
+        \end{array}
+    $$
+    We will see in the proof of Proposition \ref{prop:ttp3} that this case corresponds to a secure and resilient system.
+\end{proposition}
 
 %\vfill\eject % To force break column if need be
 % \tableofcontents % Uncomment to add a table of contents
