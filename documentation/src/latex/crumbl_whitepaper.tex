@@ -620,7 +620,7 @@ For maximum security, the slices are not supposed to be of the same length; ther
 process.
 
 Let $\Delta_{max}$ be the maximum standard deviation allowed by the system between slices, and $Rnd()$ a Pseudo-Random Number Generator (PRNG) 
-function.
+function\cite{PRNG}.
 \begin{algorithm}
     \KwIn{$s$, $t$}
     \KwOut{$\mathcal{S}$}
@@ -630,7 +630,7 @@ function.
     \While{$|\mathcal{M}| \neq t \wedge (\sum_{j=1}^t \mathcal{M}_j) \neq |s|$}{
         \For{$i \gets 0$ \KwTo $t-1$ \KwBy $1$}{
             find the mask length $l_i$ such as: \small $$
-                l_i := \bar{x} - \Delta_{max} \leq Rnd() \leq \bar{x} + \Delta_{max}
+                l_i := \bar{x} - \Delta_{max} < Rnd() \leq \bar{x} + \Delta_{max}
             $$\normalsize \\
             $\mathcal{M} \gets l_i$; \\
             $pos \gets pos + l_i + 1$; \\
@@ -648,25 +648,42 @@ function.
     \label{algo:slicer}
 \end{algorithm}
 
+\begin{remark}
+    The number of desired slices depends on the size of the input string $s$ and the system's minimum length of slice \texttt{MIN\_SLICE\_SIZE}$ > 2$.
+\end{remark}
+
 \subsubsection{Construct}
 
 Algorithm \ref{algo:construct} describes the steps that leads from the source data $d$ to the crumbled string $Cr$, provided we have all the necessary 
-material at our disposal (participants' keys, transformation tools, \dots).
+material at our disposal (participants' keys, tools, system settings configured, \dots).
 
+Let $K$ be a secret key and $N$ the number of rounds to use for obfuscation.
 \begin{algorithm}
     \KwIn{$d$, $P$}
     \KwOut{$Cr$, $V$}
-    % // TODO ###############################
+    obfuscate input: $d' \gets \mathfrak{F}(d, K, N)$; \\
+    eventually pad it: $d' \gets \mu(d')$; \\
+    determine the number of slices $t$ and therefore the $\Delta_{max}$; \\
+    build the slices: $\mathcal{S} \gets \zeta_{\Delta_{max}}(d', t)$; \\
+    initialize the set of crumbs: $\mathcal{C} := \{ \varsigma_{t \times |P| - 1} \}$; \\
+    allocate crumbs to participants in a map $\mathcal{A_P}$ where each holder is associated with crumb $\varsigma_0$ and each trusted third party with 
+    $t - 1$ crumbs from $\mathcal{S}' := \mathcal{S} \setminus \varsigma_0$; \\
+    \For{$i \gets 0$ \KwTo $t-1$ \KwBy $1$}{
+        \For{$j \gets 0$ \KwTo $|A_P|-1$ \KwBy $1$}{
+            $\mathcal{C} \gets \mathfrak{c}(\sigma_i \in \mathcal{S}, \pi_j^{PK} \in P)$;
+        }
+    }
+    use (\ref{eq:crumbledString}) to build the crumbled string: $Cr := \upsilon(d) \mathbin\Vert \Big( \sum^{\mathbin\Vert} \mathcal{C} \Big)$; \\
+    \Return{$Cr$, $\upsilon(d)$}
     \caption{From data to crumbl}
     \label{algo:construct}
 \end{algorithm}
 
-\subsection{Crumb and uncrumb}
-
-Lorem ipsum ... % // TODO
+The allocation method may differ depending on the security and continuity preferences of the system. The more trusted third parties encrypt crumbs, the 
+heaviest the result, but the more resilient the system can be.
 
 %\vfill\eject % To force break column if need be
-\tableofcontents % Uncomment to add a table of contents
+% \tableofcontents % Uncomment to add a table of contents
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
@@ -680,6 +697,9 @@ Horst Feistel. \emph{Cryptography and Computer Privacy}, Scientific American, 19
 \bibitem[2]{Feistel:cyd}
 Cyril Dever. \emph{Feistel Cipher with Hash Round Function}, 2021.
 \\\small\url{https://github.com/cyrildever/feistel}
+
+\bibitem[3]{PRNG}
+E. Barker, W. Barker, W. Burr, W. Polk, M. Smid. \emph{Recommendation for Key Management}, NIST, 2012.
 
 \end{thebibliography}
 
