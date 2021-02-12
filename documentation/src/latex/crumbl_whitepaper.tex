@@ -205,13 +205,13 @@ asymmetric encryption with the participation of so-called trusted third parties,
     \label{slice}
     A slice $\sigma$ is a padded plaintext portion of the source data.
 
-    Let $\mu()$ be a padding function and $\mu^{-1}()$ its inverse. For $t$ slices made out of a source data $d$, we have:
+    Let $\zeta()$ be a slicing function, $\mu()$ a padding function and $\mu^{-1}()$ its inverse. For $t$ slices made out of a source data $d$, we have:
     \begin{small}
         \begin{equation}
             \label{eq:slice}
             \left\{
                 \begin{array}{l}
-                    \sigma_i := \mu \Big[ \left( \frac{d}{t} \right)_i \Big] \\ \\
+                    \sigma_i := \mu \Big[ \zeta_i(d, t) \Big] \\ \\
                     d := \mu^{-1}(\sigma_0) \mathbin\Vert \mu^{-1}(\sigma_1) \mathbin\Vert \dots \mathbin\Vert \mu^{-1}(\sigma_{t-1}) \\
                 \end{array}
             \right.
@@ -566,7 +566,7 @@ exact copy of the source data when applied on its obfuscated version.
             }
         }
     }
-    \caption{Padding function $\mathcal{P}$}
+    \caption{Padding function $\mathcal{\mu}$}
     \label{algo:padding}
 \end{algorithm}
 
@@ -585,13 +585,13 @@ The reason why we use these three different kinds of padding characters is becau
 left and right parts of the input data, we might take the risk to be mistaken at the end of the unpadding process should we choose padding characters 
 that are the same than one of the two ends of the input, hence the different options for the padding character.
 
-Algorithm \ref{algo:padding} describes $\mathcal{P}()$, this special padding function.
+Algorithm \ref{algo:padding} describes $\mathcal{\mu}()$, this special padding function.
 
-In our implementation, we also add an optional parameter to $\mathcal{P}$ to be sure to return a padded input of even length, therefore modifying a bit 
+In our implementation, we also add an optional parameter to $\mathcal{\mu}$ to be sure to return a padded input of even length, therefore modifying a bit 
 the flow of operations in the final function \footnote{Check out the code in Go (\url{https://github.com/cyrildever/feistel} or in TypeScript  
 (\url{https://github.com/cyrildever/feistel-cipher}).}.
 
-And Algorithm \ref{aglo:unpadding} shows $\mathcal{P}^{-1}()$, the reverse unpadding function.
+And Algorithm \ref{aglo:unpadding} shows $\mathcal{\mu}^{-1}()$, the reverse unpadding function.
 
 \begin{algorithm}
     \KwIn{an eventually padded message $m$}
@@ -605,11 +605,61 @@ And Algorithm \ref{aglo:unpadding} shows $\mathcal{P}^{-1}()$, the reverse unpad
         }
         \Return{$m'$}
     }
-    \caption{Unpadding function $\mathcal{P}^{-1}$}
+    \caption{Unpadding function $\mathcal{\mu}^{-1}$}
     \label{aglo:unpadding}
 \end{algorithm}
 
-Obviously, we have: $$\forall d \in \omega: d' := \mathcal{P}(d) \iff d := \mathcal{P}^{-1}(d')$$
+Obviously, we have: $$\forall d \in \omega: d' := \mathcal{\mu}(d) \iff d := \mathcal{\mu}^{-1}(d')$$
+
+\paragraph{Slicing}
+
+The last tool needed before encryption is the \emph{slicer}. It takes a string $s$ to slice as well as the number of desired slices $t$ and returns a 
+set of padded slices $\mathcal{S} := \{ \sigma_0, \dots, \sigma_{t-1} \}$.
+
+For maximum security, the slices are not supposed to be of the same length; therefore, they run through the padding function $\mu()$ at the end of the 
+process.
+
+Let $\Delta_{max}$ be the maximum standard deviation allowed by the system between slices, and $Rnd()$ a Pseudo-Random Number Generator (PRNG) 
+function.
+\begin{algorithm}
+    \KwIn{$s$, $t$}
+    \KwOut{$\mathcal{S}$}
+    initialize a set of split masks: $\mathcal{M} \gets \emptyset$; \\
+    seed $Rnd()$; \\
+    set variables $pos \gets 0$ and $\bar{x} \gets \floor{ \frac{|s|}{t} }$; \\
+    \While{$|\mathcal{M}| \neq t \wedge (\sum_{j=1}^t \mathcal{M}_j) \neq |s|$}{
+        \For{$i \gets 0$ \KwTo $t-1$ \KwBy $1$}{
+            find the mask length $l_i$ such as: \small $$
+                l_i := \bar{x} - \Delta_{max} \leq Rnd() \leq \bar{x} + \Delta_{max}
+            $$\normalsize \\
+            $\mathcal{M} \gets l_i$; \\
+            $pos \gets pos + l_i + 1$; \\
+        }
+    }
+    initialize $\mathcal{S} \gets \emptyset$; \\
+    $(\sigma_0, r) \gets cut(s, \mathcal{M}_0)$; \\
+    $\mathcal{S} \gets \sigma_0$; \\
+    \For{$i \gets 1$ \KwTo $t-1$ \KwBy $1$}{
+        $(\sigma_i, r) \gets cut(r, \mathcal{M}_i)$; \\
+        $\mathcal{S} \gets \sigma_i$; \\
+    }
+    \Return{$\mathcal{S}$}
+    \caption{Slicer $\zeta$}
+    \label{algo:slicer}
+\end{algorithm}
+
+\subsubsection{Construct}
+
+Algorithm \ref{algo:construct} describes the steps that leads from the source data $d$ to the crumbled string $Cr$, provided we have all the necessary 
+material at our disposal (participants' keys, transformation tools, \dots).
+
+\begin{algorithm}
+    \KwIn{$d$, $P$}
+    \KwOut{$Cr$, $V$}
+    % // TODO ###############################
+    \caption{From data to crumbl}
+    \label{algo:construct}
+\end{algorithm}
 
 \subsection{Crumb and uncrumb}
 
