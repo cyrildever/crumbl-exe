@@ -13,7 +13,7 @@ If you're interesting in using the library, please [contact us](mailto:contact@e
 
 ### Formal description
 
-For details about the mathematical and protocol foundations, please review the latest version of the [white paper](https://github.com/cyrildever/crumbl-exe/blob/master/documentation/src/latex/crumbl_whitepaper.pdf).
+For details about the mathematical and protocol foundations, please review the latest version of the [white paper](documentation/src/latex/crumbl_whitepaper.pdf).
 
 
 ### Process
@@ -133,7 +133,7 @@ As of the latest version, the technology only processes one crumbl at a time.
 
 NB: Error(s) and/or warning message(s) are all sent to stderr.
 
-#### Go Library ####
+#### Go Library
 
 ```golang
 import "github.com/cyrildever/crumbl-exe"
@@ -229,17 +229,17 @@ crumbled, err := crumbl.Process()
 You may want to wrap each process into separate goroutines.
 
 
-#### Javascript Library ####
+#### Javascript Library
 
 You might want to check out the JS implementation for the Crumbl&trade;: [`crumbl-js`](https://github.com/cyrildever/crumbl-js), a Javascript client developed in TypeScript for generating secure data storage with trusted signing third-parties using the Crumbl&trade; technology patented by Cyril Dever for Edgewhere.
 
 
-#### Scala Library ####
+#### Scala Library
 
 You might also want to check out the Scala implementation for the Crumbl&trade;: [`crumbl-jar`](https://github.com/cyrildever/crumbl-jar), a Scala client for the JVM and an executable JAR as well.
 
 
-### License ###
+### License
 
 The use of the Crumbl&trade; executable or library for commercial purpose is subject to fees for commercial purpose and to the respect of the [BSD-2-Clause-Patent License](LICENSE).
 All technologies are protected by patents owned by Edgewhere.
