@@ -1,4 +1,4 @@
-# crumbl-exe #
+# crumbl-exe
 
 ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/cyrildever/crumbl-exe)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/cyrildever/crumbl-exe)
@@ -11,7 +11,12 @@ crumbl-exe is both an executable and a Go client for generating secure data stor
 If you're interesting in using the library, please [contact us](mailto:contact@edgewhere.fr).
 
 
-### Process ###
+### Formal description
+
+For details about the mathematical and protocol foundations, please review the latest version of the [white paper](https://github.com/cyrildever/crumbl-exe/blob/master/documentation/src/latex/crumbl_whitepaper.pdf).
+
+
+### Process
 
 The whole process could be divided into two major steps:
 * create the _crumbl_ from a source data;
@@ -40,9 +45,9 @@ The first step involves at least two stakeholders, but preferably four for optim
 All these steps could be done using command-line instructions with the [executable](#executable), or building an integrated app utilizing the [Go library](#go-library).
 
 
-### Usage ###
+### Usage
 
-#### Executable ####
+#### Executable
 
 ```console
 git clone https://github.com/edgewhere/crumbl-exe.git && cd crumbl-exe && go build

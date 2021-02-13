@@ -69,12 +69,25 @@
 \newcommand{\mod}[1]{\ \mathrm{mod}\ #1}
 
 %----------------------------------------------------------------------------------------
+%	LOW LEVEL SECTIONS
+%----------------------------------------------------------------------------------------
+
+\usepackage{titlesec}
+
+\setcounter{secnumdepth}{4} % eq. subsubsubsection
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+%----------------------------------------------------------------------------------------
 %	LISTINGS
 %----------------------------------------------------------------------------------------
 
 \usepackage{amsthm}
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
 
 \theoremstyle{remark}
 \newtheorem*{remark}{Note}
@@ -107,7 +120,7 @@
 %----------------------------------------------------------------------------------------
 
 \usepackage[english]{datetime2}
-\DTMsavedate{thedate}{2020-09-18}
+\DTMsavedate{thedate}{2019-09-18}
 
 \setlength{\droptitle}{-5\baselineskip} % Move the title up
 
@@ -127,7 +140,7 @@
         distributed among the different participants and can't be discovered by a single procedure which would allow breaking a unique encryption code. 
         We show that this distribution of crumbs and their separate encryption considerably increases the security of the storage since, in the absence 
         of a participant, the message can't be recovered. Furthermore, the algorithm doesn't allow anyone other than the rightful owner of the original 
-        message to know in clear all or part of the data at any time whatsoever.
+        message to know in clear all or part of the data at any time whatsoever. This technique is pending patent\footnotemark.
     \end{abstract}
 }
 
@@ -137,6 +150,8 @@
 
 % Print the title
 \maketitle
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]{filed under registration number \texttt{FR1908258} at INPI on July 19, 2019}}
 
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
@@ -149,17 +164,689 @@ encryption for the storage and recovery of stored data and their decryption are 
 
 This complexity comes with the added burden of the risk that the encryption key is always susceptible to being broken and/or hacked.
 
-The goal of our new algorithm, called the \texttt{crumbl} technology, is to develop simple yet particularly effective means for securing data storage.
+The goal of our new algorithm, called the \texttt{crumbl}\texttrademark~ technology, is to develop simple yet particularly effective means for securing 
+data storage.
 
-Our procedure describes a method of secure storage of a source data, owned by one (or more) holder(s), using already proven techniques of asymmetric 
-encryption with the participation of so-called trusted third parties, each having a pair of private and public keys.
+Our procedure describes a method of secure storage of a source data, owned by one (or more) \emph{holder(s)}, using already proven techniques of 
+asymmetric encryption with the participation of so-called trusted third parties, each having a pair of private and public keys.
 
-\section{The Algorithm}
+%----------------------------------------------------------------------------------------
 
-Lorem ipsum...
+\section{Basic Definitions}
+
+\begin{definition}[Source Data]
+    \label{sourceData}
+    The source data $d$ is the data that has to be protected by the \texttt{crumbl} encryption protocol.
+\end{definition}
+
+\begin{definition}[Crumbl]
+    \label{crumbl}
+    A \emph{crumbl} (or crumbled string) is the final result of the encryption of a source data through the \texttt{crumbl} process.
+    Among other elements, it uses crumbs which come from slices of the source data.
+\end{definition}
+
+\begin{definition}[Crumb]
+    \label{crumb}
+    A crumb $\varsigma$ is an encrypted portion of data of size $n$ in its binary form:
+    \begin{equation}
+        \label{eq:crumb}
+        \varsigma := \sum_{j=0}^{n-1} x_j \mid x_j \in \{ 0, 1 \}
+    \end{equation}
+    It could be the byte array itself or any string representation of it (hexadecimal, binary, base-64, \dots).
+
+    When presented with a lower index (eg. $\varsigma_8$), it indicates the order (starting at $0$) in which to eventually concatenate it with the 
+    others. With an added upper index (eg. $\varsigma^\pi)$, it indicates its signer ($\pi$) during encryption. Finally, an upper left index refers to 
+    the current operation (eg. ${}^{O_1}\varsigma$ for operation $O_1$).
+
+    A set of crumbs can only be assigned to one source data. In other words, it is obvious that one can't mix a crumb $\varsigma_1$ from a data $d_1$ 
+    with a crumb $\varsigma_2$ from a data $d_2$.
+\end{definition}
+
+\begin{definition}[Slice]
+    \label{slice}
+    A slice $\sigma$ is a padded plaintext portion of the source data.
+
+    Let $\zeta()$ be a slicing function, $\mu()$ a padding function and $\mu^{-1}()$ its inverse. For $t$ slices made out of a source data $d$, we have:
+    \begin{small}
+        \begin{equation}
+            \label{eq:slice}
+            \left\{
+                \begin{array}{l}
+                    \sigma_i := \mu \Big[ \zeta_i(d, t) \Big] \\ \\
+                    d := \mu^{-1}(\sigma_0) \mathbin\Vert \mu^{-1}(\sigma_1) \mathbin\Vert \dots \mathbin\Vert \mu^{-1}(\sigma_{t-1}) \\
+                \end{array}
+            \right.
+        \end{equation}
+    \end{small}
+\end{definition}
+
+%----------------------------------------------------------------------------------------
+
+\section{The Protocol}
+
+\begin{definition}[Operation]
+    An operation takes a source data and encrypts it with the \texttt{crumbl}, or back.
+\end{definition}
+
+\begin{definition}[Participant]
+    \label{participant}
+    A participant $\pi \in P$ (or signer) is defined by his pair of public ($PK$) and private ($SK$) keys unique to an \texttt{crumbl} operation 
+    he is taking part along with other participants/signers.
+
+    \begin{equation}
+        \label{eq:participant}
+        \begin{array}{rl}
+            \pi: P &\to (\mathcal{K} \times \mathcal{K}) \\
+                \pi_i &\mapsto (\pi_i^{SK}, \pi_i^{PK}) \\
+        \end{array}
+    \end{equation}
+
+    There are two kinds of participants involved in the process:
+    \begin{itemize}
+        \item The holders who wish to protect their asset, ie. the source data;
+        \item The trusted third parties, generally being corporations and the main sponsors of the system, who only participate in data 
+            encryption/decryption as signers and are paid for it.
+    \end{itemize}
+\end{definition}
+
+\begin{definition}[Holder]
+    The holder is the only participant able to have access to the data in clear, ie. the source data.
+    He could be the rightful owner of the data or anyone to whom the latter delegates its use.
+
+    He is (or they are, should there be more than one holder involved in an operation) the signer(s) of a special crumb: $\varsigma_0$, ie. the one 
+    with index $0$.
+\end{definition}
+
+There must be at least one holder and one trusted third party in the list of participants\footnote{We shall see that maximum security starts with at 
+least four participants: one holder and three trusted third parties.}.
+
+\subsection{Encryption}
+
+Algorithm \ref{algo:encryption} presents the encryption protocol of the \texttt{crumbl}\texttrademark~ technology.
+
+\vspace{1em} % one line separation
+
+Let $p$ be the number of participants forming the set $P \gets \{ \pi_p\}$ of signers, $P_0 \in P$ the subset of holders, and $P_\tau \in P$ the subset 
+of trusted third parties with $P_0 \cup P_\tau = P$.
+
+And let $H$ be the holder of the source data $d$.
+
+Finally, let $\mathfrak{c}()$ be the encryption function of the \texttt{crumbl}\footnote{It could be any asymmetric protocol as long as it is available 
+for $H$ in the \emph{words} space $\omega$. Thus, we assume that $H$ knows which protocol uses each participant $\pi_i$; therefore, he'd be using the 
+appropriate $\mathfrak{c}_{\pi_i}()$ function.}:
+\begin{equation}
+    \label{eq:encrypt}
+    \begin{array}{rl}
+        \mathfrak{c}: \qquad \quad \omega \times \mathcal{K} &\to \omega \\
+                (msg, pubkey) &\mapsto \mathfrak{c}(msg, pubkey) \\
+    \end{array}
+\end{equation}
+\begin{algorithm}
+    \SetKwProg{throw}{throw}{}{}
+    \KwIn{$d$, $P$}
+    \KwOut{the crumbled string $Cr$ or an error}
+    \If{$|d| = 0 \vee |P| < 2$}{
+        \throw{invalid input}{}
+    }
+    initialize a new set of crumbs: $\mathcal{C} \gets \emptyset$; \\
+    ask all participants $\pi_i \in P \setminus {\pi_H}$ for their new public key; \\
+    each participant $\pi_i$ creates a new pair of keys along with a request ID $\pi_i^{RID}$, this tuple being stored for future use in the decryption 
+        process; \\
+    $d$ is prepared and split into a set of $t$ slices $\{ \sigma_0, \dots, \sigma_{t-1} \}$ with: $t = |P_\tau| + 1$; \\
+    $H$ encrypts $\sigma_0$ with his own new public key:
+    \begin{equation}
+        \label{eq:crumb0}
+        \mathcal{C} \gets \varsigma_0^{\pi_H} := \mathfrak{c}_{\pi_H}(\sigma_0, \pi_H^{PK})
+    \end{equation} \\
+    \While{$H$ receives each participant's public key ($\pi_i^{PK}$)}{
+        \eIf{$\pi_i \in P_0$}{
+            $H$ encrypts $\sigma_0$: $$
+                \mathcal{C} \gets \varsigma_0^{\pi_{i}} := \mathfrak{c}_{\pi_i}(\sigma_0, \pi_i^{PK})
+            $$ \\
+        }{
+            all other slices are encrypted by $H$ with the received public key:
+            \begin{equation}
+                \label{eq:crumbTT}
+                \begin{array}{l}
+                    \forall j \in \{ \sigma_1, \dots, \sigma_{t-1} \}: \\
+                    \quad \mathcal{C} \gets \varsigma_j^{\pi_{i}} := \mathfrak{c}_{\pi_i}(\sigma_j, \pi_i^{PK})
+                \end{array}
+            \end{equation} \\
+        }
+    }
+    $Cr$ is finalized by $H$ using $d$ and the set of all crumbs $\mathcal{C}$; \\
+    \Return{$Cr$}
+    \caption{Encryption protocol}
+    \label{algo:encryption}
+\end{algorithm}
+
+As shown, everything takes place in $H$ environment which guarantees that the source data is never sent, let alone known, by any other stakeholder.
+
+If no error is raised, the output crumbl $Cr$ can be stored anywhere, by any of the stakeholders and/or some outsourcer (eg. a hosting service). In any 
+case, $H$ should store a tuple of references to $Cr$ (or $d$) and the keypair used for the operation. He may also store its verification hash and use 
+it for that purpose.
+
+\begin{definition}[Verification Hash]
+    \label{verificationHash}
+    A verification hash $V$ is made of the concatenation of the 64 first characters of a crumbled string $Cr$:
+    \begin{equation}
+        \label{eq:verificationHash}
+        V := \mathbin\Vert_{i=1}^{64} Cr[i]
+    \end{equation}
+    where $Cr[i]$ is the $i$-th character of $Cr$.
+
+    By design, the verification hash is unique to an operation \textemdash~see Definition \ref{hashered} and (\ref{eq:hashered}).
+
+    It is generally used for search or storage purposes\footnote{For example, our latest implementation requires that we ask a hosting service for a 
+    crumbl by sending its verification hash.}.
+
+    By definition, it is verified that\footnote{We will use the notation $V \subset Cr$ in the rest of the document when we want to assert that a 
+    passed $V$ is $Cr$'s appropriate verification hash.}: $V \subset Cr$.
+\end{definition}
+
+\subsection{Decryption}
+
+Algorithm \ref{algo:decryption} presents the decryption protocol.
+
+\vspace{1em} % one line separation
+
+Let $P'_\tau$ a subset of $P_\tau$ of size $1 \leq n \leq |P_\tau| - 1$, and $H_1$ one of the signing holders that wishes to recover the data.
+
+And let $\upsilon(d)$ be the hashered function to build a verification hash for a data $d$ \textemdash~see (\ref{eq:hashered}), and 
+\texttt{MIN\_LENGTH} $ > 64$ the minimum required length of a crumbled string.
+
+Finally, let $\mathfrak{D}()$ be the decryption function of the \texttt{crumbl}:
+\begin{equation}
+    \label{eq:decrypt}
+    \begin{array}{rl}
+        \mathfrak{D}: \quad \mathbb{N} \times \omega \times \mathcal{K} &\to \omega \\
+                (j, Cr, privkey) &\mapsto \mathfrak{D}(j, Cr, privkey) \\
+    \end{array}
+\end{equation}
+with $j$ being the $j$-th crumb.
+
+\begin{algorithm}
+    \SetKwProg{throw}{throw}{}{}
+    \KwIn{$Cr$, a decrypter $H_1 \in P_0$, $P'_\tau$, an optional verification hash $V$}
+    \KwOut{the data $d$ or an error}
+    \uIf{$V \neq \emptyset \wedge V \not\subset Cr$}{
+        \throw{invalid verification hash}{}
+    }\uElseIf{$|Cr| < $ \emph{\texttt{MIN\_LENGTH}}}{
+        \throw{invalid crumbled string}{}
+    }
+    from $Cr$, get the number $t$ of slices; \\
+    initialize a new set of slices $\mathcal{S} \gets \emptyset$; \\
+    set the timeout limit $\theta$; \\
+    initialize $R$ the map of received messages by $H1$ with cardinality $t$: $\forall i \in [1..t]: R_i \gets \emptyset$; \\
+    \For{$i \gets 1$ \KwTo $p$ \KwBy $1$}{
+        $H_1$ requests his decrypted crumbs to trusted third party $\pi_i$; \\
+    }
+    \While{current time $\leq \theta$}{
+        \ForEach{$\pi_i \in P'_\tau$}{
+            \For{$j \gets 1$ \KwTo $t$ \KwBy $1$}{
+                \If{$\exists \sigma_j := \mathfrak{D}(j, Cr, \pi_i^{SK})$}{
+                    $\pi_i$ sends his slice $\sigma_j$ to $H1$: $R_{j,i} \gets \sigma_j^{\pi_i}$; \\
+                }
+            }
+        }
+    }
+    \For{$j \gets 1$ \KwTo $|R|$ \KwBy $1$}{
+        process received $\sigma_j^{\pi_i}$: $\sigma_j \gets \sigma_j^{\pi_i}$; \\
+        \If{$\sigma_j \not\in \mathcal{S}$}{
+            $\mathcal{S} \gets \sigma_j$; \\
+        }
+    }
+    \If{$|\mathcal{S}| \neq t$}{
+        \throw{missing ($t - |\mathcal{S}|$) slices}{}
+    }
+    $H_1$ decrypts crumb $0$:
+    \eIf{$\exists \sigma_0 := \mathfrak{D}(0, Cr, {H_1}^{SK})$} {
+        $S \gets \sigma_0$
+    }{
+        \throw{$H_1$ is not a holder}{}
+    }
+    use (\ref{eq:slice}) on $\mathcal{S} := \{ \sigma_t \}$ to recover $d$:$$
+        d \gets \mu^{-1}(\sigma_0) \mathbin\Vert \mu^{-1}(\sigma_1) \mathbin\Vert \dots \mathbin\Vert \mu^{-1}(\sigma_{t-1})
+    $$ \\
+    \If{$V \neq \emptyset \wedge \upsilon(d) \neq V$}{
+        \throw{invalid recovered data $d$ against verification hash $V$}{}
+    }
+    \Return{$d$}
+    \caption{Decryption protocol}
+    \label{algo:decryption}
+\end{algorithm}
+
+\vspace{1em} % one line separation
+
+If there's no error, the returned item is a copy of the original source data as a string.
+
+%----------------------------------------------------------------------------------------
+
+\section{The Process}
+
+This section describes the detailed encryption process used in the $\mathfrak{c}()$ and $\mathcal{D}()$ functions in the above protocol.
+
+Let us first give a more precise definition of a crumbl through its actual representation as a crumbled string.
+\begin{definition}[Crumbled string]
+    \label{crumbledString}
+    The final crumbled string $Cr$ is made of the concatenation of a so-called hashered prefix with the concatenation of the base-64 string 
+    representation of all the crumbs:
+    \begin{equation}
+        \label{eq:crumbledString}
+        Cr := \upsilon(d) \mathbin\Vert \left( \sum_{i=0}^t \sum_{j=0}^p (\varsigma_i^{\pi_j})_{64} \right)
+    \end{equation}
+    where we use the symbol $\sum$ in the end part of (\ref{eq:crumbledString}) for concatenation\footnote{From now on, we may use this notation 
+    whenever it's clear in the explanation, or the $\sum^{\mathbin\Vert}$ alternative when applied on a full set/array.}.
+\end{definition}
+
+\subsection{A unique prefix}
+
+Let $sort(items)$ be the function that returns a lexicographically sorted set of items\footnote{
+    If the items are presented as a map, they are first lexicographically sorted on their keys, then their values are also lexicographically sorted.
+}, and $cut(word, at)$ the function that splits the passed $word$ in two after the $at$-th character.
+
+And let $\mathfrak{h}()$ be a secure cryptographic hashing function returning a 256-bits hash\footnote{We use the \texttt{SHA-256} algorithm in our 
+implementation because of its native availability in most browsers.}.
+
+\begin{definition}[Hashered prefix]
+    \label{hashered}
+    We build the hashered prefix by concatenating two parts:
+    \begin{itemize}
+        \item The 32 first characters of the hexadecimal string representation of the hash of the source data (using $\mathfrak{h}()$): $h^+$;
+        \item The 32 last characters of this hash ($h^-$) XORed with the padded lexicographically sorted owners' crumbs concatenation in hexadecimal.
+    \end{itemize}
+    \begin{equation}
+        \label{eq:hashAndSplit}
+        \Rightarrow h^+, h^- := cut \left( \mathfrak{h}(d), 32 \right)
+    \end{equation}
+
+    \vspace{1em} % one line separation
+
+    Let $HR()$ be the hashering function that takes $h^-$ and the set of crumbs $\mathcal{C}$, and returns the second part of the hashered prefix
+    \footnote{Recall that when using a map, like $\mathcal{C}$, the first sorting is made on the keys which are the crumb numbers ranging from $0$ 
+    to $t \in \mathbb{N}$.}.
+    \begin{equation}
+        \label{eq:hashering}
+        \begin{array}{rl}
+            HR: \omega \times \omega^t &\to \omega \\
+                (h^-, \mathcal{C}) &\mapsto h^- \oplus \left( \sum^{\mathbin\Vert} sort(\mathcal{C}) \right)
+        \end{array} 
+    \end{equation}
+
+    The full hashering function $\upsilon()$ takes the source data $d$ and its associated set of crumbs to return the hashered prefix using 
+    (\ref{eq:hashAndSplit}) in the process to build $h^+$ and $h^-$:
+    \begin{equation}
+        \label{eq:hashered}
+        \begin{array}{rl}
+            \upsilon: \quad \omega \times \omega^t &\to \omega \\
+                (d, \mathcal{C}) &\mapsto \upsilon(d, \mathcal{C}) := h^+ \mathbin\Vert HR(h^-, \mathcal{C}) \\
+        \end{array}
+    \end{equation}
+
+    The use of the hashering function ($HR()$) ensures the hashered prefix uniqueness.
+
+    \begin{proof}
+        Let $d$ be a source data owned by $\pi_{h}$, and ${}^{O_1}Cr$ and ${}^{O_2}Cr$ the results of the \texttt{crumbl} process from two operations 
+        $O_1$ and $O_2$ initiated by $\pi_h$.
+
+        We are trying to prove that ${}^{O_1}Cr$ and ${}^{O_2}Cr$ will be different as long as at least $\pi_{h}$ respects the process (even though 
+        some or all other participants don't play fair).
+
+        Thanks to Definition \ref{participant}, we know that $\pi_h$ would use different keypairs for $O_1$ and $0_2$ such as:$$
+            {}^{O_1}\varsigma_0^{\pi_h} \neq {}^{O_2}\varsigma_0^{\pi_h}
+        $$
+
+        Because (\ref{eq:hashering}) uses $sort()$ in $HR()$, we know that $\varsigma_0$ will always be the first crumb used to build the hashered 
+        prefix.
+        
+        Therefore, let $x_1$ and $x_2$ be the hashered prefixes during $O_1$ and $O_2$, through (\ref{eq:hashered}) we have:$$
+        \begin{array}{l}
+            \left\{
+                \begin{array}{ll}
+                    x_1 \gets \upsilon(d, \mathcal{C}_1) &\iff \mathcal{C}_1 := \{ {}^{O_1}\varsigma_0^{\pi_h}, \dots \} \\
+                    x_2 \gets \upsilon(d, \mathcal{C}_2) &\iff \mathcal{C}_2 := \{ {}^{O_2}\varsigma_0^{\pi_h}, \dots \} \\
+                \end{array}
+            \right. \\ \\
+            \quad \Rightarrow x_1 \neq x_2 \\
+            \end{array}
+        $$
+        
+        Using (\ref{eq:crumbledString}), we see that for the same $d \in \omega$:$$
+        \begin{array}{l}
+            \left\{
+                \begin{array}{l}
+                    {}^{O_1}Cr := x1 \mathbin\Vert \left( \sum_{i=0}^t \sum_{j=0}^p ({}^{O_1}\varsigma_i^{\pi_j})_{64} \right) \\
+                    {}^{O_2}Cr := x2 \mathbin\Vert \left( \sum_{i=0}^t \sum_{j=0}^p ({}^{O_2}\varsigma_i^{\pi_j})_{64} \right) \\
+                \end{array}
+            \right. \\ \\
+            \quad \Rightarrow \textrm{if } \pi_{h_{O_1}} \neq \pi_{h_{O_2}} \textrm{ then } {}^{O_1}Cr \neq {}^{O_2}Cr \\
+        \end{array}$$
+
+        By construction, each $Cr$ is unique at least thanks to the uniqueness of its hashered prefix if one participant (and even more so a holder) 
+        respects the protocol.
+    \end{proof}
+\end{definition}
+
+Prepended to the crumbs, not only does this prefix gives the crumbled string absolute uniqueness, but it also allows easy indexing.
+
+\subsection{A step-by-step construct}
+
+\subsubsection{Tools}
+
+\paragraph{Obfuscation}
+
+Let $\mathfrak{F}()$ be an implementation of an almost Format-Preserving Encryption scheme based on a Feistel\cite{feistel:hf} cipher\footnote{We use 
+our own implementation described in \cite{Feistel:cyd}.}.
+
+$\mathfrak{F}()$ is used as our obfuscation tool in the process. It returns an obfuscated word of even length when applied on a source data, and the 
+exact copy of the source data when applied on its obfuscated version.
+
+\paragraph{Padding}
+
+\begin{algorithm}
+    \KwIn{a message $m$, the minimum size $s$ for the output}
+    \KwOut{the appropriately padded message if necessary}
+    let $l$ be the length of $m$: $l \gets |m|$; \\
+    $\delta \gets l - s$; \\
+    \eIf{$\delta \geq 0$}{
+        \Return{$m$}
+    }{
+        \eIf{$m[0] = \emph{\texttt{PAD}}_0$}{
+            \eIf{$m[l-1] = \emph{\texttt{PAD}}_1$}{
+                \Return{$\left( \emph{\texttt{PAD}}_2 \times \delta \right) \mathbin\Vert m$}
+            }{
+                \Return{$\left( \emph{\texttt{PAD}}_1 \times \delta \right) \mathbin\Vert m$}
+            }
+        }{
+            \eIf{$m[l-1] = \emph{\texttt{PAD}}_0$}{
+                \eIf{$m[0] = \emph{\texttt{PAD}}_1$}{
+                    \Return{$\left( \emph{\texttt{PAD}}_2 \times \delta \right) \mathbin\Vert m$}
+                }{
+                    \Return{$\left( \emph{\texttt{PAD}}_1 \times \delta \right) \mathbin\Vert m$}
+                }
+            }{
+                \Return{$\left( \emph{\texttt{PAD}}_0 \times \delta \right) \mathbin\Vert m$}
+            }
+        }
+    }
+    \caption{Padding function $\mu$}
+    \label{algo:padding}
+\end{algorithm}
+
+We herein define some padding (and respective unpadding) features such as an input returns unmodified if its length is greater than the wanted minimum 
+size (in case of padding), or if it wasn't padded in the first place (in case of unpadding).
+
+Let $\texttt{PAD}_0$, $\texttt{PAD}_1$ and $\texttt{PAD}_2$ be three special padding characters\footnote{In our implementation, we use the following 
+UTF-8 characters:
+\begin{itemize}
+    \item $\texttt{PAD}_0 \gets$ \texttt{U+0002} (start-of-text) character;
+    \item $\texttt{PAD}_1 \gets$ \texttt{U+0004} (end-of-transmission) character;
+    \item $\texttt{PAD}_2 \gets$ \texttt{U+0005} (enquiry) character.
+\end{itemize}}, and $\_$ the symbol used when a variable should be discarded.
+
+The reason why we use these three different kinds of padding characters is because of the way the Feistel cipher works during obfuscation: by switching 
+left and right parts of the input data, we might take the risk to be mistaken at the end of the unpadding process should we choose padding characters 
+that are the same than one of the two ends of the input, hence the different options for the padding character.
+
+Algorithm \ref{algo:padding} describes this special padding function $\mu()$.
+
+In our implementation, we also add an optional parameter to $\mu$ to be sure to return a padded input of even length, therefore modifying a bit 
+the flow of operations in the final function \footnote{Check out the code in Go (\url{https://github.com/cyrildever/feistel} or in TypeScript  
+(\url{https://github.com/cyrildever/feistel-cipher}).}.
+
+And Algorithm \ref{algo:unpadding} shows $\mu^{-1}()$, the reverse unpadding function.
+
+\begin{algorithm}
+    \KwIn{an eventually padded message $m$}
+    \KwOut{the unpadded message}
+    \eIf{$m[0] \neq \emph{\texttt{PAD}}_0 \wedge m[0] \neq \emph{\texttt{PAD}}_1 \wedge m[0] \neq \emph{\texttt{PAD}}_2$}{
+        \Return{$m$}
+    }{
+        $\_, m' \gets cut(m, 1)$; \\
+        \While{$m'[0] \in \{ \emph{\texttt{PAD}}_0, \emph{\texttt{PAD}}_1, \emph{\texttt{PAD}}_2 \}$}{
+            $\_, m' \gets cut(m', 1)$; \\
+        }
+        \Return{$m'$}
+    }
+    \caption{Unpadding function $\mu^{-1}$}
+    \label{algo:unpadding}
+\end{algorithm}
+
+Obviously, we have: $$\forall d \in \omega: d' := \mu(d) \iff d := \mu^{-1}(d')$$
+
+\paragraph{Slicing}
+
+The last tool needed before encryption is the \emph{slicer}. It takes a string $s$ to slice as well as the number of desired slices $t$ and returns a 
+set of padded slices $\mathcal{S} := \{ \sigma_0, \dots, \sigma_{t-1} \}$.
+
+For maximum security, the slices are not supposed to be of the same length; therefore, they run through the padding function $\mu()$ at the end of the 
+process.
+
+Let $\Delta_{max}$ be the maximum standard deviation allowed by the system between slices, and $Rnd()$ a Pseudo-Random Number Generator (PRNG) 
+function\cite{PRNG}.
+\begin{algorithm}
+    \KwIn{$s$, $t$}
+    \KwOut{$\mathcal{S}$}
+    initialize a set of split masks: $\mathcal{M} \gets \emptyset$; \\
+    seed $Rnd()$; \\
+    set variables $pos \gets 0$ and $\bar{x} \gets \floor{ \frac{|s|}{t} }$; \\
+    \While{$|\mathcal{M}| \neq t \wedge (\sum_{j=1}^t \mathcal{M}_j) \neq |s|$}{
+        \For{$i \gets 0$ \KwTo $t-1$ \KwBy $1$}{
+            find the mask length $l_i$ such as: \small $$
+                l_i := \bar{x} - \Delta_{max} < Rnd() \leq \bar{x} + \Delta_{max}
+            $$\normalsize \\
+            $\mathcal{M} \gets l_i$; \\
+            $pos \gets pos + l_i + 1$; \\
+        }
+    }
+    initialize $\mathcal{S} \gets \emptyset$; \\
+    $(\sigma_0, r) \gets cut(s, \mathcal{M}_0)$; \\
+    $\mathcal{S} \gets \sigma_0$; \\
+    \For{$i \gets 1$ \KwTo $t-1$ \KwBy $1$}{
+        $(\sigma_i, r) \gets cut(r, \mathcal{M}_i)$; \\
+        $\mathcal{S} \gets \sigma_i$; \\
+    }
+    \Return{$\mathcal{S}$}
+    \caption{Slicer $\zeta$}
+    \label{algo:slicer}
+\end{algorithm}
+
+\begin{remark}
+    The number of desired slices depends on the size of the input string $s$ and the system's minimum length of slice \texttt{MIN\_SLICE\_SIZE}$ > 2$.
+\end{remark}
+
+\subsubsection{Construct}
+
+Algorithm \ref{algo:construct} describes the steps that leads from the source data $d$ to the crumbled string $Cr$, provided we have all the necessary 
+material at our disposal (participants' keys, tools, system settings configured, \dots).
+
+Let $K$ be a secret key and $N$ the number of rounds to use for obfuscation.
+\begin{algorithm}
+    \KwIn{$d$, $P$}
+    \KwOut{$Cr$, $V$}
+    obfuscate input: $d' \gets \mathfrak{F}(d, K, N)$; \\
+    eventually pad it: $d' \gets \mu(d')$; \\
+    determine the number of slices $t$ and therefore the $\Delta_{max}$; \\
+    build the slices: $\mathcal{S} \gets \zeta_{\Delta_{max}}(d', t)$; \\
+    initialize the set of crumbs: $\mathcal{C} := \{ \varsigma_{t \times |P| - 1} \}$; \\
+    allocate crumbs to participants in a map $\mathcal{A_P}$ where each holder is associated with crumb $\varsigma_0$ and each trusted third party with 
+    $t - 1$ crumbs from $\mathcal{S}' := \mathcal{S} \setminus \varsigma_0$; \\
+    \For{$i \gets 0$ \KwTo $t-1$ \KwBy $1$}{
+        \For{$j \gets 0$ \KwTo $|A_P|-1$ \KwBy $1$}{
+            $\mathcal{C} \gets \mathfrak{c}(\sigma_i \in \mathcal{S}, \pi_j^{PK} \in P)$;
+        }
+    }
+    use (\ref{eq:crumbledString}) to build the crumbled string: $Cr := \upsilon(d) \mathbin\Vert \Big( \sum^{\mathbin\Vert} \mathcal{C} \Big)$; \\
+    \Return{$Cr$, $\upsilon(d)$}
+    \caption{From data to crumbl}
+    \label{algo:construct}
+\end{algorithm}
+
+The allocation method may differ depending on the security and continuity preferences of the system.
+The more trusted third parties encrypt crumbs, the heavier the result, the longer the $Cr$, but the more resilient the system can be (see section 
+\ref{security}).
+
+In any case, the allocation rule must respect the following Proposition:
+
+\begin{proposition}
+    \label{prop:allocation}
+    Let $\mathcal{C}' := \mathcal{C} \setminus \varsigma_0$ be the set of crumbs to allocate to $\pi_i \in P_\tau \forall i := [1, \dots, t-1]$.
+    Each $\pi_i$ must have at most $t-2$ crumbs to encrypt and the allocation should be evenly distributed among the participants such as 
+    \begin{equation}
+        \label{eq:allocation}
+        \sum_{i=1}^{t-1} P(\varsigma_i) = 1 \iff P(\varsigma_i) = \frac{1}{|P_\tau|}
+    \end{equation}  
+    ensuring maximum resilience to the system.
+
+    For example, with three participants, we have $$
+    |P_\tau| \gets 3 \Rightarrow P(\varsigma_i) = \frac{1}{3}
+    $$
+    which necessarily leads to the following distribution of crumbs:$$
+        \begin{array}{l}
+            \mathcal{C}^{\pi_{\tau_1}} := \{ \varsigma_1, \varsigma_2 \} \\
+            \mathcal{C}^{\pi_{\tau_2}} := \{ \varsigma_1, \varsigma_3 \} \\
+            \mathcal{C}^{\pi_{\tau_3}} := \{ \varsigma_2, \varsigma_3 \} \\ \\
+            \Rightarrow \left\{
+                \begin{array}{l}
+                    P(\varsigma_1) = \frac{1}{6} + \frac{1}{6} = \frac{1}{3} \\ \\
+                    P(\varsigma_2) = \frac{1}{3} \\ \\
+                    P(\varsigma_3) = \frac{1}{3} \\
+                \end{array}
+            \right.
+        \end{array}
+    $$
+    We will see in the proof of Proposition \ref{prop:ttp3} that this case corresponds to a secure and resilient system.
+\end{proposition}
+
+\subsubsection{Deconstruct}
+
+The inverse method (to recover a source data from a crumbl $Cr$) involves the respect of the decryption protocol (see Algorithm \ref{algo:decryption}).
+Therefore, the holder $\pi_H$ that wants to recover the data must first gather the decrypted crumbs from the trusted third parties.
+
+As seen above, the allocation of crumbs at encryption respects the following formula: each trusted third party may only encrypt at most $t-1$ crumbs.
+
+It follows that at least two trusted third parties are necessary (and could be enough) to get all the needed decrypted crumbs. As soon as they are in 
+possession of the holder $\pi_H$, he can run Algorithm \ref{algo:deconstruct} that indeed details the last steps of the decryption protocol 
+\textemdash~see Algorithm \ref{algo:decryption}.
+\begin{algorithm}
+    \SetKwProg{throw}{throw}{}{}
+    \KwIn{$Cr$, $\pi_H^{SK}$, $\mathcal{S}' := \mathcal{S} \setminus \varsigma_0$, an optional verification hash $V$}
+    \KwOut{the recovered data or an error}
+    from $Cr$, get the number $t$ of slices; \\
+    \If{$|\mathcal{S}'| \neq t - 1$}{
+        \throw{not enough third-party slices}{}
+    }
+    initialize $\mathcal{S} \gets \mathcal{S}'$; \\
+    $\pi_H$ decrypts his own crumb $\varsigma_0$: $\mathcal{S} \gets \varsigma_0 := \mathfrak{D}(0, Cr, \pi_H^{SK})$; \\
+    use \ref{eq:slice} to build the recovered data $d$:$$ 
+        d \gets \sum_{i=0}^{t-1} \mu^{-1}(\mathcal{S}_i)
+    $$ \\
+    \If{$V \neq \emptyset \wedge \upsilon(d) \neq V$}{
+        \throw{invalid verification hash}{}
+    }
+    \Return{$d$}
+    \caption{From slices to data}
+    \label{algo:deconstruct}
+\end{algorithm}
+
+%----------------------------------------------------------------------------------------
+
+\section{Security and Resilience}
+\label{security}
+
+It is easy to prove that the \texttt{crumbl}\texttrademark~ technology can be implemented in a secure and resilient way.
+
+\subsection{A secure system}
+
+\begin{definition}[Secure]
+    \label{secure}
+    We define the system to be fully \emph{secure} if it doesn't only rely on a "classic" asymmetric or symmetric encryption scheme with one keypair 
+    eventually shared.
+\end{definition}
+
+\begin{proposition}
+    \label{prop:min1}
+    If there is at least one holder $\pi_H$ and one trusted third party $\pi_\tau$, then the system is \emph{secure}.
+\end{proposition}
+
+\begin{proof}
+    We start by proving that the system can't be secure if only one actor is present.
+
+    \vspace{1em} % one line separation
+
+    By design, only $\pi_H$ can encrypt the crumb $\varsigma_0$.
+    
+    Therefore, if $\pi_\tau$ is alone, the system is not working, let alone secure.
+    
+    And if $\pi_\tau$ is encrypting $\varsigma_0$, he is acting as a holder.
+    Now this implies that the lonely holder is encrypting all the crumbs, which is the very definition of a non-secure "classic" encryption scheme.
+
+    \vspace{1em} % one line separation
+
+    Secondly, if the two participants are present and $\pi_H \neq \pi_\tau$, then neither of them will have access to the other's keypair to decrypt the 
+    other's crumb(s). 
+    
+    Moreover, $\pi_\tau$ doesn't have access to $\varsigma_0$; thus, he can't finalize the decryption process at all.
+    This also means that, should $\pi_H$ disappear or loses his secret key for the operation ${}^O\pi_H^{PK}$, the data won't ever be recovered. Thus,
+    the system is secure in that case.
+
+    \vspace{1em} % one line separation
+
+    If $\pi_H$ respects the encryption protocol, he wouldn't encrypt all the crumbs, leaving at least one crumb $\varsigma_i \mid i \neq 0$ only 
+    encrypted by $\pi_\tau$; thus, he will need the latter to eventually finalize the decryption process, proving the system is secure in the absence of 
+    one necessary participant.
+    
+    Finally, by construction, it is not a "classic" encryption scheme anymore. Therefore, the system is \emph{secure}.
+\end{proof}
+
+\subsection{A resilient system}
+
+\begin{definition}[Resilient]
+    \label{resilient}
+    We define the system to be \emph{resilient} if the failure of a trusted third party doesn't prevent a holder to recover his data.
+\end{definition}
+
+\begin{proposition}
+    \label{prop:ttp3}
+    Let $\mathcal{G}_\tau$ be the total possible set of trusted third parties, and ${}^OP_\tau \subset {}^OP \subset \mathcal{G}_\tau$ the actual 
+    trusted third parties participating in an operation $O$, if its cardinality $|{}^OP_\tau| \geq 3$ and $|\mathcal{G}_\tau| > |{}^OP_\tau|$ then the 
+    \texttt{crumbl}\texttrademark~ protocol is both secure and resilient as long as the system enforces a replacement mechanism for any failing trusted 
+    third party $\in \mathcal{G}_\tau$.
+\end{proposition}
+
+\begin{proof}
+    We first prove that, although the system using one trusted third party is secure (cf. Definition \ref{secure}), it is not \emph{resilient}.
+    Indeed, if the one and only trusted third party fails, then the holder is left with at least one missing crumb, and therefore can't recover the 
+    data anymore.
+
+    \vspace{1em} % one line separation
+
+    In the same way, if there are two trusted third parties ($\pi_{\tau_1}$ and $\pi_{\tau_2}$) involved, as by construction each trusted third party 
+    encrypts $t-2$ crumbs, there is at least one crumb that only $\pi_{\tau_1}$ doesn't encrypt while $\pi_{\tau_2}$ does (and vice-versa).
+    
+    So, if either one of them fails, the system is still not resilient.
+
+    \vspace{1em} % one line separation
+
+    Finally, if there are 3 participating trusted third parties $\pi_{\tau_1}, \pi_{\tau_2}, \pi_{\tau_3} \in P_\tau$, from (\ref{eq:crumb0}) and 
+    (\ref{eq:crumbTT}), we have: \emph{(for instance with one holder $\pi_H \in P_0$)}$$
+        \begin{array}{l}
+            \mathcal{C}^{\pi_H} := \{ \varsigma_0 \} \\
+            \mathcal{C}^{\pi_{\tau_1}} := \{ \varsigma_1, \varsigma_2 \} \\
+            \mathcal{C}^{\pi_{\tau_2}} := \{ \varsigma_1, \varsigma_3 \} \\
+            \mathcal{C}^{\pi_{\tau_3}} := \{ \varsigma_2, \varsigma_3 \} \\
+            \iff \mathcal{C} := \mathcal{C}^{\pi_H} \cup \mathcal{C}^{\pi_{\tau_1}} \cup \mathcal{C}^{\pi_{\tau_2}} \cup \mathcal{C}^{\pi_{\tau_3}} \\
+        \end{array}
+    $$
+    It is easy to see that if any of the trusted third party fails, the other two still have the full set of crumbs under their control, eg. if 
+    $\pi_{\tau_1}$ fails, then $\mathcal{C}^{\pi_{\tau_2}} \cup \mathcal{C}^{\pi_{\tau_3}} := \{ \varsigma_1, \varsigma_2, \varsigma_3 \}$ which will 
+    allow $\pi_H$ with his own $\varsigma_0$ to rebuild the complete set $\mathcal{C}$ of the operation, and therefore recover the data.
+
+    And so on and so forth the more you add trusted third party participants and respects the allocation rule (cf. Proposition \ref{prop:allocation}).
+\end{proof}
 
 %\vfill\eject % To force break column if need be
-\tableofcontents % Uncomment to add a table of contents
+%\tableofcontents % Uncomment to add a table of contents
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
@@ -170,8 +857,12 @@ Lorem ipsum...
 \bibitem[1]{feistel:hf}
 Horst Feistel. \emph{Cryptography and Computer Privacy}, Scientific American, 1973.
 
-\bibitem[2]{Permutations:lr}
-Michael Luby, Charles Rackoff. \emph{How to Construct Pseudorandom Permutations from Pseudorandom Functions}, SIAM Journal on Computing, 1988.
+\bibitem[2]{Feistel:cyd}
+Cyril Dever. \emph{Feistel Cipher with Hash Round Function}, 2021.
+\\\small\url{https://github.com/cyrildever/feistel}
+
+\bibitem[3]{PRNG}
+E. Barker, W. Barker, W. Burr, W. Polk, M. Smid. \emph{Recommendation for Key Management}, NIST, 2012.
 
 \end{thebibliography}
 
