@@ -62,11 +62,14 @@
 %	FUNCTIONS
 %----------------------------------------------------------------------------------------
 
+\usepackage{amsmath}
+
 \newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\newcommand{\concat}{\mathbin{{+}\mspace{-8mu}{+}}}
 \newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
 \newcommand{\bsfnote}{\textsuperscript{*}} % for reference to the base64 string note
 \newcommand{\hexnote}{\textsuperscript{$\dagger$}} % for reference to the hex string note
-\newcommand{\mod}[1]{\ \mathrm{mod}\ #1}
+\newcommand{\norm}[1]{\left\Vert#1\right\Vert}
 
 %----------------------------------------------------------------------------------------
 %	LOW LEVEL SECTIONS
@@ -213,7 +216,7 @@ asymmetric encryption with the participation of so-called trusted third parties,
             \left\{
                 \begin{array}{l}
                     \sigma_i := \mu \Big[ \zeta_i(d, t) \Big] \\ \\
-                    d := \mu^{-1}(\sigma_0) \mathbin\Vert \mu^{-1}(\sigma_1) \mathbin\Vert \dots \mathbin\Vert \mu^{-1}(\sigma_{t-1}) \\
+                    d := \mu^{-1}(\sigma_0) \concat \mu^{-1}(\sigma_1) \concat \dots \concat \mu^{-1}(\sigma_{t-1}) \\
                 \end{array}
             \right.
         \end{equation}
@@ -285,14 +288,14 @@ appropriate $\mathfrak{c}_{\pi_i}()$ function.}:
     \SetKwProg{throw}{throw}{}{}
     \KwIn{$d$, $P$}
     \KwOut{the crumbled string $Cr$ or an error}
-    \If{$|d| = 0 \vee |P| < 2$}{
+    \If{$\norm{d} = 0 \vee \norm{P} < 2$}{
         \throw{invalid input}{}
     }
     initialize a new set of crumbs: $\mathcal{C} \gets \emptyset$; \\
     ask all participants $\pi_i \in P \setminus {\pi_H}$ for their new public key; \\
     each participant $\pi_i$ creates a new pair of keys along with a request ID $\pi_i^{RID}$, this tuple being stored for future use in the decryption 
         process; \\
-    $d$ is prepared and split into a set of $t$ slices $\{ \sigma_0, \dots, \sigma_{t-1} \}$ with: $t = |P_\tau| + 1$; \\
+    $d$ is prepared and split into a set of $t$ slices $\{ \sigma_0, \dots, \sigma_{t-1} \}$ with: $t = \norm{P_\tau} + 1$; \\
     $H$ encrypts $\sigma_0$ with his own new public key:
     \begin{equation}
         \label{eq:crumb0}
@@ -331,7 +334,7 @@ it for that purpose.
     A verification hash $V$ is made of the concatenation of the 64 first characters of a crumbled string $Cr$:
     \begin{equation}
         \label{eq:verificationHash}
-        V := \mathbin\Vert_{i=1}^{64} Cr[i]
+        V := \concat {\Big|}_{i=1}^{64} Cr[i]
     \end{equation}
     where $Cr[i]$ is the $i$-th character of $Cr$.
 
@@ -350,7 +353,7 @@ Algorithm \ref{algo:decryption} presents the decryption protocol.
 
 \vspace{1em} % one line separation
 
-Let $P'_\tau$ a subset of $P_\tau$ of size $1 \leq n \leq |P_\tau| - 1$, and $H_1$ one of the signing holders that wishes to recover the data.
+Let $P'_\tau$ a subset of $P_\tau$ of size $1 \leq n \leq \norm{P_\tau} - 1$, and $H_1$ one of the signing holders that wishes to recover the data.
 
 And let $\upsilon(d)$ be the hashered function to build a verification hash for a data $d$ \textemdash~see (\ref{eq:hashered}), and 
 \texttt{MIN\_LENGTH} $ > 64$ the minimum required length of a crumbled string.
@@ -371,7 +374,7 @@ with $j$ being the $j$-th crumb.
     \KwOut{the data $d$ or an error}
     \uIf{$V \neq \emptyset \wedge V \not\subset Cr$}{
         \throw{invalid verification hash}{}
-    }\uElseIf{$|Cr| < $ \emph{\texttt{MIN\_LENGTH}}}{
+    }\uElseIf{$\norm{Cr} < $ \emph{\texttt{MIN\_LENGTH}}}{
         \throw{invalid crumbled string}{}
     }
     from $Cr$, get the number $t$ of slices; \\
@@ -390,14 +393,14 @@ with $j$ being the $j$-th crumb.
             }
         }
     }
-    \For{$j \gets 1$ \KwTo $|R|$ \KwBy $1$}{
+    \For{$j \gets 1$ \KwTo $\norm{R}$ \KwBy $1$}{
         process received $\sigma_j^{\pi_i}$: $\sigma_j \gets \sigma_j^{\pi_i}$; \\
         \If{$\sigma_j \not\in \mathcal{S}$}{
             $\mathcal{S} \gets \sigma_j$; \\
         }
     }
-    \If{$|\mathcal{S}| \neq t$}{
-        \throw{missing ($t - |\mathcal{S}|$) slices}{}
+    \If{$\norm{\mathcal{S}} \neq t$}{
+        \throw{missing ($t - \norm{\mathcal{S}}$) slices}{}
     }
     $H_1$ decrypts crumb $0$:
     \eIf{$\exists \sigma_0 := \mathfrak{D}(0, Cr, {H_1}^{SK})$} {
@@ -405,9 +408,9 @@ with $j$ being the $j$-th crumb.
     }{
         \throw{$H_1$ is not a holder}{}
     }
-    use (\ref{eq:slice}) on $\mathcal{S} := \{ \sigma_t \}$ to recover $d$:$$
-        d \gets \mu^{-1}(\sigma_0) \mathbin\Vert \mu^{-1}(\sigma_1) \mathbin\Vert \dots \mathbin\Vert \mu^{-1}(\sigma_{t-1})
-    $$ \\
+    use (\ref{eq:slice}) on $\mathcal{S} := \{ \sigma_t \}$ to recover $d$: \begin{small} $$
+        d \gets \mu^{-1}(\sigma_0) \concat \mu^{-1}(\sigma_1) \concat \dots \concat \mu^{-1}(\sigma_{t-1})
+    $$ \end{small} \\
     \If{$V \neq \emptyset \wedge \upsilon(d) \neq V$}{
         \throw{invalid recovered data $d$ against verification hash $V$}{}
     }
@@ -433,10 +436,10 @@ Let us first give a more precise definition of a crumbl through its actual repre
     representation of all the crumbs:
     \begin{equation}
         \label{eq:crumbledString}
-        Cr := \upsilon(d) \mathbin\Vert \left( \sum_{i=0}^t \sum_{j=0}^p (\varsigma_i^{\pi_j})_{64} \right)
+        Cr := \upsilon(d) \concat \left( \sum_{i=0}^t \sum_{j=0}^p (\varsigma_i^{\pi_j})_{64} \right)
     \end{equation}
     where we use the symbol $\sum$ in the end part of (\ref{eq:crumbledString}) for concatenation\footnote{From now on, we may use this notation 
-    whenever it's clear in the explanation, or the $\sum^{\mathbin\Vert}$ alternative when applied on a full set/array.}.
+    whenever it's clear in the explanation, or the $\sum^{\concat}$ alternative when applied on a full set/array instead of $\concat {\Big|}_1^n$.}.
 \end{definition}
 
 \subsection{A unique prefix}
@@ -469,7 +472,7 @@ implementation because of its native availability in most browsers.}.
         \label{eq:hashering}
         \begin{array}{rl}
             HR: \omega \times \omega^t &\to \omega \\
-                (h^-, \mathcal{C}) &\mapsto h^- \oplus \left( \sum^{\mathbin\Vert} sort(\mathcal{C}) \right)
+                (h^-, \mathcal{C}) &\mapsto h^- \oplus \left( \sum^{\concat} sort(\mathcal{C}) \right)
         \end{array} 
     \end{equation}
 
@@ -479,7 +482,7 @@ implementation because of its native availability in most browsers.}.
         \label{eq:hashered}
         \begin{array}{rl}
             \upsilon: \quad \omega \times \omega^t &\to \omega \\
-                (d, \mathcal{C}) &\mapsto \upsilon(d, \mathcal{C}) := h^+ \mathbin\Vert HR(h^-, \mathcal{C}) \\
+                (d, \mathcal{C}) &\mapsto \upsilon(d, \mathcal{C}) := h^+ \concat HR(h^-, \mathcal{C}) \\
         \end{array}
     \end{equation}
 
@@ -515,8 +518,8 @@ implementation because of its native availability in most browsers.}.
         \begin{array}{l}
             \left\{
                 \begin{array}{l}
-                    {}^{O_1}Cr := x1 \mathbin\Vert \left( \sum_{i=0}^t \sum_{j=0}^p ({}^{O_1}\varsigma_i^{\pi_j})_{64} \right) \\
-                    {}^{O_2}Cr := x2 \mathbin\Vert \left( \sum_{i=0}^t \sum_{j=0}^p ({}^{O_2}\varsigma_i^{\pi_j})_{64} \right) \\
+                    {}^{O_1}Cr := x1 \concat \left( \sum_{i=0}^t \sum_{j=0}^p ({}^{O_1}\varsigma_i^{\pi_j})_{64} \right) \\
+                    {}^{O_2}Cr := x2 \concat \left( \sum_{i=0}^t \sum_{j=0}^p ({}^{O_2}\varsigma_i^{\pi_j})_{64} \right) \\
                 \end{array}
             \right. \\ \\
             \quad \Rightarrow \textrm{if } \pi_{h_{O_1}} \neq \pi_{h_{O_2}} \textrm{ then } {}^{O_1}Cr \neq {}^{O_2}Cr \\
@@ -527,7 +530,7 @@ implementation because of its native availability in most browsers.}.
     \end{proof}
 \end{definition}
 
-Prepended to the crumbs, not only does this prefix gives the crumbled string absolute uniqueness, but it also allows easy indexing.
+% Prepended to the crumbs, not only does this prefix gives the crumbled string absolute uniqueness, but it also allows easy indexing.
 
 \subsection{A step-by-step construct}
 
@@ -535,8 +538,8 @@ Prepended to the crumbs, not only does this prefix gives the crumbled string abs
 
 \paragraph{Obfuscation}
 
-Let $\mathfrak{F}()$ be an implementation of an almost Format-Preserving Encryption scheme based on a Feistel\cite{feistel:hf} cipher\footnote{We use 
-our own implementation described in \cite{Feistel:cyd}.}.
+Let $\mathfrak{F}()$ be an implementation of an almost Format-Preserving Encryption scheme based on a Feistel\cite{feistel:hf} cipher\footnote{With 
+our implementation described in \cite{Feistel:cyd}.}.
 
 $\mathfrak{F}()$ is used as our obfuscation tool in the process. It returns an obfuscated word of even length when applied on a source data, and the 
 exact copy of the source data when applied on its obfuscated version.
@@ -546,26 +549,26 @@ exact copy of the source data when applied on its obfuscated version.
 \begin{algorithm}
     \KwIn{a message $m$, the minimum size $s$ for the output}
     \KwOut{the appropriately padded message if necessary}
-    let $l$ be the length of $m$: $l \gets |m|$; \\
+    let $l$ be the length of $m$: $l \gets \norm{m}$; \\
     $\delta \gets l - s$; \\
     \eIf{$\delta \geq 0$}{
         \Return{$m$}
     }{
         \eIf{$m[0] = \emph{\texttt{PAD}}_0$}{
             \eIf{$m[l-1] = \emph{\texttt{PAD}}_1$}{
-                \Return{$\left( \emph{\texttt{PAD}}_2 \times \delta \right) \mathbin\Vert m$}
+                \Return{$\left( \emph{\texttt{PAD}}_2 \times \delta \right) \concat m$}
             }{
-                \Return{$\left( \emph{\texttt{PAD}}_1 \times \delta \right) \mathbin\Vert m$}
+                \Return{$\left( \emph{\texttt{PAD}}_1 \times \delta \right) \concat m$}
             }
         }{
             \eIf{$m[l-1] = \emph{\texttt{PAD}}_0$}{
                 \eIf{$m[0] = \emph{\texttt{PAD}}_1$}{
-                    \Return{$\left( \emph{\texttt{PAD}}_2 \times \delta \right) \mathbin\Vert m$}
+                    \Return{$\left( \emph{\texttt{PAD}}_2 \times \delta \right) \concat m$}
                 }{
-                    \Return{$\left( \emph{\texttt{PAD}}_1 \times \delta \right) \mathbin\Vert m$}
+                    \Return{$\left( \emph{\texttt{PAD}}_1 \times \delta \right) \concat m$}
                 }
             }{
-                \Return{$\left( \emph{\texttt{PAD}}_0 \times \delta \right) \mathbin\Vert m$}
+                \Return{$\left( \emph{\texttt{PAD}}_0 \times \delta \right) \concat m$}
             }
         }
     }
@@ -576,17 +579,16 @@ exact copy of the source data when applied on its obfuscated version.
 We herein define some padding (and respective unpadding) features such as an input returns unmodified if its length is greater than the wanted minimum 
 size (in case of padding), or if it wasn't padded in the first place (in case of unpadding).
 
-Let $\texttt{PAD}_0$, $\texttt{PAD}_1$ and $\texttt{PAD}_2$ be three special padding characters\footnote{In our implementation, we use the following 
-UTF-8 characters:
+Let $\texttt{PAD}_0$, $\texttt{PAD}_1$ and $\texttt{PAD}_2$ be three special padding characters\footnote{We use the following UTF-8 characters:
 \begin{itemize}
     \item $\texttt{PAD}_0 \gets$ \texttt{U+0002} (start-of-text) character;
     \item $\texttt{PAD}_1 \gets$ \texttt{U+0004} (end-of-transmission) character;
     \item $\texttt{PAD}_2 \gets$ \texttt{U+0005} (enquiry) character.
 \end{itemize}}, and $\_$ the symbol used when a variable should be discarded.
 
-The reason why we use these three different kinds of padding characters is because of the way the Feistel cipher works during obfuscation: by switching 
-left and right parts of the input data, we might take the risk to be mistaken at the end of the unpadding process should we choose padding characters 
-that are the same than one of the two ends of the input, hence the different options for the padding character.
+The reason why we use these three kinds of padding characters is because of the way the Feistel cipher works during obfuscation: by switching left and 
+right parts of the input data, we might take the risk to be mistaken at the end of the unpadding process should we choose padding characters that are the 
+same than one of the two ends of the input, hence the different options for the padding character.
 
 Algorithm \ref{algo:padding} describes this special padding function $\mu()$.
 
@@ -629,8 +631,8 @@ function\cite{PRNG}.
     \KwOut{$\mathcal{S}$}
     initialize a set of split masks: $\mathcal{M} \gets \emptyset$; \\
     seed $Rnd()$; \\
-    set variables $pos \gets 0$ and $\bar{x} \gets \floor{ \frac{|s|}{t} }$; \\
-    \While{$|\mathcal{M}| \neq t \wedge (\sum_{j=1}^t \mathcal{M}_j) \neq |s|$}{
+    set variables $pos \gets 0$ and $\bar{x} \gets \floor{ \frac{\norm{s}}{t} }$; \\
+    \While{$\norm{\mathcal{M}} \neq t \wedge (\sum_{j=1}^t \mathcal{M}_j) \neq \norm{s}$}{
         \For{$i \gets 0$ \KwTo $t-1$ \KwBy $1$}{
             find the mask length $l_i$ such as: \small $$
                 l_i := \bar{x} - \Delta_{max} < Rnd() \leq \bar{x} + \Delta_{max}
@@ -668,15 +670,15 @@ Let $K$ be a secret key and $N$ the number of rounds to use for obfuscation.
     eventually pad it: $d' \gets \mu(d')$; \\
     determine the number of slices $t$ and therefore the $\Delta_{max}$; \\
     build the slices: $\mathcal{S} \gets \zeta_{\Delta_{max}}(d', t)$; \\
-    initialize the set of crumbs: $\mathcal{C} := \{ \varsigma_{t \times |P| - 1} \}$; \\
+    initialize the set of crumbs: $\mathcal{C} := \{ \varsigma_{t \times \norm{P} - 1} \}$; \\
     allocate crumbs to participants in a map $\mathcal{A_P}$ where each holder is associated with crumb $\varsigma_0$ and each trusted third party with 
     $t - 1$ crumbs from $\mathcal{S}' := \mathcal{S} \setminus \varsigma_0$; \\
     \For{$i \gets 0$ \KwTo $t-1$ \KwBy $1$}{
-        \For{$j \gets 0$ \KwTo $|A_P|-1$ \KwBy $1$}{
+        \For{$j \gets 0$ \KwTo $\norm{A_P}-1$ \KwBy $1$}{
             $\mathcal{C} \gets \mathfrak{c}(\sigma_i \in \mathcal{S}, \pi_j^{PK} \in P)$;
         }
     }
-    use (\ref{eq:crumbledString}) to build the crumbled string: $Cr := \upsilon(d) \mathbin\Vert \Big( \sum^{\mathbin\Vert} \mathcal{C} \Big)$; \\
+    use (\ref{eq:crumbledString}) to build the crumbled string: $Cr := \upsilon(d) \concat \Big( \sum^{\concat} \mathcal{C} \Big)$; \\
     \Return{$Cr$, $\upsilon(d)$}
     \caption{From data to crumbl}
     \label{algo:construct}
@@ -694,12 +696,12 @@ In any case, the allocation rule must respect the following Proposition:
     Each $\pi_i$ must have at most $t-2$ crumbs to encrypt and the allocation should be evenly distributed among the participants such as 
     \begin{equation}
         \label{eq:allocation}
-        \sum_{i=1}^{t-1} P(\varsigma_i) = 1 \iff P(\varsigma_i) = \frac{1}{|P_\tau|}
+        \sum_{i=1}^{t-1} P(\varsigma_i) = 1 \iff P(\varsigma_i) = \frac{1}{\norm{P_\tau}}
     \end{equation}  
     ensuring maximum resilience to the system.
 
     For example, with three participants, we have $$
-    |P_\tau| \gets 3 \Rightarrow P(\varsigma_i) = \frac{1}{3}
+    \norm{P_\tau} \gets 3 \Rightarrow P(\varsigma_i) = \frac{1}{3}
     $$
     which necessarily leads to the following distribution of crumbs:$$
         \begin{array}{l}
@@ -733,7 +735,7 @@ possession of the holder $\pi_H$, he can run Algorithm \ref{algo:deconstruct} th
     \KwIn{$Cr$, $\pi_H^{SK}$, $\mathcal{S}' := \mathcal{S} \setminus \varsigma_0$, an optional verification hash $V$}
     \KwOut{the recovered data or an error}
     from $Cr$, get the number $t$ of slices; \\
-    \If{$|\mathcal{S}'| \neq t - 1$}{
+    \If{$\norm{\mathcal{S}'} \neq t - 1$}{
         \throw{not enough third-party slices}{}
     }
     initialize $\mathcal{S} \gets \mathcal{S}'$; \\
@@ -809,7 +811,7 @@ It is easy to prove that the \texttt{crumbl}\texttrademark~ technology can be im
 \begin{proposition}
     \label{prop:ttp3}
     Let $\mathcal{G}_\tau$ be the total possible set of trusted third parties, and ${}^OP_\tau \subset {}^OP \subset \mathcal{G}_\tau$ the actual 
-    trusted third parties participating in an operation $O$, if its cardinality $|{}^OP_\tau| \geq 3$ and $|\mathcal{G}_\tau| > |{}^OP_\tau|$ then the 
+    trusted third parties participating in an operation $O$, if its cardinality $\norm{{}^OP_\tau} \geq 3$ and $\norm{\mathcal{G}_\tau} > \norm{{}^OP_\tau}$ then the 
     \texttt{crumbl}\texttrademark~ protocol is both secure and resilient as long as the system enforces a replacement mechanism for any failing trusted 
     third party $\in \mathcal{G}_\tau$.
 \end{proposition}
