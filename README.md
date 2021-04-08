@@ -28,18 +28,18 @@ The first step involves at least two stakeholders, but preferably four for optim
 
 1. Creation
 
-    To create the _crumbl_, one would need the data and the public keys of all the stakeholders, as well as the encryption algorithm used by them.
-    Currently, two encryption algorithms are allowed by the system: ECIES and RSA.
+  To create the _crumbl_, one would need the data and the public keys of all the stakeholders, as well as the encryption algorithm used by them.
+  Currently, two encryption algorithms are allowed by the system: ECIES and RSA.
 
-    Once created, the _crumbl_ could be stored by anyone: any stakeholder or any outsourced data storage system. 
-    The technology guarantees that the _crumbl_ can't be deciphered without the presence of the signing stakeholders, the number of needed stakeholders depending on how many originally signed it, but a data owner must at least be present. In fact, only a data owner will be able to fully recover the original data from the _crumbl_.
+  Once created, the _crumbl_ could be stored by anyone: any stakeholder or any outsourced data storage system. 
+  The technology guarantees that the _crumbl_ can't be deciphered without the presence of the signing stakeholders, the number of needed stakeholders depending on how many originally signed it, but a data owner must at least be present. In fact, only a data owner will be able to fully recover the original data from the _crumbl_.
 
 2. Extraction
 
-    To extract the data from a _crumbl_ is a multi-step process:
-    * First, the data owner should ask the signing trusted third-parties to decipher the parts (the "crumbs") they signed;
-    * Each signing trusted third-party should use their own keypair (private and public keys) along with the _crumbl_, and then return the result (the "partial uncrumbs") to the data owner;
-    * After, collecting all the partial uncrumbs, the data owner should inject them in the system along with the _crumbl_ and his own keypair to get the fully-deciphered data.
+  To extract the data from a _crumbl_ is a multi-step process:
+  * First, the data owner should ask the signing trusted third-parties to decipher the parts (the "crumbs") they signed;
+  * Each signing trusted third-party should use their own keypair (private and public keys) along with the _crumbl_, and then return the result (the "partial uncrumbs") to the data owner;
+  * After, collecting all the partial uncrumbs, the data owner should inject them in the system along with the _crumbl_ and his own keypair to get the fully-deciphered data.
 
 
 All these steps could be done using command-line instructions with the [executable](#executable), or building an integrated app utilizing the [Go library](#go-library).
@@ -75,59 +75,59 @@ Usage of ./crumbl-exe:
 
 1. Creation
 
-    To create a _crumbl_, you need to pass the `-c` flag, then to fill in the `--owner-keys` and `--signer-keys` flags in the appropriate format concatenating:
-    * the code name of the encryption algorithm to use (`ecies` or `rsa`);
-    * a separating colon (`:`);
-    * the path to the file holding the public key (using the uncompressed public key in ECIES, and a PEM file for RSA).
-    eg. `ecies:path/to/myKey.pub`
+  To create a _crumbl_, you need to pass the `-c` flag, then to fill in the `--owner-keys` and `--signer-keys` flags in the appropriate format concatenating:
+  * the code name of the encryption algorithm to use (`ecies` or `rsa`);
+  * a separating colon (`:`);
+  * the path to the file holding the public key (using the uncompressed public key in ECIES, and a PEM file for RSA).
+  eg. `ecies:path/to/myKey.pub`
 
-    Optionally, you may add the file path to the `-out` flag to save the result into.
+  Optionally, you may add the file path to the `-out` flag to save the result into.
 
-    The data to crumbl should be placed at the end of the command line.
+  The data to crumbl should be placed at the end of the command line.
 
-    For example, here is a call to crumbl the data `myDataToCrumbl`:
-    ```console
-    user:~$ ./crumbl -c -out myFile.dat --owner-keys ecies:path/to/myKey.pub --signer-keys ecies:path/to/trustee1.pub,rsa:path/to/trustee2.pub myDataToCrumbl
-    SUCCESS - crumbl successfully saved to myFile.dat
-    ```
+  For example, here is a call to crumbl the data `myDataToCrumbl`:
+  ```console
+  user:~$ ./crumbl -c -out myFile.dat --owner-keys ecies:path/to/myKey.pub --signer-keys ecies:path/to/trustee1.pub,rsa:path/to/trustee2.pub myDataToCrumbl
+  SUCCESS - crumbl successfully saved to myFile.dat
+  ```
 
-    Not filling the `-out` flag results in sending the _crumbl_ to stdout.
+  Not filling the `-out` flag results in sending the _crumbl_ to stdout.
 
 2. Extraction
 
-    i. Get the partial uncrumbs from the signing trusted third-parties
+  i. Get the partial uncrumbs from the signing trusted third-parties
 
-    When asked (generally by sending the _crumbl_ over to them), each signing trusted third-party should use the executable to get the partial uncrumbs, ie. the deciphered crumbs the system assigned them to sign upon creation.
+  When asked (generally by sending the _crumbl_ over to them), each signing trusted third-party should use the executable to get the partial uncrumbs, ie. the deciphered crumbs the system assigned them to sign upon creation.
 
-    The signer should pass the `-x` flag, then fill the `--signer-keys` flag with the algorithm and public key information as above and the `--signer-secret` with the path to the file holding the corresponding private key.
+  The signer should pass the `-x` flag, then fill the `--signer-keys` flag with the algorithm and public key information as above and the `--signer-secret` with the path to the file holding the corresponding private key.
 
-    Optionally, the signer may add the file path to the `-out` flag to save the result into.
+  Optionally, the signer may add the file path to the `-out` flag to save the result into.
 
-    The _crumbl_ should be placed either at the end of the command line, or in a file to reference in the `-in` flag.
+  The _crumbl_ should be placed either at the end of the command line, or in a file to reference in the `-in` flag.
 
-    For example, here is a call to partially uncrumbl a _crumbl_ placed in a file:
-    ```console
-    user:~$ ./crumbl-exe -x -in theCrumbl.dat --signer-keys rsa:path/to/trustee2.pub --signer-secret path/to/trustee2.sk
-    123fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%01AgICAgKWqJ/v0/4=.1
-    ```
-    The second line above is an example of partial uncrumb sent to stdout because the `-out` wasn't defined.
+  For example, here is a call to partially uncrumbl a _crumbl_ placed in a file:
+  ```console
+  user:~$ ./crumbl-exe -x -in theCrumbl.dat --signer-keys rsa:path/to/trustee2.pub --signer-secret path/to/trustee2.sk
+  123fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%01AgICAgKWqJ/v0/4=.1
+  ```
+  The second line above is an example of partial uncrumb sent to stdout because the `-out` wasn't defined.
 
-    ii. Fully-decipher the _crumbl_ as the owner
+  ii. Fully-decipher the _crumbl_ as the owner
 
-    After receiving every partial uncrumbs from the signing trusted third-parties, the data owner can fully uncrumbl the _crumbl_.
+  After receiving every partial uncrumbs from the signing trusted third-parties, the data owner can fully uncrumbl the _crumbl_.
 
-    The owner should pass the `-x` flag, then fill the `--owner-keys` flag with the algorithm and public key information as above and the `--owner-secret` with the path to the file holding his corresponding private key.
+  The owner should pass the `-x` flag, then fill the `--owner-keys` flag with the algorithm and public key information as above and the `--owner-secret` with the path to the file holding his corresponding private key.
 
-    Optionally, the owner may add the file path to the `-out` flag to save the result into.
-    He should also provide the `-vh` tag with the stringified value of the hash of the original data. As of the latest version, this hash should use the SHA-256 hash algorithm.
+  Optionally, the owner may add the file path to the `-out` flag to save the result into.
+  He should also provide the `-vh` tag with the stringified value of the hash of the original data. As of the latest version, this hash should use the SHA-256 hash algorithm.
 
-    The partial uncrumbs could have been appended using a separating space to the end of the file used in the `-in` flag, or to the string of the _crumbl_ passed at the end of the command line. Alternatively, the _crumbl_ could be passed using the `-in` flag and the partial uncrumbs passed at the end of the command line.
+  The partial uncrumbs could have been appended using a separating space to the end of the file used in the `-in` flag, or to the string of the _crumbl_ passed at the end of the command line. Alternatively, the _crumbl_ could be passed using the `-in` flag and the partial uncrumbs passed at the end of the command line.
 
-    For example, here is a call to get the _crumbl_ deciphered using the last scenario:
-    ```console
-    user:~$ ./crumbl-exe -x -in theCrumbl.dat -vh 123fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d --owner-keys ecies:path/to/myKey.pub --owner-secret path/to/myKey.sk 123fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%01AgICAgKWqJ/v0/4=.1 123fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%02AgICAgKEEqTinyo=.1
-    myDataToCrumbl
-    ```
+  For example, here is a call to get the _crumbl_ deciphered using the last scenario:
+  ```console
+  user:~$ ./crumbl-exe -x -in theCrumbl.dat -vh 123fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d --owner-keys ecies:path/to/myKey.pub --owner-secret path/to/myKey.sk 123fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%01AgICAgKWqJ/v0/4=.1 123fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%02AgICAgKEEqTinyo=.1
+  myDataToCrumbl
+  ```
 
 As of the latest version, the technology only processes one crumbl at a time.
 
@@ -145,28 +145,28 @@ Then, launch its process.
 For example, the code below reproduces the command-line instruction above for crumbl creation:
 ```golang
 import (
-      "fmt"
-      "github.com/cyrildever/crumbl-exe/client"
+  "fmt"
+  "github.com/cyrildever/crumbl-exe/client"
 )
 
 func main() {
-      data := "myDataToCrumbl"
-      worker := client.CrumblWorker{
-            Mode:             client.CREATION,
-            Input:            "",
-            Output:           "myFile.dat",
-            OwnerKeys:        "ecies:path/to/myKey.pub",
-            OwnerSecret:      "",
-            SignerKeys:       "ecies:path/to/trustee1.pub,rsa:path/to/trustee2.pub",
-            SignerSecret:     "",
-            VerificationHash: "",
-            Data:             []string{},
-      }
-      crumbled, err := worker.Process(true)
-      if err == nil {
-            // Do something with it
-            fmt.Printf("%s once crumbled: %s\n", data, crumbled)
-      }
+  data := "myDataToCrumbl"
+  worker := client.CrumblWorker{
+    Mode:             client.CREATION,
+    Input:            "",
+    Output:           "myFile.dat",
+    OwnerKeys:        "ecies:path/to/myKey.pub",
+    OwnerSecret:      "",
+    SignerKeys:       "ecies:path/to/trustee1.pub,rsa:path/to/trustee2.pub",
+    SignerSecret:     "",
+    VerificationHash: "",
+    Data:             []string{},
+  }
+  crumbled, err := worker.Process(true)
+  if err == nil {
+    // Do something with it
+    fmt.Printf("%s once crumbled: %s\n", data, crumbled)
+  }
 }
 ```
 _NB: Passing `false` to the `Process()` method would not return any result or error, ie. mimic the behaviour of the executable._
@@ -179,11 +179,11 @@ partialUncrumb1 := "580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba
 partialUncrumb2 := "580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d%02AgICAgICAgIYUkI=.1"
 
 worker := client.CrumblWorker{
-      Mode:             client.EXTRACTION,
-      OwnerKeys:        "ecies:path/to/myKey.pub",
-      OwnerSecret:      "path/to/mySecret.key",
-      VerificationHash: "580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d",
-      Data:             []string{crumbled, partialUncrumb1, partialUncrumb2},
+  Mode:             client.EXTRACTION,
+  OwnerKeys:        "ecies:path/to/myKey.pub",
+  OwnerSecret:      "path/to/mySecret.key",
+  VerificationHash: "580fb8a91f05833200dea7d33536aaec9d7ceb256a9858ee68e330e126ba409d",
+  Data:             []string{crumbled, partialUncrumb1, partialUncrumb2},
 }
 result, err := worker.Process(true)
 ```
@@ -204,24 +204,24 @@ import (
 )
 
 owners := []signer.Signer{{
-      EncryptionAlgorithm: crypto.ECIES_ALGORITHM,
-      PublicKey:           emitterPublicKey.Bytes(),
+  EncryptionAlgorithm: crypto.ECIES_ALGORITHM,
+  PublicKey:           emitterPublicKey.Bytes(),
 }, {
-      EncryptionAlgorithm: crypto.ECIES_ALGORITHM,
-      PublicKey:           beneficiaryPublicKey.Bytes(),
+  EncryptionAlgorithm: crypto.ECIES_ALGORITHM,
+  PublicKey:           beneficiaryPublicKey.Bytes(),
 }}
 var trustees []signer.Signer
 for _, s := range signers {
-      trustees = append(trustees, signer.Signer{
-            EncryptionAlgorithm: s.EncryptionAlgorithm,
-            PublicKey:           s.PublicKey.Bytes(),
-      })
+  trustees = append(trustees, signer.Signer{
+    EncryptionAlgorithm: s.EncryptionAlgorithm,
+    PublicKey:           s.PublicKey.Bytes(),
+  })
 }
 crumbl := core.Crumbl{
-      Source:     "someSourceToCrumbl",
-      HashEngine: crypto.DEFAULT_HASH_ENGINE,
-      Owners:     owners,
-      Trustees:   trustees,
+  Source:     "someSourceToCrumbl",
+  HashEngine: crypto.DEFAULT_HASH_ENGINE,
+  Owners:     owners,
+  Trustees:   trustees,
 }
 crumbled, err := crumbl.Process()
 ```
