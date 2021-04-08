@@ -4,9 +4,15 @@ import (
 	"errors"
 
 	"github.com/cyrildever/crumbl-exe/padder"
+	"github.com/cyrildever/feistel"
+	"github.com/cyrildever/feistel/common/utils/base256"
+	"github.com/cyrildever/feistel/common/utils/hash"
 )
 
 const (
+	// DEFAULT_HASH_ENGINE ...
+	DEFAULT_HASH_ENGINE = hash.SHA_256
+
 	// DEFAULT_KEY_STRING ...
 	DEFAULT_KEY_STRING = "8ed9dcc1701c064f0fd7ae235f15143f989920e0ee9658bb7882c8d7d5f05692" // SHA-256("crumbl by Edgewhere")
 
@@ -18,8 +24,7 @@ const (
 
 // Obfuscator ...
 type Obfuscator struct {
-	Key    string
-	Rounds int
+	cipher *feistel.FPECipher
 }
 
 //--- METHODS
@@ -35,16 +40,11 @@ func (o Obfuscator) Apply(data string) (obfuscated []byte, err error) {
 		data = string(padded)
 	}
 	// Apply the Feistel cipher
-	parts, err := Split(data)
+	ob, err := o.cipher.Encrypt(data)
 	if err != nil {
 		return
 	}
-	for i := 0; i < o.Rounds; i++ {
-		rnd, _ := o.Round(parts[1], i)
-		tmp := Xor(parts[0], rnd)
-		parts = []string{parts[1], tmp}
-	}
-	obfuscated = []byte(parts[0] + parts[1])
+	obfuscated = ob.Bytes()
 	return
 }
 
@@ -55,26 +55,25 @@ func (o Obfuscator) Unapply(obfuscated []byte) (deobfuscated string, err error) 
 		return
 	}
 
-	// Apply the Feistel cipher
-	parts, err := Split(string(obfuscated))
+	// Unapply the Feistel cipher
+	readable := base256.ToBase256Readable(obfuscated)
+	d, err := o.cipher.Decrypt(readable)
 	if err != nil {
-		err = errors.New("cannot split obfuscated data")
 		return
 	}
-	a := parts[1]
-	b := parts[0]
-	var tmp string
-	for i := 0; i < o.Rounds; i++ {
-		rnd, _ := o.Round(b, o.Rounds-i-1)
-		tmp = Xor(a, rnd)
-		a = b
-		b = tmp
-	}
-	d := b + a
 	unpadded, _, err := padder.Unapply([]byte(d))
 	if err != nil {
 		return
 	}
 	deobfuscated = string(unpadded)
 	return
+}
+
+//--- FUNCTIONS
+
+// NewObfuscator ...
+func NewObfuscator(cipher *feistel.FPECipher) *Obfuscator {
+	return &Obfuscator{
+		cipher: cipher,
+	}
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/cyrildever/crumbl-exe/obfuscator"
 	"github.com/cyrildever/crumbl-exe/padder"
 	"github.com/cyrildever/crumbl-exe/slicer"
+	"github.com/cyrildever/feistel"
 )
 
 const (
@@ -72,10 +73,7 @@ func (c *Crumbl) ToStdOut() (result string, err error) {
 // - a dot followed by the version number of the Crumb&trade; engine used.
 func (c *Crumbl) doCrumbl() (crumbled string, err error) {
 	// 1-Obfuscate
-	obfuscated, err := obfuscator.Obfuscator{
-		Key:    obfuscator.DEFAULT_KEY_STRING,
-		Rounds: obfuscator.DEFAULT_ROUNDS,
-	}.Apply(c.Source)
+	obfuscated, err := obfuscator.NewObfuscator(feistel.NewFPECipher(obfuscator.DEFAULT_HASH_ENGINE, obfuscator.DEFAULT_KEY_STRING, obfuscator.DEFAULT_ROUNDS)).Apply(c.Source)
 	if err != nil {
 		return
 	}

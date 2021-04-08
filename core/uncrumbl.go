@@ -13,6 +13,7 @@ import (
 	"github.com/cyrildever/crumbl-exe/models/signer"
 	"github.com/cyrildever/crumbl-exe/obfuscator"
 	"github.com/cyrildever/crumbl-exe/utils"
+	"github.com/cyrildever/feistel"
 )
 
 //--- TYPES
@@ -102,7 +103,7 @@ func (u *Uncrumbl) doUncrumbl() (uncrumbled []byte, err error) {
 	indexSet := make(map[int]bool)
 	for _, crumb := range crumbs {
 		idx := crumb.Index
-		if !indexSet[idx] || indexSet[idx] != true {
+		if !indexSet[idx] {
 			indexSet[idx] = true
 		}
 		if (!u.IsOwner && idx == 0) || (u.IsOwner && idx != 0) {
@@ -146,10 +147,7 @@ func (u *Uncrumbl) doUncrumbl() (uncrumbled []byte, err error) {
 			err = e
 			return
 		}
-		obfuscator := obfuscator.Obfuscator{
-			Key:    obfuscator.DEFAULT_KEY_STRING,
-			Rounds: obfuscator.DEFAULT_ROUNDS,
-		}
+		obfuscator := obfuscator.NewObfuscator(feistel.NewFPECipher(obfuscator.DEFAULT_HASH_ENGINE, obfuscator.DEFAULT_KEY_STRING, obfuscator.DEFAULT_ROUNDS))
 		deobfuscated, e := obfuscator.Unapply(obfuscated)
 		if e != nil {
 			err = e
