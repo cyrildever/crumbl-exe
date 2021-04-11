@@ -45,6 +45,10 @@ func (c *Collector) ToObfuscated() (obfuscated []byte, err error) {
 		}
 		o += string(unpadded)
 	}
-	obfuscated = []byte(o)
+	oBytes, _, err := padder.Unapply([]byte(o))
+	if err != nil {
+		return
+	}
+	obfuscated = oBytes
 	return
 }

@@ -30,19 +30,19 @@ func TestCrumbl(t *testing.T) {
 		Source:     source,
 		HashEngine: crypto.DEFAULT_HASH_ENGINE,
 		Owners: []signer.Signer{
-			signer.Signer{
+			{
 				EncryptionAlgorithm: crypto.ECIES_ALGORITHM,
 				PublicKey:           owner1_pubkey,
 				PrivateKey:          owner1_privkey,
 			},
 		},
 		Trustees: []signer.Signer{
-			signer.Signer{
+			{
 				EncryptionAlgorithm: crypto.ECIES_ALGORITHM,
 				PublicKey:           trustee1_pubkey,
 				PrivateKey:          trustee1_privkey,
 			},
-			signer.Signer{
+			{
 				EncryptionAlgorithm: crypto.RSA_ALGORITHM,
 				PublicKey:           trustee2_pubkey,
 				PrivateKey:          trustee2_privkey,
@@ -61,19 +61,19 @@ func TestCrumbl(t *testing.T) {
 		Source:     source,
 		HashEngine: crypto.DEFAULT_HASH_ENGINE,
 		Owners: []signer.Signer{
-			signer.Signer{
+			{
 				EncryptionAlgorithm: crypto.ECIES_ALGORITHM,
 				PublicKey:           owner1_pubkey,
 				PrivateKey:          owner1_privkey,
 			},
 		},
 		Trustees: []signer.Signer{
-			signer.Signer{
+			{
 				EncryptionAlgorithm: crypto.ECIES_ALGORITHM,
 				PublicKey:           trustee1_pubkey,
 				PrivateKey:          trustee1_privkey,
 			},
-			signer.Signer{
+			{
 				EncryptionAlgorithm: crypto.ECIES_ALGORITHM,
 				PublicKey:           trustee3_pubkey,
 				PrivateKey:          trustee3_privkey,
