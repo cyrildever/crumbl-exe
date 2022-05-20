@@ -243,7 +243,7 @@ You might also want to check out the Scala implementation for the Crumbl&trade;:
 
 The use of the Crumbl&trade; executable or library for commercial purpose is subject to fees for commercial purpose and to the respect of the [BSD-2-Clause-Patent License](LICENSE).
 All technologies are protected by patents owned by Edgewhere.
-Please [contact us](mailto:contact@edgehere.fr) to get further information.
+Please [contact us](mailto:contact@edgewhere.fr) to get further information.
 
 
 <hr />
