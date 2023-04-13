@@ -8,7 +8,7 @@
 
 crumbl-exe is both an executable and a Go client for generating secure data storage with trusted signing third-parties using the Crumbl&trade; technology patented by Cyril Dever for [Edgewhere](https://www.edgewhere.fr).
 
-If you're interesting in using the library, please [contact us](mailto:contact@edgewhere.fr).
+If you're interesting in using the library, please [contact Edgewhere](mailto:contact@edgewhere.fr).
 
 
 ### Formal description
@@ -135,8 +135,8 @@ NB: Error(s) and/or warning message(s) are all sent to stderr.
 
 #### Go Library
 
-```golang
-import "github.com/cyrildever/crumbl-exe"
+```console
+$ go get github.com/cyrildever/crumbl-exe
 ```
 
 Construct a new `CrumblWorker` client by passing to it all the arguments otherwise passed in the executable as flags (see above).
@@ -243,7 +243,7 @@ You might also want to check out the Scala implementation for the Crumbl&trade;:
 
 The use of the Crumbl&trade; executable or library for commercial purpose is subject to fees for commercial purpose and to the respect of the [BSD-2-Clause-Patent License](LICENSE).
 All technologies are protected by patents owned by Edgewhere.
-Please [contact us](mailto:contact@edgewhere.fr) to get further information.
+Please [contact Edgewhere](mailto:contact@edgewhere.fr) to get further information.
 
 
 <hr />
