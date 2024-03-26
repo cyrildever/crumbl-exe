@@ -247,4 +247,4 @@ Please [contact Edgewhere](mailto:contact@edgewhere.fr) to get further informati
 
 
 <hr />
-&copy; 2019-2023 Cyril Dever. All rights reserved.
+&copy; 2019-2024 Cyril Dever. All rights reserved.

@@ -13,7 +13,7 @@ import (
 
 // TestEncrypt ...
 func TestEncrypt(t *testing.T) {
-	pk, _ := ioutil.ReadFile("keys/trustee2.pub")
+	pk, err := ioutil.ReadFile("keys/trustee2.pub")
 	msg := []byte("Edgewhere")
 
 	crypted, err := rsa.Encrypt(msg, pk)
@@ -29,7 +29,7 @@ func TestEncrypt(t *testing.T) {
 	assert.Assert(t, len(veryLongStr) > 256-(2*64+2)) // As this public key is a 2048-bits RSA key
 
 	_, err = rsa.Encrypt([]byte(veryLongStr), pk)
-	assert.Equal(t, err.Error(), "crypto/rsa: message too long for RSA public key size")
+	assert.Equal(t, err.Error(), "crypto/rsa: message too long for RSA key size")
 }
 
 // TestDecrypt ...
